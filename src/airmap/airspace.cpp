@@ -16,8 +16,7 @@ std::ostream &operator<<(std::ostream &out, Comma &comma) {
 
 }  // namespace
 
-airmap::Airspace::Airspace() : type_{Type::invalid} {
-}
+airmap::Airspace::Airspace() : type_{Type::invalid} {}
 
 airmap::Airspace::Airspace(const Airspace &rhs)
     : id_{rhs.id_},
@@ -33,9 +32,7 @@ airmap::Airspace::Airspace(const Airspace &rhs)
   set_details(rhs);
 }
 
-airmap::Airspace::~Airspace() {
-  reset();
-}
+airmap::Airspace::~Airspace() { reset(); }
 
 airmap::Airspace &airmap::Airspace::operator=(const Airspace &rhs) {
   reset();
@@ -56,65 +53,35 @@ airmap::Airspace &airmap::Airspace::operator=(const Airspace &rhs) {
   return *this;
 }
 
-const airmap::Airspace::Id &airmap::Airspace::id() const {
-  return id_;
-}
+const airmap::Airspace::Id &airmap::Airspace::id() const { return id_; }
 
-void airmap::Airspace::set_id(const Id &id) {
-  id_ = id;
-}
+void airmap::Airspace::set_id(const Id &id) { id_ = id; }
 
-const std::string &airmap::Airspace::name() const {
-  return name_;
-}
+const std::string &airmap::Airspace::name() const { return name_; }
 
-void airmap::Airspace::set_name(const std::string &name) {
-  name_ = name;
-}
+void airmap::Airspace::set_name(const std::string &name) { name_ = name; }
 
-airmap::Airspace::Type airmap::Airspace::type() const {
-  return type_;
-}
+airmap::Airspace::Type airmap::Airspace::type() const { return type_; }
 
-const std::string &airmap::Airspace::country() const {
-  return country_;
-}
+const std::string &airmap::Airspace::country() const { return country_; }
 
-void airmap::Airspace::set_country(const std::string &country) {
-  country_ = country;
-}
+void airmap::Airspace::set_country(const std::string &country) { country_ = country; }
 
-const std::string &airmap::Airspace::state() const {
-  return state_;
-}
+const std::string &airmap::Airspace::state() const { return state_; }
 
-void airmap::Airspace::set_state(const std::string &state) {
-  state_ = state;
-}
+void airmap::Airspace::set_state(const std::string &state) { state_ = state; }
 
-const std::string &airmap::Airspace::city() const {
-  return city_;
-}
+const std::string &airmap::Airspace::city() const { return city_; }
 
-void airmap::Airspace::set_city(const std::string &city) {
-  city_ = city;
-}
+void airmap::Airspace::set_city(const std::string &city) { city_ = city; }
 
-const airmap::Timestamp &airmap::Airspace::last_updated() const {
-  return last_updated_;
-}
+const airmap::Timestamp &airmap::Airspace::last_updated() const { return last_updated_; }
 
-void airmap::Airspace::set_last_updated(const Timestamp &timestamp) {
-  last_updated_ = timestamp;
-}
+void airmap::Airspace::set_last_updated(const Timestamp &timestamp) { last_updated_ = timestamp; }
 
-const airmap::Geometry &airmap::Airspace::geometry() const {
-  return geometry_;
-}
+const airmap::Geometry &airmap::Airspace::geometry() const { return geometry_; }
 
-void airmap::Airspace::set_geometry(const Geometry &geometry) {
-  geometry_ = geometry;
-}
+void airmap::Airspace::set_geometry(const Geometry &geometry) { geometry_ = geometry; }
 
 const std::vector<airmap::Geometry> &airmap::Airspace::related_geometries() const {
   return related_geometries_;
@@ -124,21 +91,13 @@ void airmap::Airspace::set_related_geometries(const std::vector<Geometry> &geome
   related_geometries_ = geometries;
 }
 
-const std::vector<airmap::Rule> &airmap::Airspace::rules() const {
-  return rules_;
-}
+const std::vector<airmap::Rule> &airmap::Airspace::rules() const { return rules_; }
 
-void airmap::Airspace::set_rules(const std::vector<Rule> &rules) {
-  rules_ = rules;
-}
+void airmap::Airspace::set_rules(const std::vector<Rule> &rules) { rules_ = rules; }
 
-const airmap::Airport &airmap::Airspace::details_for_airport() const {
-  return details_.airport;
-}
+const airmap::Airport &airmap::Airspace::details_for_airport() const { return details_.airport; }
 
-airmap::Airport &airmap::Airspace::details_for_airport() {
-  return details_.airport;
-}
+airmap::Airport &airmap::Airspace::details_for_airport() { return details_.airport; }
 
 const airmap::ControlledAirspace &airmap::Airspace::details_for_controlled_airspace() const {
   return details_.controlled_airspace;
@@ -152,65 +111,37 @@ const airmap::Emergency &airmap::Airspace::details_for_emergency() const {
   return details_.emergency;
 }
 
-airmap::Emergency &airmap::Airspace::details_for_emergency() {
-  return details_.emergency;
-}
+airmap::Emergency &airmap::Airspace::details_for_emergency() { return details_.emergency; }
 
-const airmap::Fire &airmap::Airspace::details_for_fire() const {
-  return details_.fire;
-}
+const airmap::Fire &airmap::Airspace::details_for_fire() const { return details_.fire; }
 
-airmap::Fire &airmap::Airspace::details_for_fire() {
-  return details_.fire;
-}
+airmap::Fire &airmap::Airspace::details_for_fire() { return details_.fire; }
 
-const airmap::Heliport &airmap::Airspace::details_for_heliport() const {
-  return details_.heliport;
-}
+const airmap::Heliport &airmap::Airspace::details_for_heliport() const { return details_.heliport; }
 
-airmap::Heliport &airmap::Airspace::details_for_heliport() {
-  return details_.heliport;
-}
+airmap::Heliport &airmap::Airspace::details_for_heliport() { return details_.heliport; }
 
-const airmap::Hospital &airmap::Airspace::details_for_hospital() const {
-  return details_.hospital;
-}
+const airmap::Hospital &airmap::Airspace::details_for_hospital() const { return details_.hospital; }
 
-airmap::Hospital &airmap::Airspace::details_for_hospital() {
-  return details_.hospital;
-}
+airmap::Hospital &airmap::Airspace::details_for_hospital() { return details_.hospital; }
 
-const airmap::Park &airmap::Airspace::details_for_park() const {
-  return details_.park;
-}
+const airmap::Park &airmap::Airspace::details_for_park() const { return details_.park; }
 
-airmap::Park &airmap::Airspace::details_for_park() {
-  return details_.park;
-}
+airmap::Park &airmap::Airspace::details_for_park() { return details_.park; }
 
 const airmap::PowerPlant &airmap::Airspace::details_for_power_plant() const {
   return details_.power_plant;
 }
 
-airmap::PowerPlant &airmap::Airspace::details_for_power_plant() {
-  return details_.power_plant;
-}
+airmap::PowerPlant &airmap::Airspace::details_for_power_plant() { return details_.power_plant; }
 
-const airmap::Prison &airmap::Airspace::details_for_prison() const {
-  return details_.prison;
-}
+const airmap::Prison &airmap::Airspace::details_for_prison() const { return details_.prison; }
 
-airmap::Prison &airmap::Airspace::details_for_prison() {
-  return details_.prison;
-}
+airmap::Prison &airmap::Airspace::details_for_prison() { return details_.prison; }
 
-const airmap::School &airmap::Airspace::details_for_school() const {
-  return details_.school;
-}
+const airmap::School &airmap::Airspace::details_for_school() const { return details_.school; }
 
-airmap::School &airmap::Airspace::details_for_school() {
-  return details_.school;
-}
+airmap::School &airmap::Airspace::details_for_school() { return details_.school; }
 
 const airmap::SpecialUseAirspace &airmap::Airspace::details_for_special_use_airspace() const {
   return details_.special_use_airspace;
@@ -220,7 +151,8 @@ airmap::SpecialUseAirspace &airmap::Airspace::details_for_special_use_airspace()
   return details_.special_use_airspace;
 }
 
-const airmap::TemporaryFlightRestriction &airmap::Airspace::details_for_temporary_flight_restriction() const {
+const airmap::TemporaryFlightRestriction &
+airmap::Airspace::details_for_temporary_flight_restriction() const {
   return details_.tfr;
 }
 
@@ -228,13 +160,9 @@ airmap::TemporaryFlightRestriction &airmap::Airspace::details_for_temporary_flig
   return details_.tfr;
 }
 
-const airmap::Wildfire &airmap::Airspace::details_for_wildfire() const {
-  return details_.wildfire;
-}
+const airmap::Wildfire &airmap::Airspace::details_for_wildfire() const { return details_.wildfire; }
 
-airmap::Wildfire &airmap::Airspace::details_for_wildfire() {
-  return details_.wildfire;
-}
+airmap::Wildfire &airmap::Airspace::details_for_wildfire() { return details_.wildfire; }
 
 void airmap::Airspace::set_details(const Airspace &detail) {
   switch (detail.type_) {
@@ -395,10 +323,8 @@ void airmap::Airspace::reset() {
   }
 }
 
-airmap::Airspace::Details::Details() : invalid{} {
-}
-airmap::Airspace::Details::~Details() {
-}
+airmap::Airspace::Details::Details() : invalid{} {}
+airmap::Airspace::Details::~Details() {}
 
 airmap::Airspace::Type airmap::operator~(airmap::Airspace::Type type) {
   using UT = typename std::underlying_type<Airspace::Type>::type;
@@ -415,31 +341,40 @@ airmap::Airspace::Type airmap::operator&(airmap::Airspace::Type lhs, airmap::Air
   return static_cast<Airspace::Type>(static_cast<UT>(lhs) & static_cast<UT>(rhs));
 }
 
-std::ostream &airmap::operator<<(std::ostream &out, const Airspace &) {
-  return out;
-}
+std::ostream &airmap::operator<<(std::ostream &out, const Airspace &) { return out; }
 
 std::ostream &airmap::operator<<(std::ostream &out, Airspace::Type types) {
   if (types == airmap::Airspace::Type::invalid) return out;
 
   Comma comma;
 
-  if ((types & airmap::Airspace::Type::airport) == airmap::Airspace::Type::airport) out << comma << "airport";
-  if ((types & airmap::Airspace::Type::controlled_airspace) == airmap::Airspace::Type::controlled_airspace)
+  if ((types & airmap::Airspace::Type::airport) == airmap::Airspace::Type::airport)
+    out << comma << "airport";
+  if ((types & airmap::Airspace::Type::controlled_airspace) ==
+      airmap::Airspace::Type::controlled_airspace)
     out << comma << "controlled_airspace";
-  if ((types & airmap::Airspace::Type::special_use_airspace) == airmap::Airspace::Type::special_use_airspace)
+  if ((types & airmap::Airspace::Type::special_use_airspace) ==
+      airmap::Airspace::Type::special_use_airspace)
     out << comma << "special_use_airspace";
   if ((types & airmap::Airspace::Type::tfr) == airmap::Airspace::Type::tfr) out << comma << "tfr";
-  if ((types & airmap::Airspace::Type::wildfire) == airmap::Airspace::Type::wildfire) out << comma << "wildfire";
-  if ((types & airmap::Airspace::Type::park) == airmap::Airspace::Type::park) out << comma << "park";
+  if ((types & airmap::Airspace::Type::wildfire) == airmap::Airspace::Type::wildfire)
+    out << comma << "wildfire";
+  if ((types & airmap::Airspace::Type::park) == airmap::Airspace::Type::park)
+    out << comma << "park";
   if ((types & airmap::Airspace::Type::power_plant) == airmap::Airspace::Type::power_plant)
     out << comma << "power_plant";
-  if ((types & airmap::Airspace::Type::heliport) == airmap::Airspace::Type::heliport) out << comma << "heliport";
-  if ((types & airmap::Airspace::Type::prison) == airmap::Airspace::Type::prison) out << comma << "prison";
-  if ((types & airmap::Airspace::Type::school) == airmap::Airspace::Type::school) out << comma << "school";
-  if ((types & airmap::Airspace::Type::hospital) == airmap::Airspace::Type::hospital) out << comma << "hospital";
-  if ((types & airmap::Airspace::Type::fire) == airmap::Airspace::Type::fire) out << comma << "fire";
-  if ((types & airmap::Airspace::Type::emergency) == airmap::Airspace::Type::emergency) out << comma << "emergency";
+  if ((types & airmap::Airspace::Type::heliport) == airmap::Airspace::Type::heliport)
+    out << comma << "heliport";
+  if ((types & airmap::Airspace::Type::prison) == airmap::Airspace::Type::prison)
+    out << comma << "prison";
+  if ((types & airmap::Airspace::Type::school) == airmap::Airspace::Type::school)
+    out << comma << "school";
+  if ((types & airmap::Airspace::Type::hospital) == airmap::Airspace::Type::hospital)
+    out << comma << "hospital";
+  if ((types & airmap::Airspace::Type::fire) == airmap::Airspace::Type::fire)
+    out << comma << "fire";
+  if ((types & airmap::Airspace::Type::emergency) == airmap::Airspace::Type::emergency)
+    out << comma << "emergency";
 
   return out;
 }

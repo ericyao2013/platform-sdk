@@ -27,7 +27,8 @@ inline void decode(const nlohmann::json& j, Airspace& airspace) {
   if (j.count("related_geometry") > 0)
     airspace.set_related_geometries(j["related_geometry"].get<std::vector<Geometry>>());
   if (j.count("rules") > 0) airspace.set_rules(j["rules"].get<std::vector<Rule>>());
-  if (j.count("last_updated") > 0) airspace.set_last_updated(iso8601::parse(j["last_updated"].get<std::string>()));
+  if (j.count("last_updated") > 0)
+    airspace.set_last_updated(iso8601::parse(j["last_updated"].get<std::string>()));
   if (j.count("type") > 0) {
     switch (j["type"].get<Airspace::Type>()) {
       case Airspace::Type::airport:
@@ -138,40 +139,30 @@ inline void decode(const nlohmann::json& j, std::vector<Airport::Runway>& v) {
   }
 }
 
-inline void decode(const nlohmann::json&, Airport::Use&) {
-}
-inline void decode(const nlohmann::json&, ControlledAirspace&) {
-}
+inline void decode(const nlohmann::json&, Airport::Use&) {}
+inline void decode(const nlohmann::json&, ControlledAirspace&) {}
 inline void decode(const nlohmann::json& j, SpecialUseAirspace& sua) {
   sua.type = j["type"].get<SpecialUseAirspace::Type>();
 }
-inline void decode(const nlohmann::json&, SpecialUseAirspace::Type&) {
-}
+inline void decode(const nlohmann::json&, SpecialUseAirspace::Type&) {}
 inline void decode(const nlohmann::json& j, TemporaryFlightRestriction& tfr) {
   get(tfr.url, j, "url");
   get(tfr.type, j, "type");
   get(tfr.reason, j, "notam_reason");
 }
 
-inline void decode(const nlohmann::json&, TemporaryFlightRestriction::Type&) {
-}
+inline void decode(const nlohmann::json&, TemporaryFlightRestriction::Type&) {}
 
 inline void decode(const nlohmann::json& j, Wildfire& wf) {
   get(wf.effective_date, j, "date_effective");
 }
 
-inline void decode(const nlohmann::json&, Park&) {
-}
-inline void decode(const nlohmann::json&, Prison&) {
-}
-inline void decode(const nlohmann::json&, School&) {
-}
-inline void decode(const nlohmann::json&, Hospital&) {
-}
-inline void decode(const nlohmann::json&, Fire&) {
-}
-inline void decode(const nlohmann::json&, Emergency&) {
-}
+inline void decode(const nlohmann::json&, Park&) {}
+inline void decode(const nlohmann::json&, Prison&) {}
+inline void decode(const nlohmann::json&, School&) {}
+inline void decode(const nlohmann::json&, Hospital&) {}
+inline void decode(const nlohmann::json&, Fire&) {}
+inline void decode(const nlohmann::json&, Emergency&) {}
 
 inline void decode(const nlohmann::json& j, Heliport& hp) {
   get(hp.faa_id, j, "faa");
@@ -179,8 +170,7 @@ inline void decode(const nlohmann::json& j, Heliport& hp) {
   get(hp.usage, j, "usage");
 }
 
-inline void decode(const nlohmann::json&, Heliport::Usage&) {
-}
+inline void decode(const nlohmann::json&, Heliport::Usage&) {}
 
 inline void decode(const nlohmann::json& j, PowerPlant& pp) {
   get(pp.technology, j, "tech");

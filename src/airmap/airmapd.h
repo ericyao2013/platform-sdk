@@ -6,10 +6,9 @@ namespace airmap {
 /// Airmapd represents the airmap services and components
 /// and is typically executed on a device.
 class Airmapd {
-public:
-
+ public:
 };
 
-}
+}  // namespace airmap
 
 #endif  // AIRMAP_AIRMAPD_H_

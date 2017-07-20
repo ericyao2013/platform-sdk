@@ -57,8 +57,8 @@ void airmap::glib::Api::get(const std::string& host, const std::string& path,
 }
 
 void airmap::glib::Api::post(const std::string& host, const std::string& path,
-                             std::unordered_map<std::string, std::string>&& headers, const std::string& body,
-                             DoCallback cb) {
+                             std::unordered_map<std::string, std::string>&& headers,
+                             const std::string& body, DoCallback cb) {
   auto sp = shared_from_this();
   std::weak_ptr<Api> wp{sp};
 
@@ -81,19 +81,20 @@ void airmap::glib::Api::post(const std::string& host, const std::string& path,
   });
 }
 
-void airmap::glib::Api::send_udp(const std::string& host, std::uint16_t port, const std::string& body) {
-  dispatch([host, port, body = std::move(body)]() {
+void airmap::glib::Api::send_udp(const std::string& host, std::uint16_t port,
+                                 const std::string& body) {
+  dispatch([ host, port, body = std::move(body) ]() {
     if (auto connectable = g_network_address_parse(host.c_str(), port, nullptr)) {
       if (auto enumerator = g_socket_connectable_enumerate(connectable)) {
         if (auto address = g_socket_address_enumerator_next(enumerator, nullptr, nullptr)) {
           std::shared_ptr<GSocketAddress> sa{address, [](GSocketAddress* address) {
                                                if (address) g_object_unref(address);
                                              }};
-          std::shared_ptr<GSocket> s{
-              g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, nullptr),
-              [](GSocket* socket) {
-                if (socket) g_object_unref(socket);
-              }};
+          std::shared_ptr<GSocket> s{g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM,
+                                                  G_SOCKET_PROTOCOL_UDP, nullptr),
+                                     [](GSocket* socket) {
+                                       if (socket) g_object_unref(socket);
+                                     }};
 
           // TODO(tvoss): Add error handling here.
           g_socket_send_to(s.get(), sa.get(), body.c_str(), body.size(), nullptr, nullptr);
@@ -112,7 +113,8 @@ void airmap::glib::Api::soup_session_callback(SoupSession*, SoupMessage* msg, gp
       delete (context);
 
       if (msg->response_body) {
-        cb(DoResult{std::string{msg->response_body->data, static_cast<std::size_t>(msg->response_body->length)}});
+        cb(DoResult{std::string{msg->response_body->data,
+                                static_cast<std::size_t>(msg->response_body->length)}});
       } else {
         cb(DoResult{msg->status_code});
       }
@@ -128,21 +130,23 @@ void airmap::glib::Api::on_pipe_fd_read_finished(GObject*, GAsyncResult*, gpoint
 
 airmap::glib::Api::Api(const std::string& api_key)
     : api_key_{api_key},
-      main_context_{g_main_context_new(), [](GMainContext* context) { g_main_context_unref(context); }},
-      main_loop_{g_main_loop_new(main_context_.get(), FALSE), [](GMainLoop* ml) { g_main_loop_unref(ml); }},
+      main_context_{g_main_context_new(),
+                    [](GMainContext* context) { g_main_context_unref(context); }},
+      main_loop_{g_main_loop_new(main_context_.get(), FALSE),
+                 [](GMainLoop* ml) { g_main_loop_unref(ml); }},
       pipe_fds_{create_pipe_or_throw()},
       pipe_input_stream_{g_unix_input_stream_new(pipe_fds_[0], FALSE),
                          [](GInputStream* stream) {
                            if (stream) g_object_unref(G_OBJECT(stream));
                          }},
-      session_{soup_session_new(),
-               [](SoupSession* session) {
+      session_{soup_session_new(), [](SoupSession* session) {
                  if (session) g_object_unref(session);
                }} {
   worker_ = std::thread{[this]() {
     g_main_context_push_thread_default(main_context_.get());
-    g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_), G_PRIORITY_LOW,
-                              nullptr, Api::on_pipe_fd_read_finished, this);
+    g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_,
+                              sizeof(pipe_read_buffer_), G_PRIORITY_LOW, nullptr,
+                              Api::on_pipe_fd_read_finished, this);
     g_main_loop_run(main_loop_.get());
     g_main_context_pop_thread_default(main_context_.get());
   }};
@@ -176,6 +180,6 @@ void airmap::glib::Api::on_pipe_fd_read_finished() {
     functors.pop();
   }
 
-  g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_), G_PRIORITY_LOW,
-                            nullptr, Api::on_pipe_fd_read_finished, this);
+  g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_),
+                            G_PRIORITY_LOW, nullptr, Api::on_pipe_fd_read_finished, this);
 }

@@ -24,9 +24,7 @@ class Buffer {
     return add(reinterpret_cast<const char*>(&value), sizeof(value));
   }
 
-  Buffer& add(const std::string& s) {
-    return add(s.c_str(), s.size());
-  }
+  Buffer& add(const std::string& s) { return add(s.c_str(), s.size()); }
 
   Buffer& add(const std::vector<std::uint8_t>& v) {
     return add(reinterpret_cast<const char*>(v.data()), v.size());
@@ -37,9 +35,7 @@ class Buffer {
     return *this;
   }
 
-  const std::string& get() const {
-    return buffer_;
-  }
+  const std::string& get() const { return buffer_; }
 
  private:
   std::string buffer_;
@@ -54,8 +50,7 @@ constexpr std::uint16_t port{16060};
 }  // namespace telemetry
 }  // namespace
 
-airmap::glib::Telemetry::Telemetry(Api& api) : api_{api} {
-}
+airmap::glib::Telemetry::Telemetry(Api& api) : api_{api} {}
 
 void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::string& key,
                                              const std::initializer_list<Update>& updates) {
@@ -74,7 +69,9 @@ void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::st
         position.set_altitude_msl(update.position().altitude_msl);
         position.set_horizontal_accuracy(update.position().horizontal_accuracy);
         auto message = position.SerializeAsString();
-        payload.add<std::uint16_t>(htons(static_cast<std::uint16_t>(Telemetry::Update::Type::position)))
+        payload
+            .add<std::uint16_t>(
+                htons(static_cast<std::uint16_t>(Telemetry::Update::Type::position)))
             .add<std::uint16_t>(htons(message.size()))
             .add(message);
         break;
@@ -86,7 +83,8 @@ void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::st
         speed.set_velocity_y(update.speed().velocity_y);
         speed.set_velocity_z(update.speed().velocity_z);
         auto message = speed.SerializeAsString();
-        payload.add<std::uint16_t>(htons(static_cast<std::uint16_t>(Telemetry::Update::Type::speed)))
+        payload
+            .add<std::uint16_t>(htons(static_cast<std::uint16_t>(Telemetry::Update::Type::speed)))
             .add<std::uint16_t>(htons(message.size()))
             .add(message);
         break;
@@ -98,7 +96,9 @@ void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::st
         attitude.set_pitch(update.attitude().pitch);
         attitude.set_roll(update.attitude().roll);
         auto message = attitude.SerializeAsString();
-        payload.add<std::uint16_t>(htons(static_cast<std::uint16_t>(Telemetry::Update::Type::attitude)))
+        payload
+            .add<std::uint16_t>(
+                htons(static_cast<std::uint16_t>(Telemetry::Update::Type::attitude)))
             .add<std::uint16_t>(htons(message.size()))
             .add(message);
         break;
@@ -108,7 +108,9 @@ void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::st
         barometer.set_timestamp(update.barometer().timestamp);
         barometer.set_pressure(update.barometer().pressure);
         auto message = barometer.SerializeAsString();
-        payload.add<std::uint16_t>(htons(static_cast<std::uint16_t>(Telemetry::Update::Type::barometer)))
+        payload
+            .add<std::uint16_t>(
+                htons(static_cast<std::uint16_t>(Telemetry::Update::Type::barometer)))
             .add<std::uint16_t>(htons(message.size()))
             .add(message);
         break;
@@ -122,20 +124,16 @@ void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::st
   rng_.GenerateBlock(iv.data(), iv.size());
 
   std::string decoded_key;
-  CryptoPP::StringSource decoder(key, true,
-    new CryptoPP::Base64Decoder(
-      new CryptoPP::StringSink(decoded_key)
-    )
-  );
+  CryptoPP::StringSource decoder(
+      key, true, new CryptoPP::Base64Decoder(new CryptoPP::StringSink(decoded_key)));
 
-  CryptoPP::CBC_Mode< CryptoPP::AES >::Encryption enc;
-  enc.SetKeyWithIV(reinterpret_cast<const byte*>(decoded_key.c_str()), decoded_key.size(), iv.data());
+  CryptoPP::CBC_Mode<CryptoPP::AES>::Encryption enc;
+  enc.SetKeyWithIV(reinterpret_cast<const byte*>(decoded_key.c_str()), decoded_key.size(),
+                   iv.data());
 
-  CryptoPP::StringSource s(payload.get(), true, 
-    new CryptoPP::StreamTransformationFilter(enc,
-      new CryptoPP::StringSink(cipher)
-    )
-  );
+  CryptoPP::StringSource s(
+      payload.get(), true,
+      new CryptoPP::StreamTransformationFilter(enc, new CryptoPP::StringSink(cipher)));
 
   Buffer packet;
   api_.send_udp(::telemetry::host, ::telemetry::port,

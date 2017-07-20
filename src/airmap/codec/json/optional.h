@@ -19,8 +19,7 @@ inline void decode(const nlohmann::json& j, Optional<T>& o) {
 
 template <typename T>
 inline void encode(nlohmann::json& j, const Optional<T>& o) {
-  if (o)
-    j = o.get();
+  if (o) j = o.get();
 }
 
 }  // namespace json

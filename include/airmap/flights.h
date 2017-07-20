@@ -100,7 +100,7 @@ class Flights {
     struct Response {
       std::string key;
     };
-    
+
     using Result = Result<Response, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
@@ -111,8 +111,7 @@ class Flights {
       Flight::Id id;
     };
 
-    struct Response {
-    };
+    struct Response {};
 
     using Result = Result<Response, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
@@ -134,11 +133,13 @@ class Flights {
 
   /// create_flight creates a flight for 'parameters' and reports
   /// results back to 'cb'.
-  virtual void create_flight_by_point(const CreateFlight::Parameters& parameters, const CreateFlight::Callback& cb) = 0;
+  virtual void create_flight_by_point(const CreateFlight::Parameters& parameters,
+                                      const CreateFlight::Callback& cb) = 0;
 
   /// create_flight creates a flight for 'parameters' and reports
   /// results back to 'cb'.
-  virtual void create_flight_by_path(const CreateFlight::Parameters& parameters, const CreateFlight::Callback& cb) = 0;
+  virtual void create_flight_by_path(const CreateFlight::Parameters& parameters,
+                                     const CreateFlight::Callback& cb) = 0;
 
   /// create_flight creates a flight for 'parameters' and reports
   /// results back to 'cb'.
@@ -147,11 +148,13 @@ class Flights {
 
   /// end_flight finalizes a flight identified by 'parameters' and reports
   /// results back to 'cb'.
-  virtual void end_flight(const EndFlight::Parameters& parameters, const EndFlight::Callback& cb) = 0;
+  virtual void end_flight(const EndFlight::Parameters& parameters,
+                          const EndFlight::Callback& cb) = 0;
 
   /// delete_flight deletes a flight identified by 'parameters' and reports
   /// results back to 'cb'.
-  virtual void delete_flight(const DeleteFlight::Parameters& parameters, const DeleteFlight::Callback& cb) = 0;
+  virtual void delete_flight(const DeleteFlight::Parameters& parameters,
+                             const DeleteFlight::Callback& cb) = 0;
 
   /// start_flight_communications enables communications for a specific flight
   /// instance and reports results back to 'cb'.

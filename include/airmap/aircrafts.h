@@ -49,7 +49,8 @@ class Aircrafts {
 
   /// manufacturers queries the AirMap services for known aircraft
   /// manufacturers, reporting results to 'cb'.
-  virtual void manufacturers(const Manufacturers::Parameters& parameters, const Manufacturers::Callback& cb) = 0;
+  virtual void manufacturers(const Manufacturers::Parameters& parameters,
+                             const Manufacturers::Callback& cb) = 0;
 
   /// models queries the AirMap services for detailed information about
   /// known Aircraft models and reports back results to 'cb'.
@@ -57,7 +58,8 @@ class Aircrafts {
 
   /// models queries the AirMap services for detailed information about
   /// an Aircraft model identified by 'ModelForId::Parameters::id' and reports back results to 'cb'.
-  virtual void model_for_id(const ModelForId::Parameters& parameters, const ModelForId::Callback& cb) = 0;
+  virtual void model_for_id(const ModelForId::Parameters& parameters,
+                            const ModelForId::Callback& cb) = 0;
 
  protected:
   Aircrafts() = default;

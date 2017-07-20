@@ -10,12 +10,12 @@
 #include <array>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <string>
 #include <thread>
 #include <unordered_map>
 #include <vector>
-#include <mutex>
 
 namespace airmap {
 namespace glib {
@@ -33,11 +33,14 @@ class Api : public std::enable_shared_from_this<Api> {
 
   ~Api();
 
-  void get(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& query,
+  void get(const std::string& host, const std::string& path,
+           std::unordered_map<std::string, std::string>&& query,
            std::unordered_map<std::string, std::string>&& headers, DoCallback cb);
-  void post(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& headers,
-            const std::string& body, DoCallback cb);
+  void post(const std::string& host, const std::string& path,
+            std::unordered_map<std::string, std::string>&& headers, const std::string& body,
+            DoCallback cb);
   void send_udp(const std::string& host, std::uint16_t port, const std::string& body);
+
  private:
   struct SoupSessionCallbackContext {
     DoCallback cb;

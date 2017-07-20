@@ -6,33 +6,18 @@ airmap::glib::Client::Client(const std::shared_ptr<Api>& api)
       airspaces_{*api},
       authenticator_{*api},
       flights_{*api},
-      telemetry_{*api} {
-}
+      telemetry_{*api} {}
 
-void airmap::glib::Client::run() {
+void airmap::glib::Client::run() {}
 
-}
+void airmap::glib::Client::stop() {}
 
-void airmap::glib::Client::stop() {
+airmap::Aircrafts& airmap::glib::Client::aircrafts() { return aircrafts_; }
 
-}
+airmap::Airspaces& airmap::glib::Client::airspaces() { return airspaces_; }
 
-airmap::Aircrafts& airmap::glib::Client::aircrafts() {
-    return aircrafts_;
-}
+airmap::Authenticator& airmap::glib::Client::authenticator() { return authenticator_; }
 
-airmap::Airspaces& airmap::glib::Client::airspaces() {
-    return airspaces_;
-}
+airmap::Flights& airmap::glib::Client::flights() { return flights_; }
 
-airmap::Authenticator& airmap::glib::Client::authenticator() {
-    return authenticator_;
-}
-
-airmap::Flights& airmap::glib::Client::flights() {
-    return flights_;
-}
-
-airmap::Telemetry& airmap::glib::Client::telemetry() {
-    return telemetry_;
-}
+airmap::Telemetry& airmap::glib::Client::telemetry() { return telemetry_; }

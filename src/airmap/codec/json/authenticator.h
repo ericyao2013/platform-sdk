@@ -30,7 +30,8 @@ inline void decode(const nlohmann::json& j, Authenticator::AnonymousToken& token
   get(token.id, j, "id_token");
 }
 
-inline void encode(nlohmann::json& j, const Authenticator::AuthenticateWithPassword::Params& params) {
+inline void encode(nlohmann::json& j,
+                   const Authenticator::AuthenticateWithPassword::Params& params) {
   j["client_id"] = params.client_id;
   j["connection"] = params.connection_name;
   j["username"] = params.username;
@@ -38,7 +39,8 @@ inline void encode(nlohmann::json& j, const Authenticator::AuthenticateWithPassw
   j["device"] = params.device;
 }
 
-inline void encode(nlohmann::json& j, const Authenticator::AuthenticateAnonymously::Params& params) {
+inline void encode(nlohmann::json& j,
+                   const Authenticator::AuthenticateAnonymously::Params& params) {
   j["user_id"] = params.user_id;
 }
 

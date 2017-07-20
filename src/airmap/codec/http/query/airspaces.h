@@ -34,8 +34,10 @@ inline void encode(std::unordered_map<std::string, std::string>& query,
   geometry = parameters.geometry;
   query["geometry"] = geometry.dump();
 
-  if (parameters.buffer) query["buffer"] = boost::lexical_cast<std::string>(parameters.buffer.get());
-  if (parameters.offset) query["offset"] = boost::lexical_cast<std::string>(parameters.offset.get());
+  if (parameters.buffer)
+    query["buffer"] = boost::lexical_cast<std::string>(parameters.buffer.get());
+  if (parameters.offset)
+    query["offset"] = boost::lexical_cast<std::string>(parameters.offset.get());
   if (parameters.date_time) query["datetime"] = iso8601::generate(parameters.date_time.get());
 }
 

@@ -1,11 +1,8 @@
 #include <airmap/geometry.h>
 
-airmap::Geometry::Geometry() : type_{Type::invalid} {
-}
+airmap::Geometry::Geometry() : type_{Type::invalid} {}
 
-airmap::Geometry::Geometry(const Point& other) : type_{Type::invalid} {
-  set_point(other);
-}
+airmap::Geometry::Geometry(const Point& other) : type_{Type::invalid} { set_point(other); }
 
 airmap::Geometry::Geometry(const MultiPoint& other) : type_{Type::invalid} {
   set_multi_point(other);
@@ -19,9 +16,7 @@ airmap::Geometry::Geometry(const MultiLineString& other) : type_{Type::invalid} 
   set_multi_line_string(other);
 }
 
-airmap::Geometry::Geometry(const Polygon& other) : type_{Type::invalid} {
-  set_polygon(other);
-}
+airmap::Geometry::Geometry(const Polygon& other) : type_{Type::invalid} { set_polygon(other); }
 
 airmap::Geometry::Geometry(const MultiPolygon& other) : type_{Type::invalid} {
   set_multi_polygon(other);
@@ -31,29 +26,19 @@ airmap::Geometry::Geometry(const GeometryCollection& other) : type_{Type::invali
   set_geometry_collection(other);
 }
 
-airmap::Geometry::Geometry(const Geometry& other) : type_{Type::invalid} {
-  set_geometry(other);
-}
+airmap::Geometry::Geometry(const Geometry& other) : type_{Type::invalid} { set_geometry(other); }
 
-airmap::Geometry::~Geometry() {
-  reset();
-}
+airmap::Geometry::~Geometry() { reset(); }
 
 airmap::Geometry& airmap::Geometry::operator=(const Geometry& rhs) {
   return reset().set_geometry(rhs);
 }
 
-bool airmap::Geometry::operator==(const Geometry&) const {
-  return false;
-}
+bool airmap::Geometry::operator==(const Geometry&) const { return false; }
 
-airmap::Geometry::Type airmap::Geometry::type() const {
-  return type_;
-}
+airmap::Geometry::Type airmap::Geometry::type() const { return type_; }
 
-const airmap::Geometry::Point& airmap::Geometry::details_for_point() const {
-  return data_.point;
-}
+const airmap::Geometry::Point& airmap::Geometry::details_for_point() const { return data_.point; }
 
 const airmap::Geometry::MultiPoint& airmap::Geometry::details_for_multi_point() const {
   return data_.multi_point;
@@ -75,7 +60,8 @@ const airmap::Geometry::MultiPolygon& airmap::Geometry::details_for_multi_polygo
   return data_.multi_polygon;
 }
 
-const airmap::Geometry::GeometryCollection airmap::Geometry::details_for_geometry_collection() const {
+const airmap::Geometry::GeometryCollection airmap::Geometry::details_for_geometry_collection()
+    const {
   return data_.geometry_collection;
 }
 
@@ -176,10 +162,8 @@ airmap::Geometry& airmap::Geometry::set_geometry(const Geometry& other) {
   return *this;
 }
 
-airmap::Geometry::Data::Data() : invalid{} {
-}
-airmap::Geometry::Data::~Data() {
-}
+airmap::Geometry::Data::Data() : invalid{} {}
+airmap::Geometry::Data::~Data() {}
 
 airmap::Geometry airmap::Geometry::point(double lat, double lon) {
   Geometry::Point p;

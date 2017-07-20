@@ -16,9 +16,11 @@ class Aircrafts : public airmap::Aircrafts {
   Aircrafts& operator=(const Aircrafts&) = delete;
   Aircrafts& operator=(Aircrafts&&) = delete;
 
-  void manufacturers(const Manufacturers::Parameters& parameters, const Manufacturers::Callback& cb) override;
+  void manufacturers(const Manufacturers::Parameters& parameters,
+                     const Manufacturers::Callback& cb) override;
   void models(const Models::Parameters& parameters, const Models::Callback& cb) override;
-  void model_for_id(const ModelForId::Parameters& parameters, const ModelForId::Callback& cb) override;
+  void model_for_id(const ModelForId::Parameters& parameters,
+                    const ModelForId::Callback& cb) override;
 
  private:
   Api& api_;
