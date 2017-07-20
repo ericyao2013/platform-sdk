@@ -8,7 +8,8 @@
 
 using json = nlohmann::json;
 
-airmap::glib::Aircrafts::Aircrafts(Api& api) : api_{api} {}
+airmap::glib::Aircrafts::Aircrafts(Api& api) : api_{api} {
+}
 
 void airmap::glib::Aircrafts::manufacturers(const Manufacturers::Parameters& parameters,
                                             const Manufacturers::Callback& cb) {

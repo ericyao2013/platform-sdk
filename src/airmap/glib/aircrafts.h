@@ -12,7 +12,7 @@ class Aircrafts : public airmap::Aircrafts {
  public:
   explicit Aircrafts(Api& api);
   Aircrafts(const Aircrafts&) = delete;
-  Aircrafts(Aircrafts&&) = delete;
+  Aircrafts(Aircrafts&&)      = delete;
   Aircrafts& operator=(const Aircrafts&) = delete;
   Aircrafts& operator=(Aircrafts&&) = delete;
 

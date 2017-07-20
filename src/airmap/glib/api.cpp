@@ -11,7 +11,8 @@ namespace {
 
 std::array<int, 2> create_pipe_or_throw() {
   std::array<int, 2> result;
-  if (::pipe(&result[0]) == -1) throw std::system_error{errno, std::system_category()};
+  if (::pipe(&result[0]) == -1)
+    throw std::system_error{errno, std::system_category()};
   return result;
 }
 
@@ -34,7 +35,7 @@ void airmap::glib::Api::get(const std::string& host, const std::string& path,
 
   GHashTable* query_table = g_hash_table_new(g_str_hash, g_str_equal);
   for (const auto& pair : query) {
-    std::string key = pair.first;
+    std::string key   = pair.first;
     std::string value = pair.second;
     g_hash_table_insert(query_table, reinterpret_cast<gpointer>(g_strdup(&key.front())),
                         reinterpret_cast<gpointer>(g_strdup(&value.front())));
@@ -88,12 +89,14 @@ void airmap::glib::Api::send_udp(const std::string& host, std::uint16_t port,
       if (auto enumerator = g_socket_connectable_enumerate(connectable)) {
         if (auto address = g_socket_address_enumerator_next(enumerator, nullptr, nullptr)) {
           std::shared_ptr<GSocketAddress> sa{address, [](GSocketAddress* address) {
-                                               if (address) g_object_unref(address);
+                                               if (address)
+                                                 g_object_unref(address);
                                              }};
           std::shared_ptr<GSocket> s{g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM,
                                                   G_SOCKET_PROTOCOL_UDP, nullptr),
                                      [](GSocket* socket) {
-                                       if (socket) g_object_unref(socket);
+                                       if (socket)
+                                         g_object_unref(socket);
                                      }};
 
           // TODO(tvoss): Add error handling here.
@@ -137,10 +140,12 @@ airmap::glib::Api::Api(const std::string& api_key)
       pipe_fds_{create_pipe_or_throw()},
       pipe_input_stream_{g_unix_input_stream_new(pipe_fds_[0], FALSE),
                          [](GInputStream* stream) {
-                           if (stream) g_object_unref(G_OBJECT(stream));
+                           if (stream)
+                             g_object_unref(G_OBJECT(stream));
                          }},
       session_{soup_session_new(), [](SoupSession* session) {
-                 if (session) g_object_unref(session);
+                 if (session)
+                   g_object_unref(session);
                }} {
   worker_ = std::thread{[this]() {
     g_main_context_push_thread_default(main_context_.get());

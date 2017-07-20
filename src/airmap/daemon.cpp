@@ -1,3 +1,5 @@
 #include <airmap/daemon.h>
 
-int airmap::Daemon::main(int, char**) { return 0; }
+int airmap::Daemon::main(int, char**) {
+  return 0;
+}

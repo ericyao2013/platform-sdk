@@ -32,12 +32,12 @@ class Geometry {
     std::vector<Coordinate> coordinates;
   };
 
-  using Point = Coordinate;
-  using MultiPoint = CoordinateVector<Type::multi_point>;
-  using LineString = CoordinateVector<Type::line_string>;
-  using MultiLineString = std::vector<LineString>;
-  using Polygon = std::vector<CoordinateVector<Type::polygon>>;
-  using MultiPolygon = std::vector<Polygon>;
+  using Point              = Coordinate;
+  using MultiPoint         = CoordinateVector<Type::multi_point>;
+  using LineString         = CoordinateVector<Type::line_string>;
+  using MultiLineString    = std::vector<LineString>;
+  using Polygon            = std::vector<CoordinateVector<Type::polygon>>;
+  using MultiPolygon       = std::vector<Polygon>;
   using GeometryCollection = std::vector<Geometry>;
 
   static Geometry point(double lat, double lon);

@@ -62,7 +62,8 @@ int main() {
 
   airmap::Client::create_with_credentials(
       airmap::Client::Credentials{api_key}, ss, di, [&client](const airmap::Client::CreateResult& result) {
-    if (not result) return;
+    if (not result)
+      return;
 
     client = result.value();
 
@@ -74,13 +75,13 @@ int main() {
           if (result) {
             std::cout << "  id: " << result.value().id << std::endl;
             airmap::Flights::CreateFlight::Parameters params;
-            params.latitude = 47.37629618703235;
-            params.longitude = 8.545989990234375;
-            params.aircraft_id = "aircraft|K7yGZ0LT5DEymAH4X4pL2uJE4B9X";
+            params.latitude      = 47.37629618703235;
+            params.longitude     = 8.545989990234375;
+            params.aircraft_id   = "aircraft|K7yGZ0LT5DEymAH4X4pL2uJE4B9X";
             params.authorization = result.value().id;
-            params.start_time = airmap::Clock::universal_time();
-            params.end_time = airmap::Clock::universal_time() + airmap::Minutes{5};
-            params.geometry = polygon;
+            params.start_time    = airmap::Clock::universal_time();
+            params.end_time      = airmap::Clock::universal_time() + airmap::Minutes{5};
+            params.geometry      = polygon;
             client->flights().create_flight_by_polygon(
                 params, [ auth = result.value().id,
                           client ](const airmap::Flights::CreateFlight::Result& result) {

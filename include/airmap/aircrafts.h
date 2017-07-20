@@ -18,7 +18,7 @@ class Aircrafts {
       Optional<std::string> manufacturer_name;
     };
 
-    using Result = Result<std::vector<Aircraft::Manufacturer>, std::exception_ptr>;
+    using Result   = Result<std::vector<Aircraft::Manufacturer>, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -28,7 +28,7 @@ class Aircrafts {
       Optional<std::string> model_name;
     };
 
-    using Result = Result<std::vector<Aircraft>, std::exception_ptr>;
+    using Result   = Result<std::vector<Aircraft>, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -37,13 +37,13 @@ class Aircrafts {
       std::string id;
     };
 
-    using Result = Result<Aircraft, std::exception_ptr>;
+    using Result   = Result<Aircraft, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
   Aircrafts(const Aircrafts&) = delete;
-  Aircrafts(Aircrafts&&) = delete;
-  virtual ~Aircrafts() = default;
+  Aircrafts(Aircrafts&&)      = delete;
+  virtual ~Aircrafts()        = default;
   Aircrafts& operator=(const Aircrafts&) = delete;
   Aircrafts& operator=(Aircrafts&&) = delete;
 

@@ -24,8 +24,10 @@ static constexpr const char* message{"message"};
 }  // namespace key
 
 inline std::string stringify_error(const nlohmann::json& j) {
-  if (j.at(key::status) == status::error) return j.at(key::data).dump();
-  if (j.at(key::status) == status::failure) return j.at(key::data).dump();
+  if (j.at(key::status) == status::error)
+    return j.at(key::data).dump();
+  if (j.at(key::status) == status::failure)
+    return j.at(key::data).dump();
   throw std::runtime_error{"not an error"};
 }
 

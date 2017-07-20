@@ -22,7 +22,7 @@ class Flights {
       Optional<bool> enhance;
     };
 
-    using Result = Result<Flight, std::exception_ptr>;
+    using Result   = Result<Flight, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -41,7 +41,7 @@ class Flights {
       Optional<DateTime> end_before;
       Optional<bool> enhance;
     };
-    using Result = Result<std::vector<Flight>, std::exception_ptr>;
+    using Result   = Result<std::vector<Flight>, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -54,12 +54,12 @@ class Flights {
       std::string aircraft_id;
       DateTime start_time;
       DateTime end_time;
-      bool is_public = true;
+      bool is_public           = true;
       bool give_digital_notice = true;
-      float buffer = 100;
+      float buffer             = 100;
       Optional<Geometry> geometry;
     };
-    using Result = Result<Flight, std::exception_ptr>;
+    using Result   = Result<Flight, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -73,7 +73,7 @@ class Flights {
       Flight::Id id;
     };
 
-    using Result = Result<Response, std::exception_ptr>;
+    using Result   = Result<Response, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -87,7 +87,7 @@ class Flights {
       DateTime end_time;
     };
 
-    using Result = Result<Response, std::exception_ptr>;
+    using Result   = Result<Response, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -101,7 +101,7 @@ class Flights {
       std::string key;
     };
 
-    using Result = Result<Response, std::exception_ptr>;
+    using Result   = Result<Response, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -113,13 +113,13 @@ class Flights {
 
     struct Response {};
 
-    using Result = Result<Response, std::exception_ptr>;
+    using Result   = Result<Response, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
   Flights(const Flights&) = delete;
-  Flights(Flights&&) = delete;
-  virtual ~Flights() = default;
+  Flights(Flights&&)      = delete;
+  virtual ~Flights()      = default;
   Flights& operator=(const Flights&) = delete;
   Flights& operator=(Flights&&) = delete;
 

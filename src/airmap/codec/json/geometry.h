@@ -76,9 +76,10 @@ inline void decode(const nlohmann::json& j, Geometry::Type& t) {
 }
 
 inline void decode(const nlohmann::json& j, Geometry::Coordinate& c) {
-  c.latitude = j.at(0).get<float>();
+  c.latitude  = j.at(0).get<float>();
   c.longitude = j.at(1).get<float>();
-  if (j.size() > 2) c.altitude = j.at(2).get<float>();
+  if (j.size() > 2)
+    c.altitude = j.at(2).get<float>();
 }
 
 template <Geometry::Type tag>
@@ -140,7 +141,8 @@ inline void encode(nlohmann::json& j, const Geometry& geometry) {
 }
 
 inline void encode(nlohmann::json& j, const std::vector<Geometry>& geometries) {
-  for (const auto& geometry : geometries) j.push_back(geometry);
+  for (const auto& geometry : geometries)
+    j.push_back(geometry);
 }
 
 inline void encode(nlohmann::json& j, Geometry::Type type) {
@@ -174,12 +176,15 @@ inline void encode(nlohmann::json& j, Geometry::Type type) {
 inline void encode(nlohmann::json& j, const Geometry::Coordinate& coordinate) {
   j.push_back(coordinate.longitude);
   j.push_back(coordinate.latitude);
-  if (coordinate.altitude) j.push_back(coordinate.altitude.get());
-  if (coordinate.elevation) j.push_back(coordinate.elevation.get());
+  if (coordinate.altitude)
+    j.push_back(coordinate.altitude.get());
+  if (coordinate.elevation)
+    j.push_back(coordinate.elevation.get());
 }
 
 inline void encode(nlohmann::json& j, const std::vector<Geometry::Coordinate>& coordinates) {
-  for (const auto& coordinate : coordinates) j.push_back(coordinate);
+  for (const auto& coordinate : coordinates)
+    j.push_back(coordinate);
 }
 
 template <Geometry::Type tag>
@@ -189,11 +194,13 @@ inline void encode(nlohmann::json& j, const Geometry::CoordinateVector<tag>& cv)
 
 template <Geometry::Type tag>
 inline void encode(nlohmann::json& j, const std::vector<Geometry::CoordinateVector<tag>>& cvs) {
-  for (const auto& cv : cvs) j.push_back(cv);
+  for (const auto& cv : cvs)
+    j.push_back(cv);
 }
 
 inline void encode(nlohmann::json& j, const std::vector<Geometry::Polygon>& cvs) {
-  for (const auto& cv : cvs) j.push_back(cv);
+  for (const auto& cv : cvs)
+    j.push_back(cv);
 }
 
 }  // namespace json

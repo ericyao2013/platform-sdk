@@ -39,7 +39,7 @@ class Authenticator {
       std::string device;
     };
 
-    using Result = Result<OAuthToken, std::exception_ptr>;
+    using Result   = Result<OAuthToken, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -47,7 +47,7 @@ class Authenticator {
     struct Params {
       std::string user_id;
     };
-    using Result = Result<AnonymousToken, std::exception_ptr>;
+    using Result   = Result<AnonymousToken, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -55,13 +55,13 @@ class Authenticator {
     struct Params {
       std::string user_id;
     };
-    using Result = Result<AnonymousToken, std::exception_ptr>;
+    using Result   = Result<AnonymousToken, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
-  virtual ~Authenticator() = default;
+  virtual ~Authenticator()            = default;
   Authenticator(const Authenticator&) = delete;
-  Authenticator(Authenticator&&) = delete;
+  Authenticator(Authenticator&&)      = delete;
   Authenticator& operator=(const Authenticator&) = delete;
   Authenticator& operator=(Authenticator&&) = delete;
 

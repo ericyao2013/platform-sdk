@@ -18,5 +18,5 @@ void airmap::Client::create_with_credentials(const Credentials& credentials,
                             });
 }
 
-airmap::Client::Client() = default;
+airmap::Client::Client()  = default;
 airmap::Client::~Client() = default;

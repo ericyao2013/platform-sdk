@@ -86,20 +86,20 @@ class Airspace {
  public:
   // Enumerates all known airspace types.
   enum class Type {
-    invalid = 0,
-    airport = 1 << 0,
-    controlled_airspace = 1 << 1,
+    invalid              = 0,
+    airport              = 1 << 0,
+    controlled_airspace  = 1 << 1,
     special_use_airspace = 1 << 2,
-    tfr = 1 << 3,
-    wildfire = 1 << 4,
-    park = 1 << 5,
-    power_plant = 1 << 6,
-    heliport = 1 << 7,
-    prison = 1 << 8,
-    school = 1 << 9,
-    hospital = 1 << 10,
-    fire = 1 << 11,
-    emergency = 1 << 12,
+    tfr                  = 1 << 3,
+    wildfire             = 1 << 4,
+    park                 = 1 << 5,
+    power_plant          = 1 << 6,
+    heliport             = 1 << 7,
+    prison               = 1 << 8,
+    school               = 1 << 9,
+    hospital             = 1 << 10,
+    fire                 = 1 << 11,
+    emergency            = 1 << 12,
     all = airport | controlled_airspace | special_use_airspace | tfr | wildfire | park |
           power_plant | heliport | prison | school | hospital | fire | emergency
   };

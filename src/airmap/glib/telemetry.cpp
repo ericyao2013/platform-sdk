@@ -24,7 +24,9 @@ class Buffer {
     return add(reinterpret_cast<const char*>(&value), sizeof(value));
   }
 
-  Buffer& add(const std::string& s) { return add(s.c_str(), s.size()); }
+  Buffer& add(const std::string& s) {
+    return add(s.c_str(), s.size());
+  }
 
   Buffer& add(const std::vector<std::uint8_t>& v) {
     return add(reinterpret_cast<const char*>(v.data()), v.size());
@@ -35,7 +37,9 @@ class Buffer {
     return *this;
   }
 
-  const std::string& get() const { return buffer_; }
+  const std::string& get() const {
+    return buffer_;
+  }
 
  private:
   std::string buffer_;
@@ -50,7 +54,8 @@ constexpr std::uint16_t port{16060};
 }  // namespace telemetry
 }  // namespace
 
-airmap::glib::Telemetry::Telemetry(Api& api) : api_{api} {}
+airmap::glib::Telemetry::Telemetry(Api& api) : api_{api} {
+}
 
 void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::string& key,
                                              const std::initializer_list<Update>& updates) {

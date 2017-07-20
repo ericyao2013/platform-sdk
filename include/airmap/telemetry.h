@@ -70,8 +70,8 @@ class Telemetry {
   };
 
   Telemetry(const Telemetry&) = delete;
-  Telemetry(Telemetry&&) = delete;
-  virtual ~Telemetry() = default;
+  Telemetry(Telemetry&&)      = delete;
+  virtual ~Telemetry()        = default;
   Telemetry& operator=(const Telemetry&) = delete;
   Telemetry& operator=(Telemetry&&) = delete;
 

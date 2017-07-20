@@ -9,12 +9,14 @@ namespace json {
 
 template <typename T>
 inline void get(T& to, const nlohmann::json& from) {
-  if (!from.is_null()) to = from.get<T>();
+  if (!from.is_null())
+    to = from.get<T>();
 }
 
 template <typename T>
 inline void get(T& to, const nlohmann::json& from, const char* name) {
-  if (from.count(name) > 0) get(to, from.at(name));
+  if (from.count(name) > 0)
+    get(to, from.at(name));
 }
 
 }  // namespace json

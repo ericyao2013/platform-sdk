@@ -9,7 +9,8 @@
 
 using json = nlohmann::json;
 
-airmap::glib::Airspaces::Airspaces(airmap::glib::Api& api) : api_{api} {}
+airmap::glib::Airspaces::Airspaces(airmap::glib::Api& api) : api_{api} {
+}
 
 void airmap::glib::Airspaces::search(const Search::Parameters& parameters,
                                      const Search::Callback& cb) {

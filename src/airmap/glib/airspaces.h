@@ -12,7 +12,7 @@ class Airspaces : public airmap::Airspaces {
  public:
   explicit Airspaces(Api& api);
   Airspaces(const Airspaces&) = delete;
-  Airspaces(Airspaces&&) = delete;
+  Airspaces(Airspaces&&)      = delete;
   Airspaces& operator=(const Airspaces&) = delete;
   Airspaces& operator=(Airspaces&&) = delete;
 

@@ -16,15 +16,15 @@ namespace codec {
 namespace json {
 
 inline void encode(nlohmann::json& j, const Flights::CreateFlight::Parameters& parameters) {
-  j["latitude"] = parameters.latitude;
-  j["longitude"] = parameters.longitude;
+  j["latitude"]     = parameters.latitude;
+  j["longitude"]    = parameters.longitude;
   j["max_altitude"] = parameters.max_altitude;
-  j["aircraft_id"] = parameters.aircraft_id;
-  j["start_time"] = parameters.start_time;
-  j["end_time"] = parameters.end_time;
-  j["public"] = parameters.is_public;
-  j["notify"] = parameters.give_digital_notice;
-  j["buffer"] = parameters.buffer;
+  j["aircraft_id"]  = parameters.aircraft_id;
+  j["start_time"]   = parameters.start_time;
+  j["end_time"]     = parameters.end_time;
+  j["public"]       = parameters.is_public;
+  j["notify"]       = parameters.give_digital_notice;
+  j["buffer"]       = parameters.buffer;
   if (parameters.geometry) {
     j["geometry"] = parameters.geometry.get();
   }
@@ -43,7 +43,8 @@ inline void decode(const nlohmann::json& j,
   get(response.key, j, "key");
 }
 
-inline void decode(const nlohmann::json&, Flights::EndFlightCommunications::Response&) {}
+inline void decode(const nlohmann::json&, Flights::EndFlightCommunications::Response&) {
+}
 
 }  // namespace json
 }  // namespace codec

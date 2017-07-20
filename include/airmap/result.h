@@ -18,9 +18,13 @@ class Result {
                     std::is_move_constructible<Error>::value,
                 "Error must be copy- and move-constructible");
 
-  explicit Result(const Value& value) : type{Type::value} { new (&data.value) Value{value}; }
+  explicit Result(const Value& value) : type{Type::value} {
+    new (&data.value) Value{value};
+  }
 
-  explicit Result(const Error& error) : type{Type::error} { new (&data.error) Error{error}; }
+  explicit Result(const Error& error) : type{Type::error} {
+    new (&data.error) Error{error};
+  }
 
   Result(const Result& other) : type{other.type} {
     switch (type) {
@@ -111,23 +115,35 @@ class Result {
     }
   }
 
-  explicit operator bool() const { return !has_error(); }
-  inline bool has_error() const { return type == Type::error; }
+  explicit operator bool() const {
+    return !has_error();
+  }
+  inline bool has_error() const {
+    return type == Type::error;
+  }
 
-  inline bool has_value() const { return type == Type::value; }
+  inline bool has_value() const {
+    return type == Type::value;
+  }
 
-  inline const Error& error() const { return data.error; }
+  inline const Error& error() const {
+    return data.error;
+  }
 
-  inline const Value& value() const { return data.value; }
+  inline const Value& value() const {
+    return data.value;
+  }
 
  private:
   enum class Type { value, error };
 
   Type type;
   union Data {
-    Data() : value{} {}
+    Data() : value{} {
+    }
 
-    ~Data() {}
+    ~Data() {
+    }
 
     Value value;
     Error error;

@@ -44,7 +44,7 @@ class Client {
                                       const CreateCallback& cb);
 
   Client(const Client&) = delete;
-  Client(Client&&) = delete;
+  Client(Client&&)      = delete;
   virtual ~Client();
   Client& operator=(const Client&) = delete;
   Client& operator=(Client&&) = delete;

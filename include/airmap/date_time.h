@@ -10,11 +10,11 @@
 
 namespace airmap {
 
-using Clock = boost::posix_time::second_clock;
+using Clock    = boost::posix_time::second_clock;
 using DateTime = boost::posix_time::ptime;
-using Hours = boost::posix_time::hours;
-using Minutes = boost::posix_time::minutes;
-using Seconds = boost::posix_time::seconds;
+using Hours    = boost::posix_time::hours;
+using Minutes  = boost::posix_time::minutes;
+using Seconds  = boost::posix_time::seconds;
 
 std::uint64_t milliseconds_since_epoch(const DateTime& dt);
 

@@ -23,7 +23,8 @@ inline void decode(const nlohmann::json& j, Authenticator::OAuthToken& token) {
 
 inline void decode(const nlohmann::json& j, Authenticator::OAuthToken::Type& type) {
   auto t = j.get<std::string>();
-  if (t == "bearer") type = Authenticator::OAuthToken::Type::bearer;
+  if (t == "bearer")
+    type = Authenticator::OAuthToken::Type::bearer;
 }
 
 inline void decode(const nlohmann::json& j, Authenticator::AnonymousToken& token) {
@@ -32,11 +33,11 @@ inline void decode(const nlohmann::json& j, Authenticator::AnonymousToken& token
 
 inline void encode(nlohmann::json& j,
                    const Authenticator::AuthenticateWithPassword::Params& params) {
-  j["client_id"] = params.client_id;
+  j["client_id"]  = params.client_id;
   j["connection"] = params.connection_name;
-  j["username"] = params.username;
-  j["password"] = params.password;
-  j["device"] = params.device;
+  j["username"]   = params.username;
+  j["password"]   = params.password;
+  j["device"]     = params.device;
 }
 
 inline void encode(nlohmann::json& j,

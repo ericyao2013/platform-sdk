@@ -2,6 +2,14 @@ BasedOnStyle: Google
 ---
 Language: Cpp
 ColumnLimit: 100
+AlignConsecutiveAssignments: true
+AlignOperands: true
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
 ---
 Language: Proto
 DisableFormat: true

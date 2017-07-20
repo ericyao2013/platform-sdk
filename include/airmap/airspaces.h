@@ -17,7 +17,7 @@ class Airspaces {
       Airspace::Id id;
     };
 
-    using Result = Result<std::vector<Airspace>, std::exception_ptr>;
+    using Result   = Result<std::vector<Airspace>, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -33,12 +33,12 @@ class Airspaces {
       Optional<DateTime> date_time;
     };
 
-    using Result = Result<std::vector<Airspace>, std::exception_ptr>;
+    using Result   = Result<std::vector<Airspace>, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
   Airspaces(const Airspaces&) = delete;
-  Airspaces(Airspaces&&) = delete;
+  Airspaces(Airspaces&&)      = delete;
   virtual ~Airspaces();
   Airspaces& operator=(const Airspaces&) = delete;
   Airspaces& operator=(Airspaces&&) = delete;
