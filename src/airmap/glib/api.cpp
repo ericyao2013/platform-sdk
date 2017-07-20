@@ -81,7 +81,7 @@ void airmap::glib::Api::post(const std::string& host, const std::string& path,
   });
 }
 
-void airmap::glib::Api::send_udp(const std::string& host, std::uint16_t port, const std::vector<std::uint8_t>& body) {
+void airmap::glib::Api::send_udp(const std::string& host, std::uint16_t port, const std::string& body) {
   dispatch([host, port, body = std::move(body)]() {
     if (auto connectable = g_network_address_parse(host.c_str(), port, nullptr)) {
       if (auto enumerator = g_socket_connectable_enumerate(connectable)) {
@@ -96,7 +96,7 @@ void airmap::glib::Api::send_udp(const std::string& host, std::uint16_t port, co
               }};
 
           // TODO(tvoss): Add error handling here.
-          auto size = g_socket_send_to(s.get(), sa.get(), reinterpret_cast<const char*>(body.data()), body.size(), nullptr, nullptr);
+          g_socket_send_to(s.get(), sa.get(), body.c_str(), body.size(), nullptr, nullptr);
         }
         g_object_unref(enumerator);
       }
@@ -105,7 +105,7 @@ void airmap::glib::Api::send_udp(const std::string& host, std::uint16_t port, co
   });
 }
 
-void airmap::glib::Api::soup_session_callback(SoupSession* session, SoupMessage* msg, gpointer user_data) {
+void airmap::glib::Api::soup_session_callback(SoupSession*, SoupMessage* msg, gpointer user_data) {
   if (auto context = static_cast<SoupSessionCallbackContext*>(user_data)) {
     if (auto sp = context->wp.lock()) {
       auto cb = std::move(context->cb);
@@ -120,7 +120,7 @@ void airmap::glib::Api::soup_session_callback(SoupSession* session, SoupMessage*
   }
 }
 
-void airmap::glib::Api::on_pipe_fd_read_finished(GObject* source, GAsyncResult* result, gpointer user_data) {
+void airmap::glib::Api::on_pipe_fd_read_finished(GObject*, GAsyncResult*, gpointer user_data) {
   if (auto context = static_cast<Api*>(user_data)) {
     context->on_pipe_fd_read_finished();
   }
@@ -139,13 +139,13 @@ airmap::glib::Api::Api(const std::string& api_key)
                [](SoupSession* session) {
                  if (session) g_object_unref(session);
                }} {
-  worker_ = std::move(std::thread{[this]() {
+  worker_ = std::thread{[this]() {
     g_main_context_push_thread_default(main_context_.get());
     g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_), G_PRIORITY_LOW,
                               nullptr, Api::on_pipe_fd_read_finished, this);
     g_main_loop_run(main_loop_.get());
     g_main_context_pop_thread_default(main_context_.get());
-  }});
+  }};
 }
 
 airmap::glib::Api::~Api() {

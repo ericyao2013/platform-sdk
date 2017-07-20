@@ -39,14 +39,14 @@ constexpr const char* api_key{
     "lvbnxENkc0V2JsSU1wR1piZXVweHdENTRoTUFiblE1Iiwib3JnYW5pemF0aW9uX2lkIjoiZGV2ZWxvcGVyfDN4OWQ1YThVV21iRGJYUzZkNlJKYkhQ"
     "THlaUHkiLCJpYXQiOjE1MDAzMDg2NzJ9.szMZec56G-HjeWT5XfG9vsgJUHwgnRcvzMx4nwPpkTg"};
 
-auto polygon = airmap::Geometry::polygon({airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043},
-                                          airmap::Geometry::Coordinate{47.37629618703235, 8.545989990234375},
-                                          airmap::Geometry::Coordinate{47.37667398429217, 8.548049926757812},
-                                          airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043}});
+auto polygon = airmap::Geometry::polygon({airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043, airmap::Optional<double>{}, airmap::Optional<double>{}},
+                                          airmap::Geometry::Coordinate{47.37629618703235, 8.545989990234375, airmap::Optional<double>{}, airmap::Optional<double>{}},
+                                          airmap::Geometry::Coordinate{47.37667398429217, 8.548049926757812, airmap::Optional<double>{}, airmap::Optional<double>{}},
+                                          airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043, airmap::Optional<double>{}, airmap::Optional<double>{}}});
 
 }  // namespace
 
-int main(int argc, const char** argv) {
+int main() {
   Barrier barrier;
 
   std::shared_ptr<airmap::DeviceIdentifier> di;
@@ -93,7 +93,7 @@ int main(int argc, const char** argv) {
                                   while (true) {
                                     auto coord = polygon.details_for_polygon().at(0).coordinates.at(counter++ % polygon.details_for_polygon().at(0).coordinates.size());
                                     client->telemetry().submit_updates(
-                                        flight, "MDAwMDExMTEyMjIyMzMzMzQ0NDQ1NTU1NjY2Njc3Nzc=",
+                                        flight, key,
                                         {airmap::Telemetry::Update{airmap::Telemetry::Position{
                                             airmap::milliseconds_since_epoch(airmap::Clock::universal_time()),
                                             coord.latitude, coord.longitude, 100, 100, 2}}});

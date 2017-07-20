@@ -4,7 +4,8 @@
 #include <airmap/telemetry.h>
 
 #include <airmap/glib/api.h>
-#include <botan/auto_rng.h>
+
+#include <cryptopp/osrng.h>
 
 #include <memory>
 
@@ -20,7 +21,7 @@ class Telemetry : public airmap::Telemetry {
 
  private:
   Api& api_;
-  Botan::AutoSeeded_RNG rng_;
+  CryptoPP::AutoSeededRandomPool rng_;
 };
 
 }  // namespace glib

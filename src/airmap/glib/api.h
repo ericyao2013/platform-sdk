@@ -37,7 +37,7 @@ class Api : public std::enable_shared_from_this<Api> {
            std::unordered_map<std::string, std::string>&& headers, DoCallback cb);
   void post(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& headers,
             const std::string& body, DoCallback cb);
-  void send_udp(const std::string& host, std::uint16_t port, const std::vector<std::uint8_t>& body);
+  void send_udp(const std::string& host, std::uint16_t port, const std::string& body);
  private:
   struct SoupSessionCallbackContext {
     DoCallback cb;

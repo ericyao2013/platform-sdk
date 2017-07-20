@@ -3,7 +3,7 @@
 Dependencies:
   * boost date-time
   * protobuf
-  * botan
+  * cryptopp 
   * libsoup
   * libglib
 

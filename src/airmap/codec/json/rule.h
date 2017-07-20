@@ -27,7 +27,7 @@ inline void decode(const nlohmann::json& j, std::vector<Rule>& v) {
   }
 }
 
-inline void decode(const nlohmann::json& j, Rule::Type&) {
+inline void decode(const nlohmann::json&, Rule::Type&) {
 }
 
 }  // namespace json

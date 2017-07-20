@@ -4,9 +4,11 @@
 
 #include "telemetry.pb.h"
 
-#include <botan/base64.h>
-#include <botan/key_filt.h>
-#include <botan/pipe.h>
+#include <cryptopp/aes.h>
+#include <cryptopp/base64.h>
+#include <cryptopp/ccm.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/osrng.h>
 
 #include <arpa/inet.h>
 
@@ -19,43 +21,34 @@ class Buffer {
  public:
   template <typename T>
   Buffer& add(const T& value) {
-    return add(reinterpret_cast<const std::uint8_t*>(&value), sizeof(value));
+    return add(reinterpret_cast<const char*>(&value), sizeof(value));
   }
 
   Buffer& add(const std::string& s) {
-    return add(reinterpret_cast<const std::uint8_t*>(s.c_str()), s.size());
+    return add(s.c_str(), s.size());
   }
 
   Buffer& add(const std::vector<std::uint8_t>& v) {
-    return add(v.data(), v.size());
+    return add(reinterpret_cast<const char*>(v.data()), v.size());
   }
 
-  Buffer& add(const Botan::secure_vector<std::uint8_t>& v) {
-    return add(v.data(), v.size());
-  }
-
-  Buffer& add(const std::uint8_t* value, std::size_t size) {
+  Buffer& add(const char* value, std::size_t size) {
     buffer_.insert(buffer_.end(), value, value + size);
     return *this;
   }
 
-  Botan::secure_vector<std::uint8_t> finalize_as_secure_vector() {
-    return Botan::secure_vector<std::uint8_t>{buffer_.begin(), buffer_.end()};
-  }
-
-  std::vector<std::uint8_t> finalize_as_vector() {
+  const std::string& get() const {
     return buffer_;
   }
 
  private:
-  std::vector<std::uint8_t> buffer_;
+  std::string buffer_;
 };
 
 namespace telemetry {
 
-constexpr const char* host{"192.168.178.24"};
+constexpr const char* host{"api-udp-telemetry.airmap.com"};
 constexpr std::uint8_t encryption_type{1};
-constexpr const char* encryption_spec{"AES-256/CBC/PKCS7"};
 constexpr std::uint16_t port{16060};
 
 }  // namespace telemetry
@@ -123,13 +116,26 @@ void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::st
     }
   }
 
-  auto pl = payload.finalize_as_secure_vector();
+  std::string cipher;
 
   std::vector<std::uint8_t> iv(16, 0);
-  rng_.randomize(iv.data(), iv.size());
+  rng_.GenerateBlock(iv.data(), iv.size());
 
-  Botan::Pipe pipe(Botan::get_cipher(::telemetry::encryption_spec, Botan::base64_decode(key), iv, Botan::ENCRYPTION));
-  pipe.process_msg(payload.finalize_as_secure_vector());
+  std::string decoded_key;
+  CryptoPP::StringSource decoder(key, true,
+    new CryptoPP::Base64Decoder(
+      new CryptoPP::StringSink(decoded_key)
+    )
+  );
+
+  CryptoPP::CBC_Mode< CryptoPP::AES >::Encryption enc;
+  enc.SetKeyWithIV(reinterpret_cast<const byte*>(decoded_key.c_str()), decoded_key.size(), iv.data());
+
+  CryptoPP::StringSource s(payload.get(), true, 
+    new CryptoPP::StreamTransformationFilter(enc,
+      new CryptoPP::StringSink(cipher)
+    )
+  );
 
   Buffer packet;
   api_.send_udp(::telemetry::host, ::telemetry::port,
@@ -138,6 +144,6 @@ void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::st
                     .add(flight.id)
                     .add<std::uint8_t>(::telemetry::encryption_type)
                     .add(iv)
-                    .add(pipe.read_all())
-                    .finalize_as_vector());
+                    .add(cipher)
+                    .get());
 }

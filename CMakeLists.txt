@@ -1,14 +1,21 @@
 cmake_minimum_required(VERSION 3.5)
 project(airmap)
 
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -Wextra -fPIC")
+
 find_package(Boost REQUIRED date_time)
 find_package(PkgConfig)
 find_package(Protobuf)
 
-pkg_check_modules(BOTAN REQUIRED botan-2)
 pkg_check_modules(LIBSOUP REQUIRED libsoup-2.4)
 pkg_check_modules(GIO gio-2.0)
 pkg_check_modules(GIO_UNIX gio-unix-2.0)
+
+# cryptopp lacks a pkgconfig setup on OS X and 
+# we will likely have to adjust the brew formula
+set(CRYPTOPP_LIBRARIES cryptopp)
 
 include_directories(
     include
@@ -18,7 +25,6 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/src
 
     ${AWS_CPP_SDK_CORE_INCLUDE_DIRS}
-    ${BOTAN_INCLUDE_DIRS}
     ${GIO_INCLUDE_DIRS}
     ${GIO_UNIX_INCLUDE_DIRS}
     ${LIBSOUP_INCLUDE_DIRS}
@@ -98,7 +104,7 @@ set_property(TARGET airmap-server PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmapd PROPERTY CXX_STANDARD 14)
 
-target_link_libraries(airmap-client ${Boost_LIBRARIES} ${LIBSOUP_LDFLAGS} ${PROTOBUF_LIBRARIES} ${BOTAN_LIBRARIES})
+target_link_libraries(airmap-client ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${LIBSOUP_LDFLAGS} ${PROTOBUF_LIBRARIES})
 target_link_libraries(airmap airmap-client)
 target_link_libraries(airmap-server airmap-client)
 target_link_libraries(airmapd airmap-server)

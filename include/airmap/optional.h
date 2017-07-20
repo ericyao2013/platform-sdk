@@ -23,12 +23,12 @@ public:
             new (&storage.value) T(other.storage.value);
     }
 
-    explicit Optional(const T& value)
+    Optional(const T& value)
         : has_value{true} {
         new (&storage.value) T(value);
     }
 
-    explicit Optional(T&& value)
+    Optional(T&& value)
         : has_value{true} {
         new (&storage.value) T(value);
     }

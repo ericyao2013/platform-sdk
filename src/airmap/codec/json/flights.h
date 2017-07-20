@@ -42,7 +42,7 @@ inline void decode(const nlohmann::json& j, Flights::StartFlightCommunications::
   get(response.key, j, "key");
 }
 
-inline void decode(const nlohmann::json& j, Flights::EndFlightCommunications::Response& response) {
+inline void decode(const nlohmann::json&, Flights::EndFlightCommunications::Response&) {
 }
 
 }  // namespace json

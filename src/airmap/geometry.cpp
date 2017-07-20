@@ -43,7 +43,7 @@ airmap::Geometry& airmap::Geometry::operator=(const Geometry& rhs) {
   return reset().set_geometry(rhs);
 }
 
-bool airmap::Geometry::operator==(const Geometry& rhs) const {
+bool airmap::Geometry::operator==(const Geometry&) const {
   return false;
 }
 

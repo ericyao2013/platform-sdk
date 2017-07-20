@@ -10,8 +10,8 @@ using json = nlohmann::json;
 airmap::glib::Authenticator::Authenticator(Api& api) : api_{api} {
 }
 
-void airmap::glib::Authenticator::authenticate_with_password(const AuthenticateWithPassword::Params& params,
-                                                             const AuthenticateWithPassword::Callback& cb) {
+void airmap::glib::Authenticator::authenticate_with_password(const AuthenticateWithPassword::Params&,
+                                                             const AuthenticateWithPassword::Callback&) {
   throw std::runtime_error{"not implemented"};
 }
 
@@ -37,6 +37,6 @@ void airmap::glib::Authenticator::authenticate_anonymously(const AuthenticateAno
       });
 }
 
-void airmap::glib::Authenticator::renew_authentication(const RenewAuthentication::Params& params,
-                                                       const RenewAuthentication::Callback& cb) {
+void airmap::glib::Authenticator::renew_authentication(const RenewAuthentication::Params&,
+                                                       const RenewAuthentication::Callback&) {
 }
