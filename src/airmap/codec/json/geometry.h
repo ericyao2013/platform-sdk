@@ -44,6 +44,8 @@ inline void decode(const nlohmann::json& j, Geometry& g) {
       g = Geometry{j["coordinates"].get<Geometry::GeometryCollection>()};
       break;
     }
+    default:
+      break;
   }
 }
 
@@ -106,6 +108,92 @@ inline void decode(const nlohmann::json& j, Geometry::MultiPolygon& mp) {
     mp.push_back(Geometry::Polygon{});
     mp.back() = element.get<Geometry::Polygon>();
   }
+}
+
+inline void encode(nlohmann::json& j, const Geometry& geometry) {
+  j["type"] = geometry.type();
+  switch (geometry.type()) {
+    case Geometry::Type::point:
+      j["coordinates"] = geometry.details_for_point();
+      break;
+    case Geometry::Type::multi_point:
+      j["coordinates"] = geometry.details_for_multi_point();
+      break;
+    case Geometry::Type::line_string:
+      j["coordinates"] = geometry.details_for_line_string();
+      break;
+    case Geometry::Type::multi_line_string:
+      j["coordinates"] = geometry.details_for_multi_line_string();
+      break;
+    case Geometry::Type::polygon:
+      j["coordinates"] = geometry.details_for_polygon();
+      break;
+    case Geometry::Type::multi_polygon:
+      j["coordinates"] = geometry.details_for_multi_polygon();
+      break;
+    case Geometry::Type::geometry_collection:
+      j["coordinates"] = geometry.details_for_geometry_collection();
+      break;
+    default:
+      break;
+  }
+}
+
+inline void encode(nlohmann::json& j, const std::vector<Geometry>& geometries) {
+  for (const auto& geometry : geometries) j.push_back(geometry);
+}
+
+inline void encode(nlohmann::json& j, Geometry::Type type) {
+  switch (type) {
+    case Geometry::Type::point:
+      j = "Point";
+      break;
+    case Geometry::Type::multi_point:
+      j = "MultiPoint";
+      break;
+    case Geometry::Type::line_string:
+      j = "LineString";
+      break;
+    case Geometry::Type::multi_line_string:
+      j = "MultiLineString";
+      break;
+    case Geometry::Type::polygon:
+      j = "Polygon";
+      break;
+    case Geometry::Type::multi_polygon:
+      j = "MultiPolygon";
+      break;
+    case Geometry::Type::geometry_collection:
+      j = "GeometryCollection";
+      break;
+    default:
+      break;
+  }
+}
+
+inline void encode(nlohmann::json& j, const Geometry::Coordinate& coordinate) {
+  j.push_back(coordinate.longitude);
+  j.push_back(coordinate.latitude);
+  if (coordinate.altitude) j.push_back(coordinate.altitude.get());
+  if (coordinate.elevation) j.push_back(coordinate.elevation.get());
+}
+
+inline void encode(nlohmann::json& j, const std::vector<Geometry::Coordinate>& coordinates) {
+  for (const auto& coordinate : coordinates) j.push_back(coordinate);
+}
+
+template <Geometry::Type tag>
+inline void encode(nlohmann::json& j, const Geometry::CoordinateVector<tag>& cv) {
+  j = cv.coordinates;
+}
+
+template <Geometry::Type tag>
+inline void encode(nlohmann::json& j, const std::vector<Geometry::CoordinateVector<tag>>& cvs) {
+  for (const auto& cv : cvs) j.push_back(cv);
+}
+
+inline void encode(nlohmann::json& j, const std::vector<Geometry::Polygon>& cvs) {
+  for (const auto& cv : cvs) j.push_back(cv);
 }
 
 }  // namespace json

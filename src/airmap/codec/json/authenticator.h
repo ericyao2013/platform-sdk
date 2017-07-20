@@ -14,6 +14,22 @@ namespace airmap {
 namespace codec {
 namespace json {
 
+inline void decode(const nlohmann::json& j, Authenticator::OAuthToken& token) {
+  get(token.refresh, j, "refresh_token");
+  get(token.id, j, "id_token");
+  get(token.access, j, "access_token");
+  get(token.type, j, "token_type");
+}
+
+inline void decode(const nlohmann::json& j, Authenticator::OAuthToken::Type& type) {
+  auto t = j.get<std::string>();
+  if (t == "bearer") type = Authenticator::OAuthToken::Type::bearer;
+}
+
+inline void decode(const nlohmann::json& j, Authenticator::AnonymousToken& token) {
+  get(token.id, j, "id_token");
+}
+
 inline void encode(nlohmann::json& j, const Authenticator::AuthenticateWithPassword::Params& params) {
   j["client_id"] = params.client_id;
   j["connection"] = params.connection_name;
