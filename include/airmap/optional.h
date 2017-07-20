@@ -71,8 +71,8 @@ public:
         return has_value;
     }
 
-    const T& get(const T& default_value = T{}) const {
-        return has_value ? storage.value : default_value;
+    const T& get() const {
+        return storage.value;
     }
 
     void set(const T& value) {

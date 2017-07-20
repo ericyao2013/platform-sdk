@@ -224,6 +224,8 @@ inline void decode(const nlohmann::json& j, Geometry& g) {
       g = Geometry{j["coordinates"].get<Geometry::GeometryCollection>()};
       break;
     }
+    default:
+      break;
   }
 }
 
@@ -479,6 +481,8 @@ inline void encode(nlohmann::json& j, const Geometry& geometry) {
     case Geometry::Type::geometry_collection:
       j["coordinates"] = geometry.details_for_geometry_collection();
       break;
+    default:
+      break;
   }
 }
 
@@ -509,14 +513,16 @@ inline void encode(nlohmann::json& j, Geometry::Type type) {
     case Geometry::Type::geometry_collection:
       j = "GeometryCollection";
       break;
+    default:
+      break;
   }
 }
 
 inline void encode(nlohmann::json& j, const Geometry::Coordinate& coordinate) {
   j.push_back(coordinate.longitude);
   j.push_back(coordinate.latitude);
-  if (coordinate.altitude) j.push_back(coordinate.altitude.get(0.f));
-  if (coordinate.elevation) j.push_back(coordinate.elevation.get(0.f));
+  if (coordinate.altitude) j.push_back(coordinate.altitude.get());
+  if (coordinate.elevation) j.push_back(coordinate.elevation.get());
 }
 
 inline void encode(nlohmann::json& j, const std::vector<Geometry::Coordinate>& coordinates) {
@@ -545,17 +551,17 @@ namespace query {
 inline void encode(std::unordered_map<std::string, std::string>& query,
                    const Aircrafts::Manufacturers::Parameters& parameters) {
   if (parameters.manufacturer_name) {
-    query["q"] = parameters.manufacturer_name.get(std::string{});
+    query["q"] = parameters.manufacturer_name.get();
   }
 }
 
 inline void encode(std::unordered_map<std::string, std::string>& query,
                    const Aircrafts::Models::Parameters& parameters) {
   if (parameters.manufacturer) {
-    query["manufacturer"] = parameters.manufacturer.get(airmap::Aircraft::Manufacturer{}).id;
+    query["manufacturer"] = parameters.manufacturer.get().id;
   }
   if (parameters.model_name) {
-    query["q"] = parameters.model_name.get(std::string{});
+    query["q"] = parameters.model_name.get();
   }
 }
 
@@ -567,10 +573,9 @@ inline void encode(std::unordered_map<std::string, std::string>& query,
     query["types"] = oss.str();
   }
 
-  if (parameters.ignored_types && parameters.ignored_types.get(Airspace::Type::invalid) != Airspace::Type::invalid) {
+  if (parameters.ignored_types && parameters.ignored_types.get() != Airspace::Type::invalid) {
     std::ostringstream oss;
-    oss << ((parameters.ignored_types.get(Airspace::Type::invalid) & ~Airspace::Type::emergency) &
-            ~Airspace::Type::fire);
+    oss << ((parameters.ignored_types.get() & ~Airspace::Type::emergency) & ~Airspace::Type::fire);
     query["ignored_types"] = oss.str();
   }
 
@@ -579,9 +584,9 @@ inline void encode(std::unordered_map<std::string, std::string>& query,
   geometry = parameters.geometry;
   query["geometry"] = geometry.dump();
 
-  if (parameters.buffer) query["buffer"] = boost::lexical_cast<std::string>(parameters.buffer.get(0));
-  if (parameters.offset) query["offset"] = boost::lexical_cast<std::string>(parameters.offset.get(0));
-  if (parameters.date_time) query["datetime"] = iso8601::generate(parameters.date_time.get(Clock::universal_time()));
+  if (parameters.buffer) query["buffer"] = boost::lexical_cast<std::string>(parameters.buffer.get());
+  if (parameters.offset) query["offset"] = boost::lexical_cast<std::string>(parameters.offset.get());
+  if (parameters.date_time) query["datetime"] = iso8601::generate(parameters.date_time.get());
 }
 
 inline void encode(std::unordered_map<std::string, std::string>& query, const Flights::ForId::Parameters& parameters) {
