@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(airmap)
 
-
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -Wextra -fPIC")
 
@@ -13,27 +12,27 @@ pkg_check_modules(LIBSOUP REQUIRED libsoup-2.4)
 pkg_check_modules(GIO gio-2.0)
 pkg_check_modules(GIO_UNIX gio-unix-2.0)
 
-# cryptopp lacks a pkgconfig setup on OS X and 
+# cryptopp lacks a pkgconfig setup on OS X and
 # we will likely have to adjust the brew formula
 set(CRYPTOPP_LIBRARIES cryptopp)
 
 include_directories(
-    include
-    src
+  include
+  src
 
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/src
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}/src
 
-    ${AWS_CPP_SDK_CORE_INCLUDE_DIRS}
-    ${GIO_INCLUDE_DIRS}
-    ${GIO_UNIX_INCLUDE_DIRS}
-    ${LIBSOUP_INCLUDE_DIRS}
-    ${PROTOBUF_INCLUDE_DIRS})
+  ${AWS_CPP_SDK_CORE_INCLUDE_DIRS}
+  ${GIO_INCLUDE_DIRS}
+  ${GIO_UNIX_INCLUDE_DIRS}
+  ${LIBSOUP_INCLUDE_DIRS}
+  ${PROTOBUF_INCLUDE_DIRS})
 
 protobuf_generate_cpp(
-    TELEMETRY_PROTOBUF_SOURCES 
-    TELEMETRY_PROTOBUF_HEADERS  
-    src/airmap/glib/telemetry.proto)
+  TELEMETRY_PROTOBUF_SOURCES
+  TELEMETRY_PROTOBUF_HEADERS
+  src/airmap/glib/telemetry.proto)
 
 add_library(
   airmap-client SHARED
@@ -81,7 +80,7 @@ add_library(
 
   src/airmap/util/cli.h
   src/airmap/util/cli.cpp
-  
+
   ${TELEMETRY_PROTOBUF_SOURCES}
   ${TELEMETRY_PROTOBUF_HEADERS}
 )
@@ -93,21 +92,28 @@ add_library(
   src/airmap/daemon.cpp)
 
 add_executable(
-    airmap
+  airmap
 
-    src/airmap/cmds/airmap/airmap.cpp)
+  src/airmap/cmds/airmap/airmap.cpp)
 
 add_executable(
-    airmapd
+  airmapd
 
-    src/airmap/cmds/airmapd/airmapd.cpp)
+  src/airmap/cmds/airmapd/airmapd.cpp)
+
+add_executable(
+  airmap-telemetry-simulator
+
+  src/airmap/cmds/airmap_telemetry_simulator/airmap_telemetry_simulator.cpp)
 
 set_property(TARGET airmap-client PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap-server PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmapd PROPERTY CXX_STANDARD 14)
+set_property(TARGET airmap-telemetry-simulator PROPERTY CXX_STANDARD 14)
 
 target_link_libraries(airmap-client ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${LIBSOUP_LDFLAGS} ${PROTOBUF_LIBRARIES})
 target_link_libraries(airmap airmap-client )
 target_link_libraries(airmap-server airmap-client)
 target_link_libraries(airmapd airmap-server)
+target_link_libraries(airmap-telemetry-simulator airmap-client)
