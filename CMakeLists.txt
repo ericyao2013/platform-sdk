@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -We
 
 find_package(Boost REQUIRED date_time)
 find_package(PkgConfig)
-find_package(Protobuf)
+find_package(Protobuf REQUIRED)
 
 pkg_check_modules(LIBSOUP REQUIRED libsoup-2.4)
 pkg_check_modules(GIO gio-2.0)
@@ -49,7 +49,7 @@ add_library(
   include/airmap/flights.h
   include/airmap/optional.h
   include/airmap/pilot.h
-  include/airmap/result.h
+  include/airmap/outcome.h
   include/airmap/rule.h
   include/airmap/telemetry.h
   include/airmap/timestamp.h
@@ -105,6 +105,6 @@ set_property(TARGET airmap PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmapd PROPERTY CXX_STANDARD 14)
 
 target_link_libraries(airmap-client ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${LIBSOUP_LDFLAGS} ${PROTOBUF_LIBRARIES})
-target_link_libraries(airmap airmap-client)
+target_link_libraries(airmap airmap-client )
 target_link_libraries(airmap-server airmap-client)
 target_link_libraries(airmapd airmap-server)

@@ -2,7 +2,7 @@
 #define AIRMAP_DAEMON_H_
 
 #include <airmap/client.h>
-#include <airmap/result.h>
+#include <airmap/outcome.h>
 
 #include <memory>
 
@@ -20,7 +20,7 @@ class Daemon {
  public:
   /// Configuration contains all runtime dependencies of Daemon.
   struct Configuration {
-    static Result<Configuration, std::exception_ptr> from_command_line(int argc, char** argv);
+    static Outcome<Configuration, std::exception_ptr> from_command_line(int argc, char** argv);
 
     std::shared_ptr<TelemetrySource> telemetry_source;
     std::shared_ptr<MissionPlanner> mission_planner;

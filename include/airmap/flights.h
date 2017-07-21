@@ -5,7 +5,7 @@
 #include <airmap/flight.h>
 #include <airmap/geometry.h>
 #include <airmap/optional.h>
-#include <airmap/result.h>
+#include <airmap/outcome.h>
 
 #include <cstdint>
 #include <functional>
@@ -22,7 +22,7 @@ class Flights {
       Optional<bool> enhance;
     };
 
-    using Result   = Result<Flight, std::exception_ptr>;
+    using Result   = Outcome<Flight, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -41,7 +41,7 @@ class Flights {
       Optional<DateTime> end_before;
       Optional<bool> enhance;
     };
-    using Result   = Result<std::vector<Flight>, std::exception_ptr>;
+    using Result   = Outcome<std::vector<Flight>, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -59,7 +59,7 @@ class Flights {
       float buffer             = 100;
       Optional<Geometry> geometry;
     };
-    using Result   = Result<Flight, std::exception_ptr>;
+    using Result   = Outcome<Flight, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -73,7 +73,7 @@ class Flights {
       Flight::Id id;
     };
 
-    using Result   = Result<Response, std::exception_ptr>;
+    using Result   = Outcome<Response, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -87,7 +87,7 @@ class Flights {
       DateTime end_time;
     };
 
-    using Result   = Result<Response, std::exception_ptr>;
+    using Result   = Outcome<Response, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -101,7 +101,7 @@ class Flights {
       std::string key;
     };
 
-    using Result   = Result<Response, std::exception_ptr>;
+    using Result   = Outcome<Response, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -113,7 +113,7 @@ class Flights {
 
     struct Response {};
 
-    using Result   = Result<Response, std::exception_ptr>;
+    using Result   = Outcome<Response, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 

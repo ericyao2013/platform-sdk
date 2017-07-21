@@ -119,7 +119,7 @@ void airmap::glib::Api::soup_session_callback(SoupSession*, SoupMessage* msg, gp
         cb(DoResult{std::string{msg->response_body->data,
                                 static_cast<std::size_t>(msg->response_body->length)}});
       } else {
-        cb(DoResult{msg->status_code});
+        cb(DoResult{static_cast<std::uint16_t>(msg->status_code)});
       }
     }
   }

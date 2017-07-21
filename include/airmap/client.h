@@ -1,7 +1,7 @@
 #ifndef AIRMAP_CLIENT_H_
 #define AIRMAP_CLIENT_H_
 
-#include <airmap/result.h>
+#include <airmap/outcome.h>
 
 #include <functional>
 #include <memory>
@@ -28,7 +28,7 @@ class Client {
 
   /// CreateResult models the result of creating a new client instance xor
   /// an exception describing why creation of an instance failed.
-  using CreateResult = Result<std::shared_ptr<Client>, std::exception_ptr>;
+  using CreateResult = Outcome<std::shared_ptr<Client>, std::exception_ptr>;
 
   /// CreateCallback is invoked when the creation of a client finishes.
   using CreateCallback = std::function<void(const CreateResult&)>;

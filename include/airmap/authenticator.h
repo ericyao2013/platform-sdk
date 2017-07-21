@@ -1,7 +1,7 @@
 #ifndef AIRMAP_AUTHENTICATOR_H_
 #define AIRMAP_AUTHENTICATOR_H_
 
-#include <airmap/result.h>
+#include <airmap/outcome.h>
 
 #include <chrono>
 #include <functional>
@@ -39,7 +39,7 @@ class Authenticator {
       std::string device;
     };
 
-    using Result   = Result<OAuthToken, std::exception_ptr>;
+    using Result   = Outcome<OAuthToken, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -47,7 +47,7 @@ class Authenticator {
     struct Params {
       std::string user_id;
     };
-    using Result   = Result<AnonymousToken, std::exception_ptr>;
+    using Result   = Outcome<AnonymousToken, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -55,7 +55,7 @@ class Authenticator {
     struct Params {
       std::string user_id;
     };
-    using Result   = Result<AnonymousToken, std::exception_ptr>;
+    using Result   = Outcome<AnonymousToken, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 

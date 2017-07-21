@@ -2,7 +2,7 @@
 #define AIRMAP_GLIB_API_H_
 
 #include <airmap/optional.h>
-#include <airmap/result.h>
+#include <airmap/outcome.h>
 
 #include <glib.h>
 #include <libsoup/soup.h>
@@ -24,9 +24,9 @@ class Api : public std::enable_shared_from_this<Api> {
  public:
   using Status = std::uint16_t;
 
-  using CreateResult   = Result<std::shared_ptr<Api>, std::exception_ptr>;
+  using CreateResult   = Outcome<std::shared_ptr<Api>, std::exception_ptr>;
   using CreateCallback = std::function<void(const CreateResult&)>;
-  using DoResult       = Result<std::string, Status>;
+  using DoResult       = Outcome<std::string, Status>;
   using DoCallback     = std::function<void(const DoResult&)>;
 
   static void create(const std::string& api_key, const CreateCallback& cb);

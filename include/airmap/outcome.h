@@ -1,16 +1,16 @@
-#ifndef AIRMAP_RESULT_H_
-#define AIRMAP_RESULT_H_
+#ifndef AIRMAP_OUTCOME_H_
+#define AIRMAP_OUTCOME_H_
 
 #include <type_traits>
 
 namespace airmap {
 
-/// Result<T,U> models a return value from a function XOR an error object
+/// Outcome<T,U> models a return value from a function XOR an error object
 /// describing the error condition if no value can be returned.
 template <typename Value, typename Error>
-class Result {
+class Outcome{
  public:
-  // static_assert(std::is_same<Value, Error>::value, "Value and Error must not be the same type");
+  static_assert(not std::is_same<Value, Error>::value, "Value and Error must not be the same type");
   static_assert(std::is_copy_constructible<Value>::value &&
                     std::is_move_constructible<Value>::value,
                 "Value must be copy- and move-constructible");
@@ -18,15 +18,15 @@ class Result {
                     std::is_move_constructible<Error>::value,
                 "Error must be copy- and move-constructible");
 
-  explicit Result(const Value& value) : type{Type::value} {
+  explicit Outcome(const Value& value) : type{Type::value} {
     new (&data.value) Value{value};
   }
 
-  explicit Result(const Error& error) : type{Type::error} {
+  explicit Outcome(const Error& error) : type{Type::error} {
     new (&data.error) Error{error};
   }
 
-  Result(const Result& other) : type{other.type} {
+  Outcome(const Outcome& other) : type{other.type} {
     switch (type) {
       case Type::error:
         new (&data.error) Error{other.data.error};
@@ -37,7 +37,7 @@ class Result {
     }
   }
 
-  Result(Result&& other) : type{other.type} {
+  Outcome(Outcome&& other) : type{other.type} {
     switch (type) {
       case Type::error:
         new (&data.error) Error{other.data.error};
@@ -48,7 +48,7 @@ class Result {
     }
   }
 
-  Result& operator=(const Result& other) {
+  Outcome& operator=(const Outcome& other) {
     switch (type) {
       case Type::error: {
         (&data.error)->~Error();
@@ -76,7 +76,7 @@ class Result {
     return *this;
   }
 
-  Result& operator=(Result&& other) {
+  Outcome& operator=(Outcome&& other) {
     switch (type) {
       case Type::error: {
         (&data.error)->~Error();
@@ -104,7 +104,7 @@ class Result {
     return *this;
   }
 
-  ~Result() {
+  ~Outcome() {
     switch (type) {
       case Type::error:
         data.error.~Error();
@@ -152,4 +152,4 @@ class Result {
 
 }  // namespace airmap
 
-#endif  // AIRMAP_RESULT_H_
+#endif  // AIRMAP_OUTCOME_H_

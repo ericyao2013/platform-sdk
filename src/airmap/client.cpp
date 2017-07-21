@@ -8,7 +8,7 @@ void airmap::Client::create_with_credentials(const Credentials& credentials,
                                              const CreateCallback& cb) {
   airmap::glib::Api::create(credentials.api_key,
                             [cb](const airmap::glib::Api::CreateResult& result) {
-                              using Result = Result<std::shared_ptr<Client>, std::exception_ptr>;
+                              using Result = Outcome<std::shared_ptr<Client>, std::exception_ptr>;
 
                               if (result) {
                                 cb(Result(std::make_shared<glib::Client>(result.value())));

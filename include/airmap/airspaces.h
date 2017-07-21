@@ -3,7 +3,7 @@
 
 #include <airmap/airspace.h>
 #include <airmap/date_time.h>
-#include <airmap/result.h>
+#include <airmap/outcome.h>
 
 #include <functional>
 #include <vector>
@@ -17,7 +17,7 @@ class Airspaces {
       Airspace::Id id;
     };
 
-    using Result   = Result<std::vector<Airspace>, std::exception_ptr>;
+    using Result = Outcome<std::vector<Airspace>, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -33,7 +33,7 @@ class Airspaces {
       Optional<DateTime> date_time;
     };
 
-    using Result   = Result<std::vector<Airspace>, std::exception_ptr>;
+    using Result   = Outcome<std::vector<Airspace>, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
