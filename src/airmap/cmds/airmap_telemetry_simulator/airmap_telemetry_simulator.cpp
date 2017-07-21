@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
               << "  flight-id: " << params.flight.id << std::endl
               << "  api-key:   " << params.api_key << std::endl
               << "  enc-key:   " << params.encryption_key << std::endl;
-    
+
     ::setenv("AIRMAP_TELEMETRY_HOST", params.host.c_str(), 1);
     ::setenv("AIRMAP_TELEMETRY_PORT", boost::lexical_cast<std::string>(params.port).c_str(), 1);
 

@@ -150,8 +150,9 @@ void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::st
   enc.SetKeyWithIV(reinterpret_cast<const byte*>(decoded_key.c_str()), decoded_key.size(),
                    iv.data());
 
-  CryptoPP::StringSource s(payload.get(), true, new CryptoPP::StreamTransformationFilter(
-                                                    enc, new CryptoPP::StringSink(cipher)));
+  CryptoPP::StringSource s(
+      payload.get(), true,
+      new CryptoPP::StreamTransformationFilter(enc, new CryptoPP::StringSink(cipher)));
 
   Buffer packet;
   api_.send_udp(::telemetry::host_from_env(), ::telemetry::port_from_env(),

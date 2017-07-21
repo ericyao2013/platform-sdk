@@ -9,16 +9,17 @@ namespace airmap {
 namespace util {
 
 class CheapRuler {
-  public:
-    CheapRuler(double latitude);
+ public:
+  CheapRuler(double latitude);
 
-    double bearing(const Geometry::Coordinate& p1, const Geometry::Coordinate& p2) const;
-    double distance(const Geometry::Coordinate& p1, const Geometry::Coordinate& p2) const;
-    Geometry::Coordinate destination(const Geometry::Coordinate& c, double distance, double bearing) const;
+  double bearing(const Geometry::Coordinate& p1, const Geometry::Coordinate& p2) const;
+  double distance(const Geometry::Coordinate& p1, const Geometry::Coordinate& p2) const;
+  Geometry::Coordinate destination(const Geometry::Coordinate& c, double distance,
+                                   double bearing) const;
 
-  private:
-    double kx_{0.f};
-    double ky_{0.f};
+ private:
+  double kx_{0.f};
+  double ky_{0.f};
 };
 
 }  // namespace util
