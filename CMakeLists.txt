@@ -5,7 +5,7 @@ project(airmap)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -Wextra -fPIC")
 
-find_package(Boost REQUIRED date_time)
+find_package(Boost REQUIRED date_time program_options system)
 find_package(PkgConfig)
 find_package(Protobuf REQUIRED)
 
@@ -79,6 +79,9 @@ add_library(
   src/airmap/glib/telemetry.h
   src/airmap/glib/telemetry.cpp
 
+  src/airmap/util/cli.h
+  src/airmap/util/cli.cpp
+  
   ${TELEMETRY_PROTOBUF_SOURCES}
   ${TELEMETRY_PROTOBUF_HEADERS}
 )
@@ -92,12 +95,12 @@ add_library(
 add_executable(
     airmap
 
-    src/airmap/airmap.cpp)
+    src/airmap/cmds/airmap/airmap.cpp)
 
 add_executable(
     airmapd
 
-    src/airmap/daemon_main.cpp)
+    src/airmap/cmds/airmapd/airmapd.cpp)
 
 set_property(TARGET airmap-client PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap-server PROPERTY CXX_STANDARD 14)

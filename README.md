@@ -1,7 +1,10 @@
 # airmapd
 
 Dependencies:
-  * boost date-time
+  * boost:
+    * date-time
+    * program-options
+    * system
   * protobuf
   * cryptopp 
   * libsoup
