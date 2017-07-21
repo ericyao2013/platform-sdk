@@ -7,6 +7,7 @@
 
 #include <airmap/util/cli.h>
 
+#include <condition_variable>
 #include <iostream>
 #include <mutex>
 #include <thread>
