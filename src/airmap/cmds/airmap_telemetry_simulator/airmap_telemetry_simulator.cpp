@@ -6,11 +6,15 @@
 #include <airmap/telemetry.h>
 
 #include <airmap/util/cli.h>
+#include <airmap/util/telemetry_simulator.h>
 
 #include <boost/lexical_cast.hpp>
 
 #include <stdlib.h>
 
+#include <cmath>
+
+#include <chrono>
 #include <condition_variable>
 #include <iostream>
 #include <mutex>
@@ -19,6 +23,7 @@
 namespace cli = airmap::util::cli;
 
 namespace {
+
 auto polygon = airmap::Geometry::polygon(
     {airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043, airmap::Optional<double>{},
                                   airmap::Optional<double>{}},
@@ -108,15 +113,17 @@ int main(int argc, char** argv) {
           client = result.value();
 
           std::thread submitter{[client]() {
-            std::uint32_t counter{0};
+            airmap::util::TelemetrySimulator simulator{polygon.details_for_polygon()};
+
             while (true) {
-              auto coord = polygon.details_for_polygon().at(0).coordinates.at(
-                  counter++ % polygon.details_for_polygon().at(0).coordinates.size());
+              auto data = simulator.update();
+
+              std::cout << data.latitude << ", " << data.longitude << std::endl;
               client->telemetry().submit_updates(
                   params.flight, params.encryption_key,
                   {airmap::Telemetry::Update{airmap::Telemetry::Position{
                       airmap::milliseconds_since_epoch(airmap::Clock::universal_time()),
-                      coord.latitude, coord.longitude, 100, 100, 2}}});
+                      data.latitude, data.longitude, 100, 100, 2}}});
               std::this_thread::sleep_for(std::chrono::milliseconds{200});
             }
           }};

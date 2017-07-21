@@ -5,6 +5,8 @@
 #include <airmap/flights.h>
 #include <airmap/telemetry.h>
 
+#include <airmap/util/telemetry_simulator.h>
+
 #include <chrono>
 #include <condition_variable>
 #include <iostream>
@@ -98,15 +100,14 @@ int main() {
               if (result) {
                 std::cout << "  key: " << result.value().key << std::endl;
                 std::thread submitter{[client, flight, key = result.value().key](){
-                    std::uint32_t counter{0};
+                    airmap::util::TelemetrySimulator simulator{polygon.details_for_polygon()};
                 while (true) {
-                  auto coord = polygon.details_for_polygon().at(0).coordinates.at(
-                      counter++ % polygon.details_for_polygon().at(0).coordinates.size());
+                  auto position = simulator.update();
                   client->telemetry().submit_updates(
                       flight, key,
                       {airmap::Telemetry::Update{airmap::Telemetry::Position{
                           airmap::milliseconds_since_epoch(airmap::Clock::universal_time()),
-                          coord.latitude, coord.longitude, 100, 100, 2}}});
+                          position.latitude, position.longitude, 100, 100, 2}}});
                   std::this_thread::sleep_for(std::chrono::milliseconds{200});
                 }
               }};

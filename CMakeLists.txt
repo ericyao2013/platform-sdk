@@ -78,8 +78,12 @@ add_library(
   src/airmap/glib/telemetry.h
   src/airmap/glib/telemetry.cpp
 
+  src/airmap/util/cheap_ruler.h
+  src/airmap/util/cheap_ruler.cpp
   src/airmap/util/cli.h
   src/airmap/util/cli.cpp
+  src/airmap/util/telemetry_simulator.h
+  src/airmap/util/telemetry_simulator.cpp
 
   ${TELEMETRY_PROTOBUF_SOURCES}
   ${TELEMETRY_PROTOBUF_HEADERS}
