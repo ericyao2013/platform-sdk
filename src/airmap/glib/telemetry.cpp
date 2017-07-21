@@ -12,6 +12,8 @@
 
 #include <arpa/inet.h>
 
+#include <stdlib.h>
+
 #include <cstdint>
 #include <sstream>
 
@@ -47,9 +49,21 @@ class Buffer {
 
 namespace telemetry {
 
-constexpr const char* host{"api-udp-telemetry.airmap.com"};
+std::string host_from_env() {
+  if (auto env = ::getenv("AIRMAP_TELEMETRY_HOST"))
+    return env;
+  return "api-udp-telemetry.airmap.com";
+}
+
+std::uint16_t port_from_env() {
+  if (auto env = ::getenv("AIRMAP_TELEMETRY_PORT"))
+    return boost::lexical_cast<std::uint16_t>(env);
+  return 16060;
+}
+
+std::string host   = host_from_env();
+std::uint16_t port = port_from_env();
 constexpr std::uint8_t encryption_type{1};
-constexpr std::uint16_t port{16060};
 
 }  // namespace telemetry
 }  // namespace
@@ -136,12 +150,11 @@ void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::st
   enc.SetKeyWithIV(reinterpret_cast<const byte*>(decoded_key.c_str()), decoded_key.size(),
                    iv.data());
 
-  CryptoPP::StringSource s(
-      payload.get(), true,
-      new CryptoPP::StreamTransformationFilter(enc, new CryptoPP::StringSink(cipher)));
+  CryptoPP::StringSource s(payload.get(), true, new CryptoPP::StreamTransformationFilter(
+                                                    enc, new CryptoPP::StringSink(cipher)));
 
   Buffer packet;
-  api_.send_udp(::telemetry::host, ::telemetry::port,
+  api_.send_udp(::telemetry::host_from_env(), ::telemetry::port_from_env(),
                 packet.add<std::uint32_t>(htonl(counter++))
                     .add<std::uint8_t>(flight.id.size())
                     .add(flight.id)

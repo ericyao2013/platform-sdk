@@ -7,6 +7,10 @@
 
 #include <airmap/util/cli.h>
 
+#include <boost/lexical_cast.hpp>
+
+#include <stdlib.h>
+
 #include <condition_variable>
 #include <iostream>
 #include <mutex>
@@ -86,6 +90,10 @@ int main(int argc, char** argv) {
               << "  flight-id: " << params.flight.id << std::endl
               << "  api-key:   " << params.api_key << std::endl
               << "  enc-key:   " << params.encryption_key << std::endl;
+    
+    ::setenv("AIRMAP_TELEMETRY_HOST", params.host.c_str(), 1);
+    ::setenv("AIRMAP_TELEMETRY_PORT", boost::lexical_cast<std::string>(params.port).c_str(), 1);
+
     std::shared_ptr<airmap::DeviceIdentifier> di;
     std::shared_ptr<airmap::SecretsStore> ss;
     std::shared_ptr<airmap::Client> client;
