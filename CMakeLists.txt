@@ -54,7 +54,6 @@ add_library(
   include/airmap/timestamp.h
 
   src/airmap/airspace.cpp
-  src/airmap/airspaces.cpp
   src/airmap/client.cpp
   src/airmap/codec.h
   src/airmap/date_time.cpp

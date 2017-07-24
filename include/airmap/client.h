@@ -44,12 +44,6 @@ class Client : DoNotCopyOrMove {
                                       const std::shared_ptr<DeviceIdentifier>& device_identifier,
                                       const CreateCallback& cb);
 
-  Client(const Client&) = delete;
-  Client(Client&&)      = delete;
-  virtual ~Client();
-  Client& operator=(const Client&) = delete;
-  Client& operator=(Client&&) = delete;
-
   /// TODO(tvoss): Both run() and stop() naturally trigger a conversation
   /// about integration with alien event loops and threading models. For the
   /// time being we will enable calling code to hand a thread of execution to the client
@@ -80,7 +74,7 @@ class Client : DoNotCopyOrMove {
   virtual Telemetry& telemetry() = 0;
 
  protected:
-  Client();
+  Client() = default;
 };
 
 }  // namespace airmap

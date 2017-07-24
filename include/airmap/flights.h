@@ -118,12 +118,6 @@ class Flights : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
-  Flights(const Flights&) = delete;
-  Flights(Flights&&)      = delete;
-  virtual ~Flights()      = default;
-  Flights& operator=(const Flights&) = delete;
-  Flights& operator=(Flights&&) = delete;
-
   /// search queries the AirMap services for known flights
   /// and reports results to 'cb'.
   virtual void search(const Search::Parameters& parameters, const Search::Callback& cb) = 0;

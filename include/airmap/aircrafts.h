@@ -42,12 +42,6 @@ class Aircrafts : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
-  Aircrafts(const Aircrafts&) = delete;
-  Aircrafts(Aircrafts&&)      = delete;
-  virtual ~Aircrafts()        = default;
-  Aircrafts& operator=(const Aircrafts&) = delete;
-  Aircrafts& operator=(Aircrafts&&) = delete;
-
   /// manufacturers queries the AirMap services for known aircraft
   /// manufacturers, reporting results to 'cb'.
   virtual void manufacturers(const Manufacturers::Parameters& parameters,

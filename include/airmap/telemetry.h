@@ -71,12 +71,6 @@ class Telemetry : DoNotCopyOrMove {
     } data_;
   };
 
-  Telemetry(const Telemetry&) = delete;
-  Telemetry(Telemetry&&)      = delete;
-  virtual ~Telemetry()        = default;
-  Telemetry& operator=(const Telemetry&) = delete;
-  Telemetry& operator=(Telemetry&&) = delete;
-
   /// submit_updates sends the telemetry data in 'updates' associated to 'flight' to the AirMap
   /// services.
   virtual void submit_updates(const Flight& flight, const std::string& key,

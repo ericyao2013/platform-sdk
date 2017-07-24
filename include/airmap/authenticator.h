@@ -60,12 +60,6 @@ class Authenticator : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
-  virtual ~Authenticator()            = default;
-  Authenticator(const Authenticator&) = delete;
-  Authenticator(Authenticator&&)      = delete;
-  Authenticator& operator=(const Authenticator&) = delete;
-  Authenticator& operator=(Authenticator&&) = delete;
-
   /// authenticate_with_password authenticates the user described in 'params' with
   /// the AirMap services and reports the result to 'cb'.
   virtual void authenticate_with_password(const AuthenticateWithPassword::Params& params,

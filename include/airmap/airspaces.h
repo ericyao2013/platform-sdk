@@ -38,12 +38,6 @@ class Airspaces : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
-  Airspaces(const Airspaces&) = delete;
-  Airspaces(Airspaces&&)      = delete;
-  virtual ~Airspaces();
-  Airspaces& operator=(const Airspaces&) = delete;
-  Airspaces& operator=(Airspaces&&) = delete;
-
   /// search queries the AirMap services for surrounding airspaces and
   /// reports back the results to 'cb'.
   virtual void search(const Search::Parameters& parameters, const Search::Callback& cb) = 0;
@@ -53,7 +47,7 @@ class Airspaces : DoNotCopyOrMove {
   virtual void for_ids(const ForIds::Parameters& parameters, const ForIds::Callback& cb) = 0;
 
  protected:
-  Airspaces();
+  Airspaces() = default;
 };
 
 }  // namespace airmap

@@ -4,12 +4,12 @@
 namespace airmap {
 
 struct DoNotCopyOrMove {
-    DoNotCopyOrMove() = default;
-    DoNotCopyOrMove(const DoNotCopyOrMove&) = delete;
-    DoNotCopyOrMove(DoNotCopyOrMove&&) = delete;
-    virtual ~DoNotCopyOrMove() = default;
-    DoNotCopyOrMove& operator=(const DoNotCopyOrMove&) = delete;
-    DoNotCopyOrMove& operator=(DoNotCopyOrMove&&) = delete;
+  DoNotCopyOrMove()                       = default;
+  DoNotCopyOrMove(const DoNotCopyOrMove&) = delete;
+  DoNotCopyOrMove(DoNotCopyOrMove&&)      = delete;
+  virtual ~DoNotCopyOrMove()              = default;
+  DoNotCopyOrMove& operator=(const DoNotCopyOrMove&) = delete;
+  DoNotCopyOrMove& operator=(DoNotCopyOrMove&&) = delete;
 };
 
 }  // namespace airmap
