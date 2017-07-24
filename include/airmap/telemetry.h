@@ -1,6 +1,8 @@
 #ifndef AIRMAP_TELEMETRY_H_
 #define AIRMAP_TELEMETRY_H_
 
+#include <airmap/do_not_copy_or_move.h>
+
 #include <cstdint>
 #include <string>
 #include <type_traits>
@@ -9,7 +11,7 @@ namespace airmap {
 
 struct Flight;
 
-class Telemetry {
+class Telemetry : DoNotCopyOrMove {
  public:
   struct Position {
     std::uint64_t timestamp;

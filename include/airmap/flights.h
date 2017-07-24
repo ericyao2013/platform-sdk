@@ -2,6 +2,7 @@
 #define AIRMAP_FLIGHTS_H_
 
 #include <airmap/date_time.h>
+#include <airmap/do_not_copy_or_move.h>
 #include <airmap/flight.h>
 #include <airmap/geometry.h>
 #include <airmap/optional.h>
@@ -13,7 +14,7 @@
 
 namespace airmap {
 
-class Flights {
+class Flights : DoNotCopyOrMove {
  public:
   struct ForId {
     struct Parameters {

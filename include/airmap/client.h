@@ -1,6 +1,7 @@
 #ifndef AIRMAP_CLIENT_H_
 #define AIRMAP_CLIENT_H_
 
+#include <airmap/do_not_copy_or_move.h>
 #include <airmap/outcome.h>
 
 #include <functional>
@@ -18,7 +19,7 @@ class SecretsStore;
 class Telemetry;
 
 /// Client enables applications to use the AirMap services and APIs.
-class Client {
+class Client : DoNotCopyOrMove {
  public:
   /// Credentials bundles up all credentials required
   /// to use the AirMap SDK and APIs.

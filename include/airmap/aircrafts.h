@@ -2,6 +2,7 @@
 #define AIRMAP_AIRCRAFTS_H_
 
 #include <airmap/aircraft.h>
+#include <airmap/do_not_copy_or_move.h>
 #include <airmap/optional.h>
 #include <airmap/outcome.h>
 
@@ -11,7 +12,7 @@
 
 namespace airmap {
 
-class Aircrafts {
+class Aircrafts : DoNotCopyOrMove {
  public:
   struct Manufacturers {
     struct Parameters {

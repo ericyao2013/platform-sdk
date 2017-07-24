@@ -1,6 +1,7 @@
 #ifndef AIRMAP_AUTHENTICATOR_H_
 #define AIRMAP_AUTHENTICATOR_H_
 
+#include <airmap/do_not_copy_or_move.h>
 #include <airmap/outcome.h>
 
 #include <chrono>
@@ -10,7 +11,7 @@
 
 namespace airmap {
 
-class Authenticator {
+class Authenticator : DoNotCopyOrMove {
  public:
   struct AnonymousToken {
     std::string id;
