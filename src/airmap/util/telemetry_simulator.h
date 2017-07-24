@@ -27,6 +27,7 @@ class TelemetrySimulator {
   double segment_bearing_;
   double segment_length_;
   airmap::Geometry::Coordinate current_data_;
+  Clock::time_point current_time_;
 };
 
 }  // namespace util
