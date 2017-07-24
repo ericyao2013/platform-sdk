@@ -17,7 +17,7 @@ class Airspaces {
       Airspace::Id id;
     };
 
-    using Result = Outcome<std::vector<Airspace>, std::exception_ptr>;
+    using Result   = Outcome<std::vector<Airspace>, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 

@@ -122,3 +122,19 @@ target_link_libraries(airmap airmap-client )
 target_link_libraries(airmap-server airmap-client)
 target_link_libraries(airmapd airmap-server)
 target_link_libraries(airmap-telemetry-simulator airmap-client)
+
+find_program(CLANG_FORMAT_EXECUTABLE
+  NAMES clang-format clang-format-5.0
+        clang-format-4.0 clang-format-3.9
+        clang-format-3.8 clang-format-3.7
+        clang-format-3.6 clang-format-3.5
+        clang-format-3.4 clang-format-3.3
+  DOC "clang-format executable"
+)
+
+if (CLANG_FORMAT_EXECUTABLE)
+  file(GLOB_RECURSE AIRMAPD_SRCS include/*.h src/*.cpp)
+
+  add_custom_target(
+    format ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${AIRMAPD_SRCS})
+endif()

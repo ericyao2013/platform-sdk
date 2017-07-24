@@ -23,8 +23,9 @@ void airmap::rest::Communicator::create(const std::string& api_key, const Create
 }
 
 void airmap::rest::Communicator::get(const std::string& host, const std::string& path,
-                            std::unordered_map<std::string, std::string>&& query,
-                            std::unordered_map<std::string, std::string>&& headers, DoCallback cb) {
+                                     std::unordered_map<std::string, std::string>&& query,
+                                     std::unordered_map<std::string, std::string>&& headers,
+                                     DoCallback cb) {
   auto sp = shared_from_this();
   std::weak_ptr<Communicator> wp{sp};
 
@@ -58,8 +59,8 @@ void airmap::rest::Communicator::get(const std::string& host, const std::string&
 }
 
 void airmap::rest::Communicator::post(const std::string& host, const std::string& path,
-                             std::unordered_map<std::string, std::string>&& headers,
-                             const std::string& body, DoCallback cb) {
+                                      std::unordered_map<std::string, std::string>&& headers,
+                                      const std::string& body, DoCallback cb) {
   auto sp = shared_from_this();
   std::weak_ptr<Communicator> wp{sp};
 
@@ -83,7 +84,7 @@ void airmap::rest::Communicator::post(const std::string& host, const std::string
 }
 
 void airmap::rest::Communicator::send_udp(const std::string& host, std::uint16_t port,
-                                 const std::string& body) {
+                                          const std::string& body) {
   dispatch([ host, port, body = std::move(body) ]() {
     if (auto connectable = g_network_address_parse(host.c_str(), port, nullptr)) {
       if (auto enumerator = g_socket_connectable_enumerate(connectable)) {
@@ -109,7 +110,8 @@ void airmap::rest::Communicator::send_udp(const std::string& host, std::uint16_t
   });
 }
 
-void airmap::rest::Communicator::soup_session_callback(SoupSession*, SoupMessage* msg, gpointer user_data) {
+void airmap::rest::Communicator::soup_session_callback(SoupSession*, SoupMessage* msg,
+                                                       gpointer user_data) {
   if (auto context = static_cast<SoupSessionCallbackContext*>(user_data)) {
     if (auto sp = context->wp.lock()) {
       auto cb = std::move(context->cb);
@@ -125,7 +127,8 @@ void airmap::rest::Communicator::soup_session_callback(SoupSession*, SoupMessage
   }
 }
 
-void airmap::rest::Communicator::on_pipe_fd_read_finished(GObject*, GAsyncResult*, gpointer user_data) {
+void airmap::rest::Communicator::on_pipe_fd_read_finished(GObject*, GAsyncResult*,
+                                                          gpointer user_data) {
   if (auto context = static_cast<Communicator*>(user_data)) {
     context->on_pipe_fd_read_finished();
   }

@@ -19,18 +19,19 @@ void airmap::rest::Flights::search(const Search::Parameters& parameters,
     headers["Authorization"] = (boost::format("Bearer %1%") % parameters.authorization.get()).str();
   codec::http::query::encode(query, parameters);
 
-  communicator_.get("https://api.airmap.com", "/flight/v2/", std::move(query), std::move(headers),
-           [cb](const Communicator::DoResult& result) {
-             if (result) {
-               auto j = json::parse(result.value());
-               if (j[jsend::key::status] == jsend::status::success) {
-                 cb(Search::Result(j[jsend::key::data]["results"].get<std::vector<Flight>>()));
-               } else {
-                 cb(Search::Result(
-                     std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
-               }
-             }
-           });
+  communicator_.get(
+      "https://api.airmap.com", "/flight/v2/", std::move(query), std::move(headers),
+      [cb](const Communicator::DoResult& result) {
+        if (result) {
+          auto j = json::parse(result.value());
+          if (j[jsend::key::status] == jsend::status::success) {
+            cb(Search::Result(j[jsend::key::data]["results"].get<std::vector<Flight>>()));
+          } else {
+            cb(Search::Result(
+                std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
+          }
+        }
+      });
 }
 
 void airmap::rest::Flights::for_id(const ForId::Parameters& parameters, const ForId::Callback& cb) {
@@ -40,18 +41,19 @@ void airmap::rest::Flights::for_id(const ForId::Parameters& parameters, const Fo
     headers["Authorization"] = (boost::format("Bearer %1%") % parameters.authorization.get()).str();
   codec::http::query::encode(query, parameters);
 
-  communicator_.get("https://api.airmap.com", (boost::format("/flight/v2/%1%") % parameters.id).str(),
-           std::move(query), std::move(headers), [cb](const Communicator::DoResult& result) {
-             if (result) {
-               auto j = json::parse(result.value());
-               if (j[jsend::key::status] == jsend::status::success) {
-                 cb(ForId::Result(j[jsend::key::data].get<Flight>()));
-               } else {
-                 cb(ForId::Result(
-                     std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
-               }
-             }
-           });
+  communicator_.get(
+      "https://api.airmap.com", (boost::format("/flight/v2/%1%") % parameters.id).str(),
+      std::move(query), std::move(headers), [cb](const Communicator::DoResult& result) {
+        if (result) {
+          auto j = json::parse(result.value());
+          if (j[jsend::key::status] == jsend::status::success) {
+            cb(ForId::Result(j[jsend::key::data].get<Flight>()));
+          } else {
+            cb(ForId::Result(
+                std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
+          }
+        }
+      });
 }
 
 void airmap::rest::Flights::create_flight_by_point(const CreateFlight::Parameters& parameters,
@@ -63,18 +65,18 @@ void airmap::rest::Flights::create_flight_by_point(const CreateFlight::Parameter
   j = parameters;
 
   communicator_.post("https://api.airmap.com", "/flight/v2/point", std::move(headers), j.dump(),
-            [cb](const Communicator::DoResult& result) {
-              if (result) {
-                auto j = json::parse(result.value());
-                std::cout << j.dump(2) << std::endl;
-                if (j[jsend::key::status] == jsend::status::success) {
-                  cb(CreateFlight::Result(j[jsend::key::data].get<Flight>()));
-                } else {
-                  cb(CreateFlight::Result(
-                      std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
-                }
-              }
-            });
+                     [cb](const Communicator::DoResult& result) {
+                       if (result) {
+                         auto j = json::parse(result.value());
+                         std::cout << j.dump(2) << std::endl;
+                         if (j[jsend::key::status] == jsend::status::success) {
+                           cb(CreateFlight::Result(j[jsend::key::data].get<Flight>()));
+                         } else {
+                           cb(CreateFlight::Result(std::make_exception_ptr(
+                               std::runtime_error(jsend::stringify_error(j)))));
+                         }
+                       }
+                     });
 }
 
 void airmap::rest::Flights::create_flight_by_path(const CreateFlight::Parameters& parameters,
@@ -86,17 +88,17 @@ void airmap::rest::Flights::create_flight_by_path(const CreateFlight::Parameters
   j = parameters;
 
   communicator_.post("https://api.airmap.com", "/flight/v2/path", std::move(headers), j.dump(),
-            [cb](const Communicator::DoResult& result) {
-              if (result) {
-                auto j = json::parse(result.value());
-                if (j[jsend::key::status] == jsend::status::success) {
-                  cb(CreateFlight::Result(j[jsend::key::data].get<Flight>()));
-                } else {
-                  cb(CreateFlight::Result(
-                      std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
-                }
-              }
-            });
+                     [cb](const Communicator::DoResult& result) {
+                       if (result) {
+                         auto j = json::parse(result.value());
+                         if (j[jsend::key::status] == jsend::status::success) {
+                           cb(CreateFlight::Result(j[jsend::key::data].get<Flight>()));
+                         } else {
+                           cb(CreateFlight::Result(std::make_exception_ptr(
+                               std::runtime_error(jsend::stringify_error(j)))));
+                         }
+                       }
+                     });
 }
 
 void airmap::rest::Flights::create_flight_by_polygon(const CreateFlight::Parameters& parameters,
@@ -108,17 +110,17 @@ void airmap::rest::Flights::create_flight_by_polygon(const CreateFlight::Paramet
   j = parameters;
 
   communicator_.post("https://api.airmap.com", "/flight/v2/polygon", std::move(headers), j.dump(),
-            [cb](const Communicator::DoResult& result) {
-              if (result) {
-                auto j = json::parse(result.value());
-                if (j[jsend::key::status] == jsend::status::success) {
-                  cb(CreateFlight::Result(j[jsend::key::data].get<Flight>()));
-                } else {
-                  cb(CreateFlight::Result(
-                      std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
-                }
-              }
-            });
+                     [cb](const Communicator::DoResult& result) {
+                       if (result) {
+                         auto j = json::parse(result.value());
+                         if (j[jsend::key::status] == jsend::status::success) {
+                           cb(CreateFlight::Result(j[jsend::key::data].get<Flight>()));
+                         } else {
+                           cb(CreateFlight::Result(std::make_exception_ptr(
+                               std::runtime_error(jsend::stringify_error(j)))));
+                         }
+                       }
+                     });
 }
 
 void airmap::rest::Flights::end_flight(const EndFlight::Parameters& parameters,
@@ -126,18 +128,19 @@ void airmap::rest::Flights::end_flight(const EndFlight::Parameters& parameters,
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
 
-  communicator_.post("https://api.airmap.com", (boost::format("/flight/v2/%1%/end") % parameters.id).str(),
-            std::move(headers), std::string{}, [cb](const Communicator::DoResult& result) {
-              if (result) {
-                auto j = json::parse(result.value());
-                if (j[jsend::key::status] == jsend::status::success) {
-                  cb(EndFlight::Result(j[jsend::key::data].get<EndFlight::Response>()));
-                } else {
-                  cb(EndFlight::Result(
-                      std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
-                }
-              }
-            });
+  communicator_.post(
+      "https://api.airmap.com", (boost::format("/flight/v2/%1%/end") % parameters.id).str(),
+      std::move(headers), std::string{}, [cb](const Communicator::DoResult& result) {
+        if (result) {
+          auto j = json::parse(result.value());
+          if (j[jsend::key::status] == jsend::status::success) {
+            cb(EndFlight::Result(j[jsend::key::data].get<EndFlight::Response>()));
+          } else {
+            cb(EndFlight::Result(
+                std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
+          }
+        }
+      });
 }
 
 void airmap::rest::Flights::delete_flight(const DeleteFlight::Parameters& parameters,
@@ -145,19 +148,19 @@ void airmap::rest::Flights::delete_flight(const DeleteFlight::Parameters& parame
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
 
-  communicator_.post("https://api.airmap.com",
-            (boost::format("/flight/v2/%1%/delete") % parameters.id).str(), std::move(headers),
-            std::string{}, [cb](const Communicator::DoResult& result) {
-              if (result) {
-                auto j = json::parse(result.value());
-                if (j[jsend::key::status] == jsend::status::success) {
-                  cb(DeleteFlight::Result(j[jsend::key::data].get<DeleteFlight::Response>()));
-                } else {
-                  cb(DeleteFlight::Result(
-                      std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
-                }
-              }
-            });
+  communicator_.post(
+      "https://api.airmap.com", (boost::format("/flight/v2/%1%/delete") % parameters.id).str(),
+      std::move(headers), std::string{}, [cb](const Communicator::DoResult& result) {
+        if (result) {
+          auto j = json::parse(result.value());
+          if (j[jsend::key::status] == jsend::status::success) {
+            cb(DeleteFlight::Result(j[jsend::key::data].get<DeleteFlight::Response>()));
+          } else {
+            cb(DeleteFlight::Result(
+                std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
+          }
+        }
+      });
 }
 
 void airmap::rest::Flights::start_flight_communications(
@@ -166,20 +169,20 @@ void airmap::rest::Flights::start_flight_communications(
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
 
-  communicator_.post("https://api.airmap.com",
-            (boost::format("/flight/v2/%1%/start-comm") % parameters.id).str(), std::move(headers),
-            std::string{}, [cb](const Communicator::DoResult& result) {
-              if (result) {
-                auto j = json::parse(result.value());
-                if (j[jsend::key::status] == jsend::status::success) {
-                  cb(StartFlightCommunications::Result(
-                      j[jsend::key::data].get<StartFlightCommunications::Response>()));
-                } else {
-                  cb(StartFlightCommunications::Result(
-                      std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
-                }
-              }
-            });
+  communicator_.post(
+      "https://api.airmap.com", (boost::format("/flight/v2/%1%/start-comm") % parameters.id).str(),
+      std::move(headers), std::string{}, [cb](const Communicator::DoResult& result) {
+        if (result) {
+          auto j = json::parse(result.value());
+          if (j[jsend::key::status] == jsend::status::success) {
+            cb(StartFlightCommunications::Result(
+                j[jsend::key::data].get<StartFlightCommunications::Response>()));
+          } else {
+            cb(StartFlightCommunications::Result(
+                std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
+          }
+        }
+      });
 }
 
 void airmap::rest::Flights::end_flight_communications(
@@ -188,18 +191,18 @@ void airmap::rest::Flights::end_flight_communications(
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
 
-  communicator_.post("https://api.airmap.com",
-            (boost::format("/flight/v2/%1%/end-comm") % parameters.id).str(), std::move(headers),
-            std::string{}, [cb](const Communicator::DoResult& result) {
-              if (result) {
-                auto j = json::parse(result.value());
-                if (j[jsend::key::status] == jsend::status::success) {
-                  cb(EndFlightCommunications::Result(
-                      j[jsend::key::data].get<EndFlightCommunications::Response>()));
-                } else {
-                  cb(EndFlightCommunications::Result(
-                      std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
-                }
-              }
-            });
+  communicator_.post(
+      "https://api.airmap.com", (boost::format("/flight/v2/%1%/end-comm") % parameters.id).str(),
+      std::move(headers), std::string{}, [cb](const Communicator::DoResult& result) {
+        if (result) {
+          auto j = json::parse(result.value());
+          if (j[jsend::key::status] == jsend::status::success) {
+            cb(EndFlightCommunications::Result(
+                j[jsend::key::data].get<EndFlightCommunications::Response>()));
+          } else {
+            cb(EndFlightCommunications::Result(
+                std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
+          }
+        }
+      });
 }

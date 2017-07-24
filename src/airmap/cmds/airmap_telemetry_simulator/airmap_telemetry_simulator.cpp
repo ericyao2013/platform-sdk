@@ -124,7 +124,7 @@ int main(int argc, char** argv) {
                   {airmap::Telemetry::Update{airmap::Telemetry::Position{
                       airmap::milliseconds_since_epoch(airmap::Clock::universal_time()),
                       data.latitude, data.longitude, 100, 100, 2}}});
-              std::this_thread::sleep_for(std::chrono::milliseconds{500});
+              std::this_thread::sleep_for(std::chrono::milliseconds{200});
             }
           }};
 

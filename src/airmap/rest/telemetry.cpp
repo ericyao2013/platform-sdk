@@ -156,11 +156,11 @@ void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::st
 
   Buffer packet;
   communicator_.send_udp(::telemetry::host_from_env(), ::telemetry::port_from_env(),
-                packet.add<std::uint32_t>(htonl(counter++))
-                    .add<std::uint8_t>(flight.id.size())
-                    .add(flight.id)
-                    .add<std::uint8_t>(::telemetry::encryption_type)
-                    .add(iv)
-                    .add(cipher)
-                    .get());
+                         packet.add<std::uint32_t>(htonl(counter++))
+                             .add<std::uint8_t>(flight.id.size())
+                             .add(flight.id)
+                             .add<std::uint8_t>(::telemetry::encryption_type)
+                             .add(iv)
+                             .add(cipher)
+                             .get());
 }

@@ -8,7 +8,7 @@ namespace airmap {
 /// Outcome<T,U> models a return value from a function XOR an error object
 /// describing the error condition if no value can be returned.
 template <typename Value, typename Error>
-class Outcome{
+class Outcome {
  public:
   static_assert(not std::is_same<Value, Error>::value, "Value and Error must not be the same type");
   static_assert(std::is_copy_constructible<Value>::value &&
