@@ -1,4 +1,4 @@
-#include <airmap/glib/authenticator.h>
+#include <airmap/rest/authenticator.h>
 
 #include <airmap/codec.h>
 #include <airmap/jsend.h>
@@ -7,23 +7,23 @@
 
 using json = nlohmann::json;
 
-airmap::glib::Authenticator::Authenticator(Api& api) : api_{api} {
+airmap::rest::Authenticator::Authenticator(Communicator& communicator) : communicator_{communicator} {
 }
 
-void airmap::glib::Authenticator::authenticate_with_password(
+void airmap::rest::Authenticator::authenticate_with_password(
     const AuthenticateWithPassword::Params&, const AuthenticateWithPassword::Callback&) {
   throw std::runtime_error{"not implemented"};
 }
 
-void airmap::glib::Authenticator::authenticate_anonymously(
+void airmap::rest::Authenticator::authenticate_anonymously(
     const AuthenticateAnonymously::Params& params, const AuthenticateAnonymously::Callback& cb) {
   std::unordered_map<std::string, std::string> headers;
 
   json j;
   j = params;
 
-  api_.post("https://api.airmap.com", "/auth/v1/anonymous/token", std::move(headers), j.dump(),
-            [cb](const Api::DoResult& result) {
+  communicator_.post("https://api.airmap.com", "/auth/v1/anonymous/token", std::move(headers), j.dump(),
+            [cb](const Communicator::DoResult& result) {
               if (result) {
                 auto j = json::parse(result.value());
 
@@ -37,6 +37,6 @@ void airmap::glib::Authenticator::authenticate_anonymously(
             });
 }
 
-void airmap::glib::Authenticator::renew_authentication(const RenewAuthentication::Params&,
+void airmap::rest::Authenticator::renew_authentication(const RenewAuthentication::Params&,
                                                        const RenewAuthentication::Callback&) {
 }

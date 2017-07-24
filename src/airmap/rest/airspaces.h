@@ -1,16 +1,16 @@
-#ifndef AIRMAP_GLIB_AIRSPACES_H_
-#define AIRMAP_GLIB_AIRSPACES_H_
+#ifndef AIRMAP_REST_AIRSPACES_H_
+#define AIRMAP_REST_AIRSPACES_H_
 
 #include <airmap/airspaces.h>
 
-#include <airmap/glib/api.h>
+#include <airmap/rest/communicator.h>
 
 namespace airmap {
-namespace glib {
+namespace rest {
 
 class Airspaces : public airmap::Airspaces {
  public:
-  explicit Airspaces(Api& api);
+  explicit Airspaces(Communicator& communicator);
   Airspaces(const Airspaces&) = delete;
   Airspaces(Airspaces&&)      = delete;
   Airspaces& operator=(const Airspaces&) = delete;
@@ -20,10 +20,10 @@ class Airspaces : public airmap::Airspaces {
   void for_ids(const ForIds::Parameters& parameters, const ForIds::Callback& cb) override;
 
  private:
-  Api& api_;
+  Communicator& communicator_;
 };
 
-}  // namespace glib
+}  // namespace rest
 }  // namespace airmap
 
-#endif  // AIRMAP_GLIB_AIRSPACES_H_
+#endif  // AIRMAP_REST_AIRSPACES_H_

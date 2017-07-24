@@ -1,16 +1,16 @@
-#ifndef AIRMAP_GLIB_AIRCRAFTS_H_
-#define AIRMAP_GLIB_AIRCRAFTS_H_
+#ifndef AIRMAP_REST_AIRCRAFTS_H_
+#define AIRMAP_REST_AIRCRAFTS_H_
 
 #include <airmap/aircrafts.h>
 
-#include <airmap/glib/api.h>
+#include <airmap/rest/communicator.h>
 
 namespace airmap {
-namespace glib {
+namespace rest {
 
 class Aircrafts : public airmap::Aircrafts {
  public:
-  explicit Aircrafts(Api& api);
+  explicit Aircrafts(Communicator& communicator);
   Aircrafts(const Aircrafts&) = delete;
   Aircrafts(Aircrafts&&)      = delete;
   Aircrafts& operator=(const Aircrafts&) = delete;
@@ -23,10 +23,10 @@ class Aircrafts : public airmap::Aircrafts {
                     const ModelForId::Callback& cb) override;
 
  private:
-  Api& api_;
+  Communicator& communicator_;
 };
 
-}  // namespace glib
+}  // namespace rest
 }  // namespace airmap
 
-#endif  // AIRMAP_GLIB_AIRCRAFTS_H_
+#endif  // AIRMAP_REST_AIRCRAFTS_H_

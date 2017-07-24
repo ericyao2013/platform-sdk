@@ -1,30 +1,30 @@
-#ifndef AIRMAP_GLIB_TELEMETRY_H_
-#define AIRMAP_GLIB_TELEMETRY_H_
+#ifndef AIRMAP_REST_TELEMETRY_H_
+#define AIRMAP_REST_TELEMETRY_H_
 
 #include <airmap/telemetry.h>
 
-#include <airmap/glib/api.h>
+#include <airmap/rest/communicator.h>
 
 #include <cryptopp/osrng.h>
 
 #include <memory>
 
 namespace airmap {
-namespace glib {
+namespace rest {
 
 class Telemetry : public airmap::Telemetry {
  public:
-  explicit Telemetry(Api& api);
+  explicit Telemetry(Communicator& communicator);
 
   void submit_updates(const Flight& flight, const std::string& key,
                       const std::initializer_list<Update>& updates) override;
 
  private:
-  Api& api_;
+  Communicator& communicator_;
   CryptoPP::AutoSeededRandomPool rng_;
 };
 
-}  // namespace glib
+}  // namespace rest
 }  // namespace airmap
 
-#endif  // AIRMAP_GLIB_TELEMETRY_H_
+#endif  // AIRMAP_REST_TELEMETRY_H_

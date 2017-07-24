@@ -1,16 +1,16 @@
-#ifndef AIRMAP_GLIB_FLIGHTS_H_
-#define AIRMAP_GLIB_FLIGHTS_H_
+#ifndef AIRMAP_REST_FLIGHTS_H_
+#define AIRMAP_REST_FLIGHTS_H_
 
 #include <airmap/flights.h>
 
-#include <airmap/glib/api.h>
+#include <airmap/rest/communicator.h>
 
 namespace airmap {
-namespace glib {
+namespace rest {
 
 class Flights : public airmap::Flights {
  public:
-  explicit Flights(Api& api);
+  explicit Flights(Communicator& communicator);
 
   void search(const Search::Parameters& parameters, const Search::Callback& cb) override;
   void for_id(const ForId::Parameters& parameters, const ForId::Callback& cb) override;
@@ -29,10 +29,10 @@ class Flights : public airmap::Flights {
                                          const EndFlightCommunications::Callback& cb) override;
 
  private:
-  Api& api_;
+  Communicator& communicator_;
 };
 
-}  // namespace glib
+}  // namespace rest
 }  // namespace airmap
 
-#endif  // AIRMAP_GLIB_FLIGHTS_H_
+#endif  // AIRMAP_REST_FLIGHTS_H_

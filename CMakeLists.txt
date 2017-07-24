@@ -32,7 +32,7 @@ include_directories(
 protobuf_generate_cpp(
   TELEMETRY_PROTOBUF_SOURCES
   TELEMETRY_PROTOBUF_HEADERS
-  src/airmap/glib/telemetry.proto)
+  src/airmap/rest/telemetry.proto)
 
 add_library(
   airmap-client SHARED
@@ -63,20 +63,21 @@ add_library(
   src/airmap/jsend.cpp
   src/airmap/telemetry.cpp
 
-  src/airmap/glib/client.h
-  src/airmap/glib/client.cpp
-  src/airmap/glib/aircrafts.h
-  src/airmap/glib/aircrafts.cpp
-  src/airmap/glib/airspaces.h
-  src/airmap/glib/airspaces.cpp
-  src/airmap/glib/authenticator.h
-  src/airmap/glib/authenticator.cpp
-  src/airmap/glib/api.h
-  src/airmap/glib/api.cpp
-  src/airmap/glib/flights.h
-  src/airmap/glib/flights.cpp
-  src/airmap/glib/telemetry.h
-  src/airmap/glib/telemetry.cpp
+  src/airmap/rest/client.h
+  src/airmap/rest/client.cpp
+  src/airmap/rest/communicator.h
+  src/airmap/rest/communicator.cpp
+  
+  src/airmap/rest/aircrafts.h
+  src/airmap/rest/aircrafts.cpp
+  src/airmap/rest/airspaces.h
+  src/airmap/rest/airspaces.cpp
+  src/airmap/rest/authenticator.h
+  src/airmap/rest/authenticator.cpp
+  src/airmap/rest/flights.h
+  src/airmap/rest/flights.cpp
+  src/airmap/rest/telemetry.h
+  src/airmap/rest/telemetry.cpp
 
   src/airmap/util/cheap_ruler.h
   src/airmap/util/cheap_ruler.cpp

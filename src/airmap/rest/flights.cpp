@@ -1,4 +1,4 @@
-#include <airmap/glib/flights.h>
+#include <airmap/rest/flights.h>
 
 #include <airmap/codec.h>
 #include <airmap/jsend.h>
@@ -8,10 +8,10 @@
 
 using json = nlohmann::json;
 
-airmap::glib::Flights::Flights(Api& api) : api_{api} {
+airmap::rest::Flights::Flights(Communicator& communicator) : communicator_{communicator} {
 }
 
-void airmap::glib::Flights::search(const Search::Parameters& parameters,
+void airmap::rest::Flights::search(const Search::Parameters& parameters,
                                    const Search::Callback& cb) {
   std::unordered_map<std::string, std::string> query, headers;
 
@@ -19,8 +19,8 @@ void airmap::glib::Flights::search(const Search::Parameters& parameters,
     headers["Authorization"] = (boost::format("Bearer %1%") % parameters.authorization.get()).str();
   codec::http::query::encode(query, parameters);
 
-  api_.get("https://api.airmap.com", "/flight/v2/", std::move(query), std::move(headers),
-           [cb](const Api::DoResult& result) {
+  communicator_.get("https://api.airmap.com", "/flight/v2/", std::move(query), std::move(headers),
+           [cb](const Communicator::DoResult& result) {
              if (result) {
                auto j = json::parse(result.value());
                if (j[jsend::key::status] == jsend::status::success) {
@@ -33,15 +33,15 @@ void airmap::glib::Flights::search(const Search::Parameters& parameters,
            });
 }
 
-void airmap::glib::Flights::for_id(const ForId::Parameters& parameters, const ForId::Callback& cb) {
+void airmap::rest::Flights::for_id(const ForId::Parameters& parameters, const ForId::Callback& cb) {
   std::unordered_map<std::string, std::string> query, headers;
 
   if (parameters.authorization)
     headers["Authorization"] = (boost::format("Bearer %1%") % parameters.authorization.get()).str();
   codec::http::query::encode(query, parameters);
 
-  api_.get("https://api.airmap.com", (boost::format("/flight/v2/%1%") % parameters.id).str(),
-           std::move(query), std::move(headers), [cb](const Api::DoResult& result) {
+  communicator_.get("https://api.airmap.com", (boost::format("/flight/v2/%1%") % parameters.id).str(),
+           std::move(query), std::move(headers), [cb](const Communicator::DoResult& result) {
              if (result) {
                auto j = json::parse(result.value());
                if (j[jsend::key::status] == jsend::status::success) {
@@ -54,7 +54,7 @@ void airmap::glib::Flights::for_id(const ForId::Parameters& parameters, const Fo
            });
 }
 
-void airmap::glib::Flights::create_flight_by_point(const CreateFlight::Parameters& parameters,
+void airmap::rest::Flights::create_flight_by_point(const CreateFlight::Parameters& parameters,
                                                    const CreateFlight::Callback& cb) {
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
@@ -62,8 +62,8 @@ void airmap::glib::Flights::create_flight_by_point(const CreateFlight::Parameter
   json j;
   j = parameters;
 
-  api_.post("https://api.airmap.com", "/flight/v2/point", std::move(headers), j.dump(),
-            [cb](const Api::DoResult& result) {
+  communicator_.post("https://api.airmap.com", "/flight/v2/point", std::move(headers), j.dump(),
+            [cb](const Communicator::DoResult& result) {
               if (result) {
                 auto j = json::parse(result.value());
                 std::cout << j.dump(2) << std::endl;
@@ -77,7 +77,7 @@ void airmap::glib::Flights::create_flight_by_point(const CreateFlight::Parameter
             });
 }
 
-void airmap::glib::Flights::create_flight_by_path(const CreateFlight::Parameters& parameters,
+void airmap::rest::Flights::create_flight_by_path(const CreateFlight::Parameters& parameters,
                                                   const CreateFlight::Callback& cb) {
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
@@ -85,8 +85,8 @@ void airmap::glib::Flights::create_flight_by_path(const CreateFlight::Parameters
   json j;
   j = parameters;
 
-  api_.post("https://api.airmap.com", "/flight/v2/path", std::move(headers), j.dump(),
-            [cb](const Api::DoResult& result) {
+  communicator_.post("https://api.airmap.com", "/flight/v2/path", std::move(headers), j.dump(),
+            [cb](const Communicator::DoResult& result) {
               if (result) {
                 auto j = json::parse(result.value());
                 if (j[jsend::key::status] == jsend::status::success) {
@@ -99,7 +99,7 @@ void airmap::glib::Flights::create_flight_by_path(const CreateFlight::Parameters
             });
 }
 
-void airmap::glib::Flights::create_flight_by_polygon(const CreateFlight::Parameters& parameters,
+void airmap::rest::Flights::create_flight_by_polygon(const CreateFlight::Parameters& parameters,
                                                      const CreateFlight::Callback& cb) {
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
@@ -107,8 +107,8 @@ void airmap::glib::Flights::create_flight_by_polygon(const CreateFlight::Paramet
   json j;
   j = parameters;
 
-  api_.post("https://api.airmap.com", "/flight/v2/polygon", std::move(headers), j.dump(),
-            [cb](const Api::DoResult& result) {
+  communicator_.post("https://api.airmap.com", "/flight/v2/polygon", std::move(headers), j.dump(),
+            [cb](const Communicator::DoResult& result) {
               if (result) {
                 auto j = json::parse(result.value());
                 if (j[jsend::key::status] == jsend::status::success) {
@@ -121,13 +121,13 @@ void airmap::glib::Flights::create_flight_by_polygon(const CreateFlight::Paramet
             });
 }
 
-void airmap::glib::Flights::end_flight(const EndFlight::Parameters& parameters,
+void airmap::rest::Flights::end_flight(const EndFlight::Parameters& parameters,
                                        const EndFlight::Callback& cb) {
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
 
-  api_.post("https://api.airmap.com", (boost::format("/flight/v2/%1%/end") % parameters.id).str(),
-            std::move(headers), std::string{}, [cb](const Api::DoResult& result) {
+  communicator_.post("https://api.airmap.com", (boost::format("/flight/v2/%1%/end") % parameters.id).str(),
+            std::move(headers), std::string{}, [cb](const Communicator::DoResult& result) {
               if (result) {
                 auto j = json::parse(result.value());
                 if (j[jsend::key::status] == jsend::status::success) {
@@ -140,14 +140,14 @@ void airmap::glib::Flights::end_flight(const EndFlight::Parameters& parameters,
             });
 }
 
-void airmap::glib::Flights::delete_flight(const DeleteFlight::Parameters& parameters,
+void airmap::rest::Flights::delete_flight(const DeleteFlight::Parameters& parameters,
                                           const DeleteFlight::Callback& cb) {
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
 
-  api_.post("https://api.airmap.com",
+  communicator_.post("https://api.airmap.com",
             (boost::format("/flight/v2/%1%/delete") % parameters.id).str(), std::move(headers),
-            std::string{}, [cb](const Api::DoResult& result) {
+            std::string{}, [cb](const Communicator::DoResult& result) {
               if (result) {
                 auto j = json::parse(result.value());
                 if (j[jsend::key::status] == jsend::status::success) {
@@ -160,15 +160,15 @@ void airmap::glib::Flights::delete_flight(const DeleteFlight::Parameters& parame
             });
 }
 
-void airmap::glib::Flights::start_flight_communications(
+void airmap::rest::Flights::start_flight_communications(
     const StartFlightCommunications::Parameters& parameters,
     const StartFlightCommunications::Callback& cb) {
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
 
-  api_.post("https://api.airmap.com",
+  communicator_.post("https://api.airmap.com",
             (boost::format("/flight/v2/%1%/start-comm") % parameters.id).str(), std::move(headers),
-            std::string{}, [cb](const Api::DoResult& result) {
+            std::string{}, [cb](const Communicator::DoResult& result) {
               if (result) {
                 auto j = json::parse(result.value());
                 if (j[jsend::key::status] == jsend::status::success) {
@@ -182,15 +182,15 @@ void airmap::glib::Flights::start_flight_communications(
             });
 }
 
-void airmap::glib::Flights::end_flight_communications(
+void airmap::rest::Flights::end_flight_communications(
     const EndFlightCommunications::Parameters& parameters,
     const EndFlightCommunications::Callback& cb) {
   std::unordered_map<std::string, std::string> headers{
       {"Authorization", (boost::format("Bearer %1%") % parameters.authorization).str()}};
 
-  api_.post("https://api.airmap.com",
+  communicator_.post("https://api.airmap.com",
             (boost::format("/flight/v2/%1%/end-comm") % parameters.id).str(), std::move(headers),
-            std::string{}, [cb](const Api::DoResult& result) {
+            std::string{}, [cb](const Communicator::DoResult& result) {
               if (result) {
                 auto j = json::parse(result.value());
                 if (j[jsend::key::status] == jsend::status::success) {

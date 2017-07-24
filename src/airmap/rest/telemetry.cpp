@@ -1,4 +1,4 @@
-#include <airmap/glib/telemetry.h>
+#include <airmap/rest/telemetry.h>
 
 #include <airmap/flight.h>
 
@@ -68,10 +68,10 @@ constexpr std::uint8_t encryption_type{1};
 }  // namespace telemetry
 }  // namespace
 
-airmap::glib::Telemetry::Telemetry(Api& api) : api_{api} {
+airmap::rest::Telemetry::Telemetry(Communicator& communicator) : communicator_{communicator} {
 }
 
-void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::string& key,
+void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::string& key,
                                              const std::initializer_list<Update>& updates) {
   static std::uint32_t counter{0};
 
@@ -155,7 +155,7 @@ void airmap::glib::Telemetry::submit_updates(const Flight& flight, const std::st
       new CryptoPP::StreamTransformationFilter(enc, new CryptoPP::StringSink(cipher)));
 
   Buffer packet;
-  api_.send_udp(::telemetry::host_from_env(), ::telemetry::port_from_env(),
+  communicator_.send_udp(::telemetry::host_from_env(), ::telemetry::port_from_env(),
                 packet.add<std::uint32_t>(htonl(counter++))
                     .add<std::uint8_t>(flight.id.size())
                     .add(flight.id)

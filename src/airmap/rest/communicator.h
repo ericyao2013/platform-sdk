@@ -1,5 +1,5 @@
-#ifndef AIRMAP_GLIB_API_H_
-#define AIRMAP_GLIB_API_H_
+#ifndef AIRMAP_REST_COMMUNICATOR_H_
+#define AIRMAP_REST_COMMUNICATOR_H_
 
 #include <airmap/optional.h>
 #include <airmap/outcome.h>
@@ -18,20 +18,20 @@
 #include <vector>
 
 namespace airmap {
-namespace glib {
+namespace rest {
 
-class Api : public std::enable_shared_from_this<Api> {
+class Communicator : public std::enable_shared_from_this<Communicator> {
  public:
   using Status = std::uint16_t;
 
-  using CreateResult   = Outcome<std::shared_ptr<Api>, std::exception_ptr>;
+  using CreateResult   = Outcome<std::shared_ptr<Communicator>, std::exception_ptr>;
   using CreateCallback = std::function<void(const CreateResult&)>;
   using DoResult       = Outcome<std::string, Status>;
   using DoCallback     = std::function<void(const DoResult&)>;
 
   static void create(const std::string& api_key, const CreateCallback& cb);
 
-  ~Api();
+  ~Communicator();
 
   void get(const std::string& host, const std::string& path,
            std::unordered_map<std::string, std::string>&& query,
@@ -44,13 +44,13 @@ class Api : public std::enable_shared_from_this<Api> {
  private:
   struct SoupSessionCallbackContext {
     DoCallback cb;
-    std::weak_ptr<Api> wp;
+    std::weak_ptr<Communicator> wp;
   };
 
   static void soup_session_callback(SoupSession* session, SoupMessage* msg, gpointer user_data);
   static void on_pipe_fd_read_finished(GObject* source, GAsyncResult* result, gpointer user_data);
 
-  explicit Api(const std::string& api_key);
+  explicit Communicator(const std::string& api_key);
 
   void dispatch(const std::function<void()>& task);
   void on_pipe_fd_read_finished();
@@ -70,7 +70,7 @@ class Api : public std::enable_shared_from_this<Api> {
   std::thread worker_;
 };
 
-}  // namespace glib
+}  // namespace rest
 }  // namespace airmap
 
-#endif  // AIRMAP_GLIB_API_H_
+#endif  // AIRMAP_REST_COMMUNICATOR_H_

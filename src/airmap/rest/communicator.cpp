@@ -1,4 +1,4 @@
-#include <airmap/glib/api.h>
+#include <airmap/rest/communicator.h>
 
 #include <gio/gunixinputstream.h>
 #include <glib.h>
@@ -18,15 +18,15 @@ std::array<int, 2> create_pipe_or_throw() {
 
 }  // namespace
 
-void airmap::glib::Api::create(const std::string& api_key, const CreateCallback& cb) {
-  cb(CreateResult{std::shared_ptr<Api>{new Api{api_key}}});
+void airmap::rest::Communicator::create(const std::string& api_key, const CreateCallback& cb) {
+  cb(CreateResult{std::shared_ptr<Communicator>{new Communicator{api_key}}});
 }
 
-void airmap::glib::Api::get(const std::string& host, const std::string& path,
+void airmap::rest::Communicator::get(const std::string& host, const std::string& path,
                             std::unordered_map<std::string, std::string>&& query,
                             std::unordered_map<std::string, std::string>&& headers, DoCallback cb) {
   auto sp = shared_from_this();
-  std::weak_ptr<Api> wp{sp};
+  std::weak_ptr<Communicator> wp{sp};
 
   headers["X-API-Key"] = api_key_;
 
@@ -52,16 +52,16 @@ void airmap::glib::Api::get(const std::string& host, const std::string& path,
 
   dispatch([this, wp, cb, msg]() {
     if (auto sp = wp.lock())
-      soup_session_queue_message(session_.get(), msg, Api::soup_session_callback,
+      soup_session_queue_message(session_.get(), msg, Communicator::soup_session_callback,
                                  new SoupSessionCallbackContext{cb, wp});
   });
 }
 
-void airmap::glib::Api::post(const std::string& host, const std::string& path,
+void airmap::rest::Communicator::post(const std::string& host, const std::string& path,
                              std::unordered_map<std::string, std::string>&& headers,
                              const std::string& body, DoCallback cb) {
   auto sp = shared_from_this();
-  std::weak_ptr<Api> wp{sp};
+  std::weak_ptr<Communicator> wp{sp};
 
   headers["X-API-Key"] = api_key_;
 
@@ -77,12 +77,12 @@ void airmap::glib::Api::post(const std::string& host, const std::string& path,
 
   dispatch([this, wp, cb, msg]() {
     if (auto sp = wp.lock())
-      soup_session_queue_message(session_.get(), msg, Api::soup_session_callback,
+      soup_session_queue_message(session_.get(), msg, Communicator::soup_session_callback,
                                  new SoupSessionCallbackContext{cb, wp});
   });
 }
 
-void airmap::glib::Api::send_udp(const std::string& host, std::uint16_t port,
+void airmap::rest::Communicator::send_udp(const std::string& host, std::uint16_t port,
                                  const std::string& body) {
   dispatch([ host, port, body = std::move(body) ]() {
     if (auto connectable = g_network_address_parse(host.c_str(), port, nullptr)) {
@@ -109,7 +109,7 @@ void airmap::glib::Api::send_udp(const std::string& host, std::uint16_t port,
   });
 }
 
-void airmap::glib::Api::soup_session_callback(SoupSession*, SoupMessage* msg, gpointer user_data) {
+void airmap::rest::Communicator::soup_session_callback(SoupSession*, SoupMessage* msg, gpointer user_data) {
   if (auto context = static_cast<SoupSessionCallbackContext*>(user_data)) {
     if (auto sp = context->wp.lock()) {
       auto cb = std::move(context->cb);
@@ -125,13 +125,13 @@ void airmap::glib::Api::soup_session_callback(SoupSession*, SoupMessage* msg, gp
   }
 }
 
-void airmap::glib::Api::on_pipe_fd_read_finished(GObject*, GAsyncResult*, gpointer user_data) {
-  if (auto context = static_cast<Api*>(user_data)) {
+void airmap::rest::Communicator::on_pipe_fd_read_finished(GObject*, GAsyncResult*, gpointer user_data) {
+  if (auto context = static_cast<Communicator*>(user_data)) {
     context->on_pipe_fd_read_finished();
   }
 }
 
-airmap::glib::Api::Api(const std::string& api_key)
+airmap::rest::Communicator::Communicator(const std::string& api_key)
     : api_key_{api_key},
       main_context_{g_main_context_new(),
                     [](GMainContext* context) { g_main_context_unref(context); }},
@@ -151,20 +151,20 @@ airmap::glib::Api::Api(const std::string& api_key)
     g_main_context_push_thread_default(main_context_.get());
     g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_,
                               sizeof(pipe_read_buffer_), G_PRIORITY_LOW, nullptr,
-                              Api::on_pipe_fd_read_finished, this);
+                              Communicator::on_pipe_fd_read_finished, this);
     g_main_loop_run(main_loop_.get());
     g_main_context_pop_thread_default(main_context_.get());
   }};
 }
 
-airmap::glib::Api::~Api() {
+airmap::rest::Communicator::~Communicator() {
   g_main_loop_quit(main_loop_.get());
   if (worker_.joinable()) {
     worker_.join();
   }
 }
 
-void airmap::glib::Api::dispatch(const std::function<void()>& task) {
+void airmap::rest::Communicator::dispatch(const std::function<void()>& task) {
   static const int value{42};
 
   std::lock_guard<std::mutex> lg{guard_};
@@ -172,7 +172,7 @@ void airmap::glib::Api::dispatch(const std::function<void()>& task) {
   ::write(pipe_fds_[1], &value, sizeof(value));
 }
 
-void airmap::glib::Api::on_pipe_fd_read_finished() {
+void airmap::rest::Communicator::on_pipe_fd_read_finished() {
   std::queue<std::function<void()>> functors;
 
   {
@@ -186,5 +186,5 @@ void airmap::glib::Api::on_pipe_fd_read_finished() {
   }
 
   g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_),
-                            G_PRIORITY_LOW, nullptr, Api::on_pipe_fd_read_finished, this);
+                            G_PRIORITY_LOW, nullptr, Communicator::on_pipe_fd_read_finished, this);
 }

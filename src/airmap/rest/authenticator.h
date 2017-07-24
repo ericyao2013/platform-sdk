@@ -1,16 +1,16 @@
-#ifndef AIRMAP_GLIB_AUTHENTICATOR_H_
-#define AIRMAP_GLIB_AUTHENTICATOR_H_
+#ifndef AIRMAP_REST_AUTHENTICATOR_H_
+#define AIRMAP_REST_AUTHENTICATOR_H_
 
 #include <airmap/authenticator.h>
 
-#include <airmap/glib/api.h>
+#include <airmap/rest/communicator.h>
 
 namespace airmap {
-namespace glib {
+namespace rest {
 
 class Authenticator : public airmap::Authenticator {
  public:
-  explicit Authenticator(Api& api);
+  explicit Authenticator(Communicator& communicator);
 
   void authenticate_with_password(const AuthenticateWithPassword::Params& params,
                                   const AuthenticateWithPassword::Callback& cb) override;
@@ -22,10 +22,10 @@ class Authenticator : public airmap::Authenticator {
                             const RenewAuthentication::Callback& cb) override;
 
  private:
-  Api& api_;
+  Communicator& communicator_;
 };
 
-}  // namespace glib
+}  // namespace rest
 }  // namespace airmap
 
-#endif  // AIRMAP_GLIB_AUTHENTICATOR_H_
+#endif  // AIRMAP_REST_AUTHENTICATOR_H_
