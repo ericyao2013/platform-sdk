@@ -23,20 +23,12 @@ void airmap::rest::Authenticator::authenticate_anonymously(
   json j;
   j = params;
 
-  communicator_.post(
-      "https://api.airmap.com", "/auth/v1/anonymous/token", std::move(headers), j.dump(),
-      [cb](const Communicator::DoResult& result) {
-        if (result) {
-          auto j = json::parse(result.value());
-
-          if (j[jsend::key::status] == jsend::status::success) {
-            cb(AuthenticateAnonymously::Result(j[jsend::key::data].get<AnonymousToken>()));
-          } else {
-            cb(AuthenticateAnonymously::Result(
-                std::make_exception_ptr(std::runtime_error(jsend::stringify_error(j)))));
-          }
-        }
-      });
+  communicator_.post("https://api.airmap.com", "/auth/v1/anonymous/token", std::move(headers),
+                     j.dump(), [cb](const Communicator::DoResult& result) {
+                       if (result) {
+                         cb(jsend::to_outcome<AnonymousToken>(json::parse(result.value())));
+                       }
+                     });
 }
 
 void airmap::rest::Authenticator::renew_authentication(const RenewAuthentication::Params&,

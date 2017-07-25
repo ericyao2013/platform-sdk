@@ -1,6 +1,8 @@
 #ifndef AIRMAP_JSEND_H_
 #define AIRMAP_JSEND_H_
 
+#include <airmap/outcome.h>
+
 #include <nlohmann/json.hpp>
 
 #include <string>
@@ -29,6 +31,17 @@ inline std::string stringify_error(const nlohmann::json& j) {
   if (j.at(key::status) == status::failure)
     return j.at(key::data).dump();
   throw std::runtime_error{"not an error"};
+}
+
+template<typename T>
+inline Outcome<T, std::exception_ptr> to_outcome(const nlohmann::json& j) {
+  using Result = Outcome<T, std::exception_ptr>;
+
+  if (j[key::status] == status::success)
+    return Result{j[jsend::key::data].get<T>()};
+
+  return Result{std::make_exception_ptr(
+        std::runtime_error{jsend::stringify_error(j)})};
 }
 
 }  // namespace jsend
