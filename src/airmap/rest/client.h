@@ -5,8 +5,8 @@
 
 #include <airmap/rest/aircrafts.h>
 #include <airmap/rest/airspaces.h>
-#include <airmap/rest/communicator.h>
 #include <airmap/rest/authenticator.h>
+#include <airmap/rest/communicator.h>
 #include <airmap/rest/flights.h>
 #include <airmap/rest/telemetry.h>
 

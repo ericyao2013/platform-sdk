@@ -19,23 +19,23 @@ class Communicator : DoNotCopyOrMove {
  public:
   using Status = std::uint16_t;
 
-  using CreateResult   = Outcome<std::shared_ptr<Communicator>, std::exception_ptr>;
-  using DoResult       = Outcome<std::string, Status>;
-  using DoCallback     = std::function<void(const DoResult&)>;
+  using CreateResult = Outcome<std::shared_ptr<Communicator>, std::exception_ptr>;
+  using DoResult     = Outcome<std::string, Status>;
+  using DoCallback   = std::function<void(const DoResult&)>;
 
   virtual void get(const std::string& host, const std::string& path,
-           std::unordered_map<std::string, std::string>&& query,
-           std::unordered_map<std::string, std::string>&& headers, DoCallback cb) = 0;
+                   std::unordered_map<std::string, std::string>&& query,
+                   std::unordered_map<std::string, std::string>&& headers, DoCallback cb) = 0;
 
   virtual void post(const std::string& host, const std::string& path,
-            std::unordered_map<std::string, std::string>&& headers, const std::string& body,
-            DoCallback cb) = 0;
+                    std::unordered_map<std::string, std::string>&& headers, const std::string& body,
+                    DoCallback cb)                                                            = 0;
   virtual void send_udp(const std::string& host, std::uint16_t port, const std::string& body) = 0;
 
   virtual void dispatch(const std::function<void()>& task) = 0;
 
-  protected:
-    Communicator() = default;
+ protected:
+  Communicator() = default;
 };
 
 }  // namespace rest

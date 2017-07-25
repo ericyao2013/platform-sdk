@@ -136,15 +136,10 @@ find_program(CLANG_FORMAT_EXECUTABLE
 )
 
 if (CLANG_FORMAT_EXECUTABLE)
-  file(GLOB_RECURSE AIRMAPD_SRCS include/*.h src/*.cpp)
+  file(GLOB_RECURSE AIRMAPD_SRCS include/*.h src/*.h src/*.cpp test/*.h test/*.cpp)
 
   add_custom_target(
     format ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${AIRMAPD_SRCS})
 endif()
 
-include_directories(test/3rd_party)
-
-add_executable(airspace_test test/airspace_test.cpp)
-set_property(TARGET airspace_test PROPERTY CXX_STANDARD 14)
-target_link_libraries(airspace_test airmap-client)
-add_test(airspace_test airspace_test)
+add_subdirectory(test)

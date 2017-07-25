@@ -33,15 +33,14 @@ inline std::string stringify_error(const nlohmann::json& j) {
   throw std::runtime_error{"not an error"};
 }
 
-template<typename T>
+template <typename T>
 inline Outcome<T, std::exception_ptr> to_outcome(const nlohmann::json& j) {
   using Result = Outcome<T, std::exception_ptr>;
 
   if (j[key::status] == status::success)
     return Result{j[jsend::key::data].get<T>()};
 
-  return Result{std::make_exception_ptr(
-        std::runtime_error{jsend::stringify_error(j)})};
+  return Result{std::make_exception_ptr(std::runtime_error{jsend::stringify_error(j)})};
 }
 
 }  // namespace jsend
