@@ -102,7 +102,13 @@ add_library(
 add_executable(
   airmap
 
-  src/airmap/cmds/airmap/airmap.cpp)
+  src/airmap/cmds/airmap/airmap.cpp
+  src/airmap/cmds/airmap/cmd/authorize.h
+  src/airmap/cmds/airmap/cmd/authorize.cpp
+  src/airmap/cmds/airmap/cmd/create_flight.h
+  src/airmap/cmds/airmap/cmd/create_flight.cpp
+  src/airmap/cmds/airmap/cmd/simulate_telemetry.h
+  src/airmap/cmds/airmap/cmd/simulate_telemetry.cpp)
 
 add_executable(
   airmapd
