@@ -9,12 +9,6 @@ airmap::rest::Client::Client(const std::shared_ptr<Communicator>& communicator)
       telemetry_{*communicator} {
 }
 
-void airmap::rest::Client::run() {
-}
-
-void airmap::rest::Client::stop() {
-}
-
 airmap::Aircrafts& airmap::rest::Client::aircrafts() {
   return aircrafts_;
 }

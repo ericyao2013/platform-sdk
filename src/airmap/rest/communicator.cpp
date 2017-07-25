@@ -18,8 +18,21 @@ std::array<int, 2> create_pipe_or_throw() {
 
 }  // namespace
 
-void airmap::rest::Communicator::create(const std::string& api_key, const CreateCallback& cb) {
-  cb(CreateResult{std::shared_ptr<Communicator>{new Communicator{api_key}}});
+airmap::rest::Communicator::CreateResult airmap::rest::Communicator::create(
+    const std::string& api_key) {
+  return CreateResult{std::shared_ptr<Communicator>{new Communicator{api_key}}};
+}
+
+void airmap::rest::Communicator::run() {
+  g_main_context_push_thread_default(main_context_.get());
+  g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_),
+                            G_PRIORITY_LOW, nullptr, Communicator::on_pipe_fd_read_finished, this);
+  g_main_loop_run(main_loop_.get());
+  g_main_context_pop_thread_default(main_context_.get());
+}
+
+void airmap::rest::Communicator::stop() {
+  g_main_loop_quit(main_loop_.get());
 }
 
 void airmap::rest::Communicator::get(const std::string& host, const std::string& path,
@@ -150,21 +163,9 @@ airmap::rest::Communicator::Communicator(const std::string& api_key)
                  if (session)
                    g_object_unref(session);
                }} {
-  worker_ = std::thread{[this]() {
-    g_main_context_push_thread_default(main_context_.get());
-    g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_,
-                              sizeof(pipe_read_buffer_), G_PRIORITY_LOW, nullptr,
-                              Communicator::on_pipe_fd_read_finished, this);
-    g_main_loop_run(main_loop_.get());
-    g_main_context_pop_thread_default(main_context_.get());
-  }};
 }
 
 airmap::rest::Communicator::~Communicator() {
-  g_main_loop_quit(main_loop_.get());
-  if (worker_.joinable()) {
-    worker_.join();
-  }
 }
 
 void airmap::rest::Communicator::dispatch(const std::function<void()>& task) {

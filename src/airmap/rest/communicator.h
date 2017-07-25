@@ -1,6 +1,7 @@
 #ifndef AIRMAP_REST_COMMUNICATOR_H_
 #define AIRMAP_REST_COMMUNICATOR_H_
 
+#include <airmap/context.h>
 #include <airmap/optional.h>
 #include <airmap/outcome.h>
 
@@ -20,18 +21,21 @@
 namespace airmap {
 namespace rest {
 
-class Communicator : public std::enable_shared_from_this<Communicator> {
+class Communicator : public airmap::Context, public std::enable_shared_from_this<Communicator> {
  public:
   using Status = std::uint16_t;
 
   using CreateResult   = Outcome<std::shared_ptr<Communicator>, std::exception_ptr>;
-  using CreateCallback = std::function<void(const CreateResult&)>;
   using DoResult       = Outcome<std::string, Status>;
   using DoCallback     = std::function<void(const DoResult&)>;
 
-  static void create(const std::string& api_key, const CreateCallback& cb);
+  static CreateResult create(const std::string& api_key);
 
   ~Communicator();
+
+  // From airmap::Context
+  void run() override;
+  void stop() override;
 
   void get(const std::string& host, const std::string& path,
            std::unordered_map<std::string, std::string>&& query,
@@ -40,6 +44,8 @@ class Communicator : public std::enable_shared_from_this<Communicator> {
             std::unordered_map<std::string, std::string>&& headers, const std::string& body,
             DoCallback cb);
   void send_udp(const std::string& host, std::uint16_t port, const std::string& body);
+
+  void dispatch(const std::function<void()>& task);
 
  private:
   struct SoupSessionCallbackContext {
@@ -52,7 +58,6 @@ class Communicator : public std::enable_shared_from_this<Communicator> {
 
   explicit Communicator(const std::string& api_key);
 
-  void dispatch(const std::function<void()>& task);
   void on_pipe_fd_read_finished();
 
   std::string api_key_;

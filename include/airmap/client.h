@@ -1,6 +1,7 @@
 #ifndef AIRMAP_CLIENT_H_
 #define AIRMAP_CLIENT_H_
 
+#include <airmap/context.h>
 #include <airmap/do_not_copy_or_move.h>
 #include <airmap/outcome.h>
 
@@ -25,7 +26,10 @@ class Client : DoNotCopyOrMove {
     std::string api_key;
   };
 
-  /// CreateResult models the result of creating a new client instance xor
+  /// ContextResult models the synchronous result of creating a client.
+  using ContextResult = Outcome<std::shared_ptr<Context>, std::exception_ptr>;
+
+  /// CreateResult models the async result of creating a new client instance xor
   /// an exception describing why creation of an instance failed.
   using CreateResult = Outcome<std::shared_ptr<Client>, std::exception_ptr>;
 
@@ -37,21 +41,8 @@ class Client : DoNotCopyOrMove {
   ///
   /// TODO(tvoss): Depending on the scope of this core SDK, determine whether
   /// the embedded libc++ used by NuttX properly supports std::shared_ptr.
-  static void create_with_credentials(const Credentials& credentials, const CreateCallback& cb);
-
-  /// TODO(tvoss): Both run() and stop() naturally trigger a conversation
-  /// about integration with alien event loops and threading models. For the
-  /// time being we will enable calling code to hand a thread of execution to the client
-  /// and make sure that all callbacks are only ever executed on the thread handed to 'run()'.
-  ///
-  /// run hands a thread of execution to a 'Client' instance
-  /// and implementations should not return from it until stop
-  /// is called.
-  virtual void run() = 0;
-
-  /// stop requests a 'Client' instance to finish up outstanding operations
-  /// and return from its 'run()' method implementation.
-  virtual void stop() = 0;
+  static ContextResult create_with_credentials(const Credentials& credentials,
+                                               const CreateCallback& cb);
 
   /// authenticator returns the Authenticator implementation provided by the client.
   virtual Authenticator& authenticator() = 0;

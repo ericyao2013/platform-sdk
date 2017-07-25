@@ -15,9 +15,7 @@
 #include <cmath>
 
 #include <chrono>
-#include <condition_variable>
 #include <iostream>
-#include <mutex>
 #include <thread>
 
 namespace cli = airmap::util::cli;
@@ -33,25 +31,6 @@ auto polygon = airmap::Geometry::polygon(
                                   airmap::Optional<double>{}},
      airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043, airmap::Optional<double>{},
                                   airmap::Optional<double>{}}});
-
-class Barrier {
- public:
-  void wait() {
-    std::unique_lock<std::mutex> ul{mutex_};
-    condition_variable_.wait(ul, [this]() { return signaled_; });
-  }
-
-  void signal_all() {
-    std::unique_lock<std::mutex> ul{mutex_};
-    signaled_ = true;
-    condition_variable_.notify_all();
-  }
-
- private:
-  std::mutex mutex_;
-  bool signaled_{false};
-  std::condition_variable condition_variable_;
-};
 
 struct Params {
   Params()
@@ -99,16 +78,14 @@ int main(int argc, char** argv) {
     ::setenv("AIRMAP_TELEMETRY_HOST", params.host.c_str(), 1);
     ::setenv("AIRMAP_TELEMETRY_PORT", boost::lexical_cast<std::string>(params.port).c_str(), 1);
 
-    std::shared_ptr<airmap::Client> client;
-
-    airmap::Client::create_with_credentials(
+    auto result = airmap::Client::create_with_credentials(
         airmap::Client::Credentials{params.api_key},
-        [&client](const airmap::Client::CreateResult& result) {
+        [](const airmap::Client::CreateResult& result) {
           if (!result) {
             return;
           }
 
-          client = result.value();
+          auto client = result.value();
 
           std::thread submitter{[client]() {
             airmap::util::TelemetrySimulator simulator{polygon.details_for_polygon()};
@@ -129,10 +106,10 @@ int main(int argc, char** argv) {
           submitter.detach();
         });
 
-    Barrier barrier;
-    barrier.wait();
-
+    if (result)
+      result.value()->run();
     return 0;
   });
+
   return cmd.run(cli::Command::Context{std::cin, std::cout, cli::args(argc, argv)});
 }

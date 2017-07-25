@@ -2,16 +2,14 @@
 
 #include <airmap/rest/client.h>
 
-void airmap::Client::create_with_credentials(const Credentials& credentials,
-                                             const CreateCallback& cb) {
-  airmap::rest::Communicator::create(
-      credentials.api_key, [cb](const airmap::rest::Communicator::CreateResult& result) {
-        using Result = Outcome<std::shared_ptr<Client>, std::exception_ptr>;
+airmap::Client::ContextResult airmap::Client::create_with_credentials(
+    const Credentials& credentials, const CreateCallback& cb) {
+  auto result = airmap::rest::Communicator::create(credentials.api_key);
 
-        if (result) {
-          cb(Result(std::make_shared<rest::Client>(result.value())));
-        } else {
-          cb(Result(result.error()));
-        }
-      });
+  if (result) {
+    auto ctxt = result.value();
+    ctxt->dispatch([ctxt, cb]() { cb(CreateResult(std::make_shared<rest::Client>(ctxt))); });
+  }
+
+  return ContextResult{std::dynamic_pointer_cast<airmap::Context>(result.value())};
 }

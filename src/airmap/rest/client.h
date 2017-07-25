@@ -19,8 +19,6 @@ class Client : public airmap::Client {
  public:
   explicit Client(const std::shared_ptr<Communicator>& communicator);
 
-  void run() override;
-  void stop() override;
   airmap::Aircrafts& aircrafts() override;
   airmap::Airspaces& airspaces() override;
   airmap::Authenticator& authenticator() override;
