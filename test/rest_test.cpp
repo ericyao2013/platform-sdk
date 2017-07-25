@@ -39,10 +39,10 @@ TEST_CASE("rest") {
       airmap::codec::http::query::encode(query, parameters);
 
       MockCommunicator communicator;
-      REQUIRE_CALL(communicator,
-                   get(mock::eq<std::string>("https://api.airmap.com"),
-                       mock::eq<std::string>("/aircraft/v2/manufacturer"), mock::eq<StringMap>(query),
-                       ANY(StringMap), ANY(airmap::rest::Communicator::DoCallback)));
+      REQUIRE_CALL(communicator, get(mock::eq<std::string>("https://api.airmap.com"),
+                                     mock::eq<std::string>("/aircraft/v2/manufacturer"),
+                                     mock::eq<StringMap>(query), ANY(StringMap),
+                                     ANY(airmap::rest::Communicator::DoCallback)));
 
       airmap::rest::Aircrafts aircrafts{communicator};
       aircrafts.manufacturers(parameters, [](const airmap::Aircrafts::Manufacturers::Result&) {});
