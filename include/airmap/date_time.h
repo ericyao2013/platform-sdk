@@ -10,7 +10,7 @@
 
 namespace airmap {
 
-using Clock    = boost::posix_time::second_clock;
+using Clock    = boost::posix_time::microsec_clock;
 using DateTime = boost::posix_time::ptime;
 using Hours    = boost::posix_time::hours;
 using Minutes  = boost::posix_time::minutes;
