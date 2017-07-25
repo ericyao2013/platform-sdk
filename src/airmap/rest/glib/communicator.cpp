@@ -1,4 +1,4 @@
-#include <airmap/rest/communicator.h>
+#include <airmap/rest/glib/communicator.h>
 
 #include <gio/gunixinputstream.h>
 #include <glib.h>
@@ -18,12 +18,12 @@ std::array<int, 2> create_pipe_or_throw() {
 
 }  // namespace
 
-airmap::rest::Communicator::CreateResult airmap::rest::Communicator::create(
+airmap::rest::glib::Communicator::CreateResult airmap::rest::glib::Communicator::create(
     const std::string& api_key) {
   return CreateResult{std::shared_ptr<Communicator>{new Communicator{api_key}}};
 }
 
-void airmap::rest::Communicator::run() {
+void airmap::rest::glib::Communicator::run() {
   g_main_context_push_thread_default(main_context_.get());
   g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_),
                             G_PRIORITY_LOW, nullptr, Communicator::on_pipe_fd_read_finished, this);
@@ -31,11 +31,11 @@ void airmap::rest::Communicator::run() {
   g_main_context_pop_thread_default(main_context_.get());
 }
 
-void airmap::rest::Communicator::stop() {
+void airmap::rest::glib::Communicator::stop() {
   g_main_loop_quit(main_loop_.get());
 }
 
-void airmap::rest::Communicator::get(const std::string& host, const std::string& path,
+void airmap::rest::glib::Communicator::get(const std::string& host, const std::string& path,
                                      std::unordered_map<std::string, std::string>&& query,
                                      std::unordered_map<std::string, std::string>&& headers,
                                      DoCallback cb) {
@@ -71,7 +71,7 @@ void airmap::rest::Communicator::get(const std::string& host, const std::string&
   });
 }
 
-void airmap::rest::Communicator::post(const std::string& host, const std::string& path,
+void airmap::rest::glib::Communicator::post(const std::string& host, const std::string& path,
                                       std::unordered_map<std::string, std::string>&& headers,
                                       const std::string& body, DoCallback cb) {
   auto sp = shared_from_this();
@@ -96,7 +96,7 @@ void airmap::rest::Communicator::post(const std::string& host, const std::string
   });
 }
 
-void airmap::rest::Communicator::send_udp(const std::string& host, std::uint16_t port,
+void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::uint16_t port,
                                           const std::string& body) {
   dispatch([ host, port, body = std::move(body) ]() {
     if (auto connectable = g_network_address_parse(host.c_str(), port, nullptr)) {
@@ -123,7 +123,7 @@ void airmap::rest::Communicator::send_udp(const std::string& host, std::uint16_t
   });
 }
 
-void airmap::rest::Communicator::soup_session_callback(SoupSession*, SoupMessage* msg,
+void airmap::rest::glib::Communicator::soup_session_callback(SoupSession*, SoupMessage* msg,
                                                        gpointer user_data) {
   if (auto context = static_cast<SoupSessionCallbackContext*>(user_data)) {
     if (auto sp = context->wp.lock()) {
@@ -140,14 +140,14 @@ void airmap::rest::Communicator::soup_session_callback(SoupSession*, SoupMessage
   }
 }
 
-void airmap::rest::Communicator::on_pipe_fd_read_finished(GObject*, GAsyncResult*,
+void airmap::rest::glib::Communicator::on_pipe_fd_read_finished(GObject*, GAsyncResult*,
                                                           gpointer user_data) {
   if (auto context = static_cast<Communicator*>(user_data)) {
     context->on_pipe_fd_read_finished();
   }
 }
 
-airmap::rest::Communicator::Communicator(const std::string& api_key)
+airmap::rest::glib::Communicator::Communicator(const std::string& api_key)
     : api_key_{api_key},
       main_context_{g_main_context_new(),
                     [](GMainContext* context) { g_main_context_unref(context); }},
@@ -165,10 +165,10 @@ airmap::rest::Communicator::Communicator(const std::string& api_key)
                }} {
 }
 
-airmap::rest::Communicator::~Communicator() {
+airmap::rest::glib::Communicator::~Communicator() {
 }
 
-void airmap::rest::Communicator::dispatch(const std::function<void()>& task) {
+void airmap::rest::glib::Communicator::dispatch(const std::function<void()>& task) {
   static const int value{42};
 
   std::lock_guard<std::mutex> lg{guard_};
@@ -176,7 +176,7 @@ void airmap::rest::Communicator::dispatch(const std::function<void()>& task) {
   ::write(pipe_fds_[1], &value, sizeof(value));
 }
 
-void airmap::rest::Communicator::on_pipe_fd_read_finished() {
+void airmap::rest::glib::Communicator::on_pipe_fd_read_finished() {
   std::queue<std::function<void()>> functors;
 
   {

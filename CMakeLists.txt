@@ -68,8 +68,9 @@ add_library(
   src/airmap/rest/client.h
   src/airmap/rest/client.cpp
   src/airmap/rest/communicator.h
-  src/airmap/rest/communicator.cpp
-  
+  src/airmap/rest/glib/communicator.h
+  src/airmap/rest/glib/communicator.cpp
+
   src/airmap/rest/aircrafts.h
   src/airmap/rest/aircrafts.cpp
   src/airmap/rest/airspaces.h

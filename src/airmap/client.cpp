@@ -1,10 +1,11 @@
 #include <airmap/client.h>
 
 #include <airmap/rest/client.h>
+#include <airmap/rest/glib/communicator.h>
 
 airmap::Client::ContextResult airmap::Client::create_with_credentials(
     const Credentials& credentials, const CreateCallback& cb) {
-  auto result = airmap::rest::Communicator::create(credentials.api_key);
+  auto result = airmap::rest::glib::Communicator::create(credentials.api_key);
 
   if (result) {
     auto ctxt = result.value();
