@@ -58,12 +58,10 @@ auto polygon = airmap::Geometry::polygon(
 int main() {
   Barrier barrier;
 
-  std::shared_ptr<airmap::DeviceIdentifier> di;
-  std::shared_ptr<airmap::SecretsStore> ss;
   std::shared_ptr<airmap::Client> client;
 
   airmap::Client::create_with_credentials(
-      airmap::Client::Credentials{api_key}, ss, di, [&client](const airmap::Client::CreateResult& result) {
+      airmap::Client::Credentials{api_key}, [&client](const airmap::Client::CreateResult& result) {
     if (not result)
       return;
 

@@ -99,12 +99,10 @@ int main(int argc, char** argv) {
     ::setenv("AIRMAP_TELEMETRY_HOST", params.host.c_str(), 1);
     ::setenv("AIRMAP_TELEMETRY_PORT", boost::lexical_cast<std::string>(params.port).c_str(), 1);
 
-    std::shared_ptr<airmap::DeviceIdentifier> di;
-    std::shared_ptr<airmap::SecretsStore> ss;
     std::shared_ptr<airmap::Client> client;
 
     airmap::Client::create_with_credentials(
-        airmap::Client::Credentials{params.api_key}, ss, di,
+        airmap::Client::Credentials{params.api_key},
         [&client](const airmap::Client::CreateResult& result) {
           if (!result) {
             return;

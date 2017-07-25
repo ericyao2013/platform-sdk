@@ -13,9 +13,7 @@ namespace airmap {
 class Aircrafts;
 class Airspaces;
 class Authenticator;
-class DeviceIdentifier;
 class Flights;
-class SecretsStore;
 class Telemetry;
 
 /// Client enables applications to use the AirMap services and APIs.
@@ -39,10 +37,7 @@ class Client : DoNotCopyOrMove {
   ///
   /// TODO(tvoss): Depending on the scope of this core SDK, determine whether
   /// the embedded libc++ used by NuttX properly supports std::shared_ptr.
-  static void create_with_credentials(const Credentials& credentials,
-                                      const std::shared_ptr<SecretsStore>& secrets_store,
-                                      const std::shared_ptr<DeviceIdentifier>& device_identifier,
-                                      const CreateCallback& cb);
+  static void create_with_credentials(const Credentials& credentials, const CreateCallback& cb);
 
   /// TODO(tvoss): Both run() and stop() naturally trigger a conversation
   /// about integration with alien event loops and threading models. For the
