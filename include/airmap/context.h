@@ -6,11 +6,11 @@
 namespace airmap {
 
 class Context : DoNotCopyOrMove {
-public:
-  virtual void run() = 0;
+ public:
+  virtual void run()  = 0;
   virtual void stop() = 0;
 
-protected:
+ protected:
   Context() = default;
 };
 

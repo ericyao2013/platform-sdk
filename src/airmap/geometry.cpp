@@ -43,7 +43,30 @@ airmap::Geometry& airmap::Geometry::operator=(const Geometry& rhs) {
   return reset().set_geometry(rhs);
 }
 
-bool airmap::Geometry::operator==(const Geometry&) const {
+bool airmap::Geometry::operator==(const Geometry& rhs) const {
+  if (type() != rhs.type())
+    return false;
+
+  switch (type()) {
+    case Type::invalid:
+      return true;
+    case Type::point:
+      return details_for_point() == rhs.details_for_point();
+    case Type::multi_point:
+      return details_for_multi_point() == rhs.details_for_multi_point();
+    case Type::line_string:
+      return details_for_line_string() == rhs.details_for_line_string();
+    case Type::multi_line_string:
+      return details_for_multi_line_string() == rhs.details_for_multi_line_string();
+    case Type::polygon:
+      return details_for_polygon() == rhs.details_for_polygon();
+    case Type::multi_polygon:
+      return details_for_multi_polygon() == rhs.details_for_multi_polygon();
+    case Type::geometry_collection:
+      return details_for_geometry_collection() == rhs.details_for_geometry_collection();
+    default:
+      break;
+  }
   return false;
 }
 
@@ -192,4 +215,9 @@ airmap::Geometry airmap::Geometry::point(double lat, double lon) {
 airmap::Geometry airmap::Geometry::polygon(const std::vector<Coordinate>& coordinates) {
   Geometry::Polygon polygon{{coordinates}};
   return Geometry{polygon};
+}
+
+bool airmap::operator==(const Geometry::Coordinate& lhs, const Geometry::Coordinate& rhs) {
+  return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude &&
+         lhs.altitude == rhs.altitude;
 }

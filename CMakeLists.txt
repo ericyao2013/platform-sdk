@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(airmap)
 
+enable_testing()
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -Wextra -fPIC")
 
@@ -60,6 +62,7 @@ add_library(
   src/airmap/geometry.cpp
   src/airmap/jsend.h
   src/airmap/jsend.cpp
+  src/airmap/rule.cpp
   src/airmap/telemetry.cpp
 
   src/airmap/rest/client.h
@@ -137,3 +140,10 @@ if (CLANG_FORMAT_EXECUTABLE)
   add_custom_target(
     format ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${AIRMAPD_SRCS})
 endif()
+
+include_directories(test/3rd_party)
+
+add_executable(airspace_test test/airspace_test.cpp)
+set_property(TARGET airspace_test PROPERTY CXX_STANDARD 14)
+target_link_libraries(airspace_test airmap-client)
+add_test(airspace_test airspace_test)

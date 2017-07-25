@@ -16,6 +16,8 @@ struct Rule {
   // TODO(tvoss): Add requirements here.
 };
 
+bool operator==(const Rule& lhs, const Rule& rhs);
+
 }  // namespace airmap
 
 #endif  // AIRMAP_RULE_H_

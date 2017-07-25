@@ -107,11 +107,11 @@ class Airspace {
   using Id = std::string;
 
   Airspace();
-  template <typename T>
-  explicit Airspace(const T &detail);
   Airspace(const Airspace &rhs);
   ~Airspace();
   Airspace &operator=(const Airspace &rhs);
+  bool operator==(const Airspace &rhs) const;
+  bool operator!=(const Airspace &rhs) const;
 
   const Id &id() const;
   void set_id(const Id &id);
@@ -233,6 +233,21 @@ class Airspace {
   std::vector<Rule> rules_;
   Details details_;
 };
+
+bool operator==(const Airport &lhs, const Airport &rhs);
+bool operator==(const Airport::Runway &lhs, const Airport::Runway &rhs);
+bool operator==(const ControlledAirspace &lhs, const ControlledAirspace &rhs);
+bool operator==(const SpecialUseAirspace &lhs, const SpecialUseAirspace &rhs);
+bool operator==(const TemporaryFlightRestriction &lhs, const TemporaryFlightRestriction &rhs);
+bool operator==(const Wildfire &lhs, const Wildfire &rhs);
+bool operator==(const Park &lhs, const Park &rhs);
+bool operator==(const Prison &lhs, const Prison &rhs);
+bool operator==(const School &lhs, const School &rhs);
+bool operator==(const Hospital &lhs, const Hospital &rhs);
+bool operator==(const Fire &lhs, const Fire &rhs);
+bool operator==(const Emergency &lhs, const Emergency &rhs);
+bool operator==(const Heliport &lhs, const Heliport &rhs);
+bool operator==(const PowerPlant &lhs, const PowerPlant &rhs);
 
 Airspace::Type operator~(Airspace::Type);
 Airspace::Type operator|(Airspace::Type, Airspace::Type);
