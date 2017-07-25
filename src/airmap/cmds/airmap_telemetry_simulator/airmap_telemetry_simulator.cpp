@@ -42,6 +42,7 @@ struct Params {
   }
   std::string host;
   std::uint16_t port{16060};
+  std::uint16_t frequency{5};
   airmap::Flight flight;
   std::string api_key;
   std::string encryption_key;
@@ -57,6 +58,9 @@ int main(int argc, char** argv) {
   cmd.flag(
          cli::make_flag(cli::Name{"host"}, cli::Description{"telemetry host address"}, params.host))
       .flag(cli::make_flag(cli::Name{"port"}, cli::Description{"telemetry host port"}, params.port))
+      .flag(cli::make_flag(cli::Name{"frequency"},
+                           cli::Description{"telemetry is sent with `FREQUENCY` Hz"},
+                           params.frequency))
       .flag(cli::make_flag(cli::Name{"flight-id"},
                            cli::Description{"telemetry is sent for this flight id"},
                            params.flight.id))
@@ -71,6 +75,7 @@ int main(int argc, char** argv) {
     ctxt.cout << "Sending telemetry package to" << std::endl
               << "  host:      " << params.host << std::endl
               << "  port:      " << params.port << std::endl
+              << "  frequency: " << params.frequency << std::endl
               << "  flight-id: " << params.flight.id << std::endl
               << "  api-key:   " << params.api_key << std::endl
               << "  enc-key:   " << params.encryption_key << std::endl;
@@ -99,7 +104,7 @@ int main(int argc, char** argv) {
                   {airmap::Telemetry::Update{airmap::Telemetry::Position{
                       airmap::milliseconds_since_epoch(airmap::Clock::universal_time()),
                       data.latitude, data.longitude, 100, 100, 2}}});
-              std::this_thread::sleep_for(std::chrono::milliseconds{200});
+              std::this_thread::sleep_for(std::chrono::milliseconds{1000 / params.frequency});
             }
           }};
 
