@@ -143,6 +143,8 @@ find_program(CLANG_FORMAT_EXECUTABLE
   DOC "clang-format executable"
 )
 
+install(TARGETS airmap RUNTIME DESTINATION bin)
+
 if (CLANG_FORMAT_EXECUTABLE)
   file(GLOB_RECURSE AIRMAPD_SRCS include/*.h src/*.h src/*.cpp test/*.h test/*.cpp)
 
@@ -151,3 +153,7 @@ if (CLANG_FORMAT_EXECUTABLE)
 endif()
 
 add_subdirectory(test)
+
+set(CPACK_PACKAGE_NAME "airmap")
+set(CPACK_PACKAGE_FILE_NAME "airmap-installer")
+include (CPack)
