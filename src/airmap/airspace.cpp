@@ -59,9 +59,9 @@ airmap::Airspace &airmap::Airspace::operator=(const Airspace &rhs) {
 
 bool airmap::Airspace::operator==(const Airspace &rhs) const {
   auto members_equal = id() == rhs.id() && name() == rhs.name() && country() == rhs.country() &&
-                       state() == rhs.state() && city() == rhs.city() &&
-                       last_updated() == rhs.last_updated() && geometry() == rhs.geometry() &&
-                       related_geometries() == rhs.related_geometries() && rules() == rhs.rules();
+                       state() == rhs.state() && city() == rhs.city() && last_updated() == rhs.last_updated() &&
+                       geometry() == rhs.geometry() && related_geometries() == rhs.related_geometries() &&
+                       rules() == rhs.rules();
 
   if (!members_equal)
     return false;
@@ -76,8 +76,7 @@ bool airmap::Airspace::operator==(const Airspace &rhs) const {
     case Type::special_use_airspace:
       return details_for_special_use_airspace() == rhs.details_for_special_use_airspace();
     case Type::tfr:
-      return details_for_temporary_flight_restriction() ==
-             rhs.details_for_temporary_flight_restriction();
+      return details_for_temporary_flight_restriction() == rhs.details_for_temporary_flight_restriction();
     case Type::wildfire:
       return details_for_wildfire() == rhs.details_for_wildfire();
     case Type::park:
@@ -271,8 +270,7 @@ airmap::SpecialUseAirspace &airmap::Airspace::details_for_special_use_airspace()
   return details_.special_use_airspace;
 }
 
-const airmap::TemporaryFlightRestriction &
-airmap::Airspace::details_for_temporary_flight_restriction() const {
+const airmap::TemporaryFlightRestriction &airmap::Airspace::details_for_temporary_flight_restriction() const {
   return details_.tfr;
 }
 
@@ -453,11 +451,10 @@ airmap::Airspace::Details::~Details() {
 }
 
 bool airmap::operator==(const Airport &lhs, const Airport &rhs) {
-  return lhs.iata == rhs.iata && lhs.icao == rhs.icao && lhs.paved == rhs.paved &&
-         lhs.phone == rhs.phone && lhs.tower == rhs.tower && lhs.runways == rhs.runways &&
-         lhs.elevation == rhs.elevation && lhs.longest_runway == rhs.longest_runway &&
-         lhs.instrument_approach_procedure == rhs.instrument_approach_procedure &&
-         lhs.use == rhs.use;
+  return lhs.iata == rhs.iata && lhs.icao == rhs.icao && lhs.paved == rhs.paved && lhs.phone == rhs.phone &&
+         lhs.tower == rhs.tower && lhs.runways == rhs.runways && lhs.elevation == rhs.elevation &&
+         lhs.longest_runway == rhs.longest_runway &&
+         lhs.instrument_approach_procedure == rhs.instrument_approach_procedure && lhs.use == rhs.use;
 }
 
 bool airmap::operator==(const Airport::Runway &lhs, const Airport::Runway &rhs) {
@@ -472,8 +469,7 @@ bool airmap::operator==(const SpecialUseAirspace &lhs, const SpecialUseAirspace 
   return lhs.type == rhs.type;
 }
 
-bool airmap::operator==(const TemporaryFlightRestriction &lhs,
-                        const TemporaryFlightRestriction &rhs) {
+bool airmap::operator==(const TemporaryFlightRestriction &lhs, const TemporaryFlightRestriction &rhs) {
   return lhs.url == rhs.url && lhs.type == rhs.type && lhs.reason == rhs.reason;
 }
 
@@ -540,11 +536,9 @@ std::ostream &airmap::operator<<(std::ostream &out, Airspace::Type types) {
 
   if ((types & airmap::Airspace::Type::airport) == airmap::Airspace::Type::airport)
     out << comma << "airport";
-  if ((types & airmap::Airspace::Type::controlled_airspace) ==
-      airmap::Airspace::Type::controlled_airspace)
+  if ((types & airmap::Airspace::Type::controlled_airspace) == airmap::Airspace::Type::controlled_airspace)
     out << comma << "controlled_airspace";
-  if ((types & airmap::Airspace::Type::special_use_airspace) ==
-      airmap::Airspace::Type::special_use_airspace)
+  if ((types & airmap::Airspace::Type::special_use_airspace) == airmap::Airspace::Type::special_use_airspace)
     out << comma << "special_use_airspace";
   if ((types & airmap::Airspace::Type::tfr) == airmap::Airspace::Type::tfr)
     out << comma << "tfr";

@@ -48,14 +48,12 @@ static constexpr const char* option  = "    --%1% %2%";
 void add_to_desc_for_flags(po::options_description& desc, const std::set<cli::Flag::Ptr>& flags) {
   for (auto flag : flags) {
     auto v = po::value<std::string>()->notifier([flag](const std::string& s) { flag->notify(s); });
-    desc.add_options()(flag->name().as_string().c_str(), v,
-                       flag->description().as_string().c_str());
+    desc.add_options()(flag->name().as_string().c_str(), v, flag->description().as_string().c_str());
   }
 }
 }  // namespace
 
-airmap::util::cli::ProgressBar::ProgressBar(std::ostream& out, const std::string& prefix,
-                                            std::uint32_t width)
+airmap::util::cli::ProgressBar::ProgressBar(std::ostream& out, const std::string& prefix, std::uint32_t width)
     : prefix{prefix}, width{width}, out{out} {
 }
 
@@ -75,8 +73,8 @@ void airmap::util::cli::ProgressBar::update(double percentage) {
   } cs{out};
 
   out << "\r" << prefix << "[" << std::setw(width) << std::left << std::setfill(' ')
-      << std::string(percentage * width, '=') << "] " << std::setw(5) << std::fixed
-      << std::setprecision(2) << percentage * 100 << " %" << std::flush;
+      << std::string(percentage * width, '=') << "] " << std::setw(5) << std::fixed << std::setprecision(2)
+      << percentage * 100 << " %" << std::flush;
 }
 
 std::vector<std::string> cli::args(int argc, char** argv) {
@@ -94,16 +92,13 @@ const cli::Description& cli::Flag::description() const {
   return description_;
 }
 
-cli::Flag::Flag(const Name& name, const Description& description)
-    : name_{name}, description_{description} {
+cli::Flag::Flag(const Name& name, const Description& description) : name_{name}, description_{description} {
 }
 
-cli::Command::FlagsWithInvalidValue::FlagsWithInvalidValue()
-    : std::runtime_error{"Flags with invalid value"} {
+cli::Command::FlagsWithInvalidValue::FlagsWithInvalidValue() : std::runtime_error{"Flags with invalid value"} {
 }
 
-cli::Command::FlagsMissing::FlagsMissing()
-    : std::runtime_error{"Flags are missing in command invocation"} {
+cli::Command::FlagsMissing::FlagsMissing() : std::runtime_error{"Flags are missing in command invocation"} {
 }
 
 cli::Name cli::Command::name() const {
@@ -118,8 +113,7 @@ cli::Description cli::Command::description() const {
   return description_;
 }
 
-cli::Command::Command(const cli::Name& name, const cli::Usage& usage,
-                      const cli::Description& description)
+cli::Command::Command(const cli::Name& name, const cli::Usage& usage, const cli::Description& description)
     : name_(name), usage_(usage), description_(description) {
 }
 
@@ -140,8 +134,8 @@ cli::CommandWithSubcommands& cli::CommandWithSubcommands::flag(const Flag::Ptr& 
 }
 
 void cli::CommandWithSubcommands::help(std::ostream& out) {
-  out << boost::format(pattern::help_for_command_with_subcommands) % name().as_string() %
-             usage().as_string() % name().as_string()
+  out << boost::format(pattern::help_for_command_with_subcommands) % name().as_string() % usage().as_string() %
+             name().as_string()
       << std::endl;
 
   if (flags_.size() > 0) {
@@ -153,8 +147,7 @@ void cli::CommandWithSubcommands::help(std::ostream& out) {
   if (commands_.size() > 0) {
     out << std::endl << pattern::commands << std::endl;
     for (const auto& cmd : commands_)
-      out << boost::format(pattern::command) % cmd.second->name() % cmd.second->description()
-          << std::endl;
+      out << boost::format(pattern::command) % cmd.second->name() % cmd.second->description() << std::endl;
   }
 }
 
@@ -179,8 +172,8 @@ int cli::CommandWithSubcommands::run(const cli::Command::Context& ctxt) {
     po::store(parsed, vm);
     po::notify(vm);
 
-    return commands_[vm["command"].as<std::string>()]->run(cli::Command::Context{
-        ctxt.cin, ctxt.cout, po::collect_unrecognized(parsed.options, po::include_positional)});
+    return commands_[vm["command"].as<std::string>()]->run(
+        cli::Command::Context{ctxt.cin, ctxt.cout, po::collect_unrecognized(parsed.options, po::include_positional)});
   } catch (const po::error& e) {
     ctxt.cout << e.what() << std::endl;
     help(ctxt.cout);
@@ -228,8 +221,8 @@ int cli::CommandWithFlagsAndAction::run(const Context& ctxt) {
       return EXIT_SUCCESS;
     }
 
-    return action_(cli::Command::Context{
-        ctxt.cin, ctxt.cout, po::collect_unrecognized(parsed.options, po::exclude_positional)});
+    return action_(
+        cli::Command::Context{ctxt.cin, ctxt.cout, po::collect_unrecognized(parsed.options, po::exclude_positional)});
   } catch (const po::error& e) {
     ctxt.cout << e.what() << std::endl;
     help(ctxt.cout);
@@ -240,8 +233,8 @@ int cli::CommandWithFlagsAndAction::run(const Context& ctxt) {
 }
 
 void cli::CommandWithFlagsAndAction::help(std::ostream& out) {
-  out << boost::format(pattern::help_for_command_with_subcommands) % name().as_string() %
-             description().as_string() % name().as_string()
+  out << boost::format(pattern::help_for_command_with_subcommands) % name().as_string() % description().as_string() %
+             name().as_string()
       << std::endl;
 
   if (flags_.size() > 0) {

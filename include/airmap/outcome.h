@@ -11,11 +11,9 @@ template <typename Value, typename Error>
 class Outcome {
  public:
   static_assert(not std::is_same<Value, Error>::value, "Value and Error must not be the same type");
-  static_assert(std::is_copy_constructible<Value>::value &&
-                    std::is_move_constructible<Value>::value,
+  static_assert(std::is_copy_constructible<Value>::value && std::is_move_constructible<Value>::value,
                 "Value must be copy- and move-constructible");
-  static_assert(std::is_copy_constructible<Error>::value &&
-                    std::is_move_constructible<Error>::value,
+  static_assert(std::is_copy_constructible<Error>::value && std::is_move_constructible<Error>::value,
                 "Error must be copy- and move-constructible");
 
   explicit Outcome(const Value& value) : type{Type::value} {

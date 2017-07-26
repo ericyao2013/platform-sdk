@@ -88,9 +88,7 @@ void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::st
         position.set_altitude_msl(update.position().altitude_msl);
         position.set_horizontal_accuracy(update.position().horizontal_accuracy);
         auto message = position.SerializeAsString();
-        payload
-            .add<std::uint16_t>(
-                htons(static_cast<std::uint16_t>(Telemetry::Update::Type::position)))
+        payload.add<std::uint16_t>(htons(static_cast<std::uint16_t>(Telemetry::Update::Type::position)))
             .add<std::uint16_t>(htons(message.size()))
             .add(message);
         break;
@@ -102,8 +100,7 @@ void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::st
         speed.set_velocity_y(update.speed().velocity_y);
         speed.set_velocity_z(update.speed().velocity_z);
         auto message = speed.SerializeAsString();
-        payload
-            .add<std::uint16_t>(htons(static_cast<std::uint16_t>(Telemetry::Update::Type::speed)))
+        payload.add<std::uint16_t>(htons(static_cast<std::uint16_t>(Telemetry::Update::Type::speed)))
             .add<std::uint16_t>(htons(message.size()))
             .add(message);
         break;
@@ -115,9 +112,7 @@ void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::st
         attitude.set_pitch(update.attitude().pitch);
         attitude.set_roll(update.attitude().roll);
         auto message = attitude.SerializeAsString();
-        payload
-            .add<std::uint16_t>(
-                htons(static_cast<std::uint16_t>(Telemetry::Update::Type::attitude)))
+        payload.add<std::uint16_t>(htons(static_cast<std::uint16_t>(Telemetry::Update::Type::attitude)))
             .add<std::uint16_t>(htons(message.size()))
             .add(message);
         break;
@@ -127,9 +122,7 @@ void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::st
         barometer.set_timestamp(update.barometer().timestamp);
         barometer.set_pressure(update.barometer().pressure);
         auto message = barometer.SerializeAsString();
-        payload
-            .add<std::uint16_t>(
-                htons(static_cast<std::uint16_t>(Telemetry::Update::Type::barometer)))
+        payload.add<std::uint16_t>(htons(static_cast<std::uint16_t>(Telemetry::Update::Type::barometer)))
             .add<std::uint16_t>(htons(message.size()))
             .add(message);
         break;
@@ -143,16 +136,13 @@ void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::st
   rng_.GenerateBlock(iv.data(), iv.size());
 
   std::string decoded_key;
-  CryptoPP::StringSource decoder(
-      key, true, new CryptoPP::Base64Decoder(new CryptoPP::StringSink(decoded_key)));
+  CryptoPP::StringSource decoder(key, true, new CryptoPP::Base64Decoder(new CryptoPP::StringSink(decoded_key)));
 
   CryptoPP::CBC_Mode<CryptoPP::AES>::Encryption enc;
-  enc.SetKeyWithIV(reinterpret_cast<const byte*>(decoded_key.c_str()), decoded_key.size(),
-                   iv.data());
+  enc.SetKeyWithIV(reinterpret_cast<const byte*>(decoded_key.c_str()), decoded_key.size(), iv.data());
 
-  CryptoPP::StringSource s(
-      payload.get(), true,
-      new CryptoPP::StreamTransformationFilter(enc, new CryptoPP::StringSink(cipher)));
+  CryptoPP::StringSource s(payload.get(), true,
+                           new CryptoPP::StreamTransformationFilter(enc, new CryptoPP::StringSink(cipher)));
 
   Buffer packet;
   communicator_.send_udp(::telemetry::host_from_env(), ::telemetry::port_from_env(),

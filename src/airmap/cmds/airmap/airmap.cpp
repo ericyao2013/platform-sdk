@@ -1,6 +1,7 @@
 #include <airmap/cmds/airmap/cmd/authorize.h>
 #include <airmap/cmds/airmap/cmd/create_flight.h>
 #include <airmap/cmds/airmap/cmd/simulate_telemetry.h>
+#include <airmap/cmds/airmap/cmd/start_flight_comms.h>
 
 #include <airmap/do_not_copy_or_move.h>
 #include <airmap/util/cli.h>
@@ -17,6 +18,7 @@ class Airmap : airmap::DoNotCopyOrMove {
              cli::Description{"interacts with AirMap services"}} {
     cmd_.command(std::make_shared<cmd::Authorize>());
     cmd_.command(std::make_shared<cmd::CreateFlight>());
+    cmd_.command(std::make_shared<cmd::StartFlightComms>());
     cmd_.command(std::make_shared<cmd::SimulateTelemetry>());
   }
 

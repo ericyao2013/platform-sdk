@@ -100,8 +100,7 @@ class Geometry {
 bool operator==(const Geometry::Coordinate& lhs, const Geometry::Coordinate& rhs);
 
 template <Geometry::Type tag>
-bool operator==(const Geometry::CoordinateVector<tag>& lhs,
-                const Geometry::CoordinateVector<tag>& rhs) {
+bool operator==(const Geometry::CoordinateVector<tag>& lhs, const Geometry::CoordinateVector<tag>& rhs) {
   return lhs.coordinates == rhs.coordinates;
 }
 

@@ -98,8 +98,7 @@ const airmap::Geometry::MultiPolygon& airmap::Geometry::details_for_multi_polygo
   return data_.multi_polygon;
 }
 
-const airmap::Geometry::GeometryCollection airmap::Geometry::details_for_geometry_collection()
-    const {
+const airmap::Geometry::GeometryCollection airmap::Geometry::details_for_geometry_collection() const {
   return data_.geometry_collection;
 }
 
@@ -218,6 +217,5 @@ airmap::Geometry airmap::Geometry::polygon(const std::vector<Coordinate>& coordi
 }
 
 bool airmap::operator==(const Geometry::Coordinate& lhs, const Geometry::Coordinate& rhs) {
-  return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude &&
-         lhs.altitude == rhs.altitude;
+  return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude && lhs.altitude == rhs.altitude;
 }

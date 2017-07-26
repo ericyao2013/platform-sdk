@@ -18,15 +18,14 @@ std::array<int, 2> create_pipe_or_throw() {
 
 }  // namespace
 
-airmap::rest::glib::Communicator::CreateResult airmap::rest::glib::Communicator::create(
-    const std::string& api_key) {
+airmap::rest::glib::Communicator::CreateResult airmap::rest::glib::Communicator::create(const std::string& api_key) {
   return CreateResult{std::shared_ptr<Communicator>{new Communicator{api_key}}};
 }
 
 void airmap::rest::glib::Communicator::run() {
   g_main_context_push_thread_default(main_context_.get());
-  g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_),
-                            G_PRIORITY_LOW, nullptr, Communicator::on_pipe_fd_read_finished, this);
+  g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_), G_PRIORITY_LOW,
+                            nullptr, Communicator::on_pipe_fd_read_finished, this);
   g_main_loop_run(main_loop_.get());
   g_main_context_pop_thread_default(main_context_.get());
 }
@@ -37,8 +36,7 @@ void airmap::rest::glib::Communicator::stop() {
 
 void airmap::rest::glib::Communicator::get(const std::string& host, const std::string& path,
                                            std::unordered_map<std::string, std::string>&& query,
-                                           std::unordered_map<std::string, std::string>&& headers,
-                                           DoCallback cb) {
+                                           std::unordered_map<std::string, std::string>&& headers, DoCallback cb) {
   auto sp = shared_from_this();
   std::weak_ptr<Communicator> wp{sp};
 
@@ -96,8 +94,7 @@ void airmap::rest::glib::Communicator::post(const std::string& host, const std::
   });
 }
 
-void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::uint16_t port,
-                                                const std::string& body) {
+void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::uint16_t port, const std::string& body) {
   dispatch([ host, port, body = std::move(body) ]() {
     if (auto connectable = g_network_address_parse(host.c_str(), port, nullptr)) {
       if (auto enumerator = g_socket_connectable_enumerate(connectable)) {
@@ -106,12 +103,12 @@ void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::ui
                                                if (address)
                                                  g_object_unref(address);
                                              }};
-          std::shared_ptr<GSocket> s{g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM,
-                                                  G_SOCKET_PROTOCOL_UDP, nullptr),
-                                     [](GSocket* socket) {
-                                       if (socket)
-                                         g_object_unref(socket);
-                                     }};
+          std::shared_ptr<GSocket> s{
+              g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, nullptr),
+              [](GSocket* socket) {
+                if (socket)
+                  g_object_unref(socket);
+              }};
 
           // TODO(tvoss): Add error handling here.
           g_socket_send_to(s.get(), sa.get(), body.c_str(), body.size(), nullptr, nullptr);
@@ -123,16 +120,14 @@ void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::ui
   });
 }
 
-void airmap::rest::glib::Communicator::soup_session_callback(SoupSession*, SoupMessage* msg,
-                                                             gpointer user_data) {
+void airmap::rest::glib::Communicator::soup_session_callback(SoupSession*, SoupMessage* msg, gpointer user_data) {
   if (auto context = static_cast<SoupSessionCallbackContext*>(user_data)) {
     if (auto sp = context->wp.lock()) {
       auto cb = std::move(context->cb);
       delete (context);
 
       if (msg->response_body) {
-        cb(DoResult{std::string{msg->response_body->data,
-                                static_cast<std::size_t>(msg->response_body->length)}});
+        cb(DoResult{std::string{msg->response_body->data, static_cast<std::size_t>(msg->response_body->length)}});
       } else {
         cb(DoResult{static_cast<std::uint16_t>(msg->status_code)});
       }
@@ -140,8 +135,7 @@ void airmap::rest::glib::Communicator::soup_session_callback(SoupSession*, SoupM
   }
 }
 
-void airmap::rest::glib::Communicator::on_pipe_fd_read_finished(GObject*, GAsyncResult*,
-                                                                gpointer user_data) {
+void airmap::rest::glib::Communicator::on_pipe_fd_read_finished(GObject*, GAsyncResult*, gpointer user_data) {
   if (auto context = static_cast<Communicator*>(user_data)) {
     context->on_pipe_fd_read_finished();
   }
@@ -149,10 +143,8 @@ void airmap::rest::glib::Communicator::on_pipe_fd_read_finished(GObject*, GAsync
 
 airmap::rest::glib::Communicator::Communicator(const std::string& api_key)
     : api_key_{api_key},
-      main_context_{g_main_context_new(),
-                    [](GMainContext* context) { g_main_context_unref(context); }},
-      main_loop_{g_main_loop_new(main_context_.get(), FALSE),
-                 [](GMainLoop* ml) { g_main_loop_unref(ml); }},
+      main_context_{g_main_context_new(), [](GMainContext* context) { g_main_context_unref(context); }},
+      main_loop_{g_main_loop_new(main_context_.get(), FALSE), [](GMainLoop* ml) { g_main_loop_unref(ml); }},
       pipe_fds_{create_pipe_or_throw()},
       pipe_input_stream_{g_unix_input_stream_new(pipe_fds_[0], FALSE),
                          [](GInputStream* stream) {
@@ -189,6 +181,6 @@ void airmap::rest::glib::Communicator::on_pipe_fd_read_finished() {
     functors.pop();
   }
 
-  g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_),
-                            G_PRIORITY_LOW, nullptr, Communicator::on_pipe_fd_read_finished, this);
+  g_input_stream_read_async(pipe_input_stream_.get(), &pipe_read_buffer_, sizeof(pipe_read_buffer_), G_PRIORITY_LOW,
+                            nullptr, Communicator::on_pipe_fd_read_finished, this);
 }

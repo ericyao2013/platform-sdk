@@ -76,8 +76,8 @@ inline void decode(const nlohmann::json& j, Geometry::Type& t) {
 }
 
 inline void decode(const nlohmann::json& j, Geometry::Coordinate& c) {
-  c.latitude  = j.at(0).get<float>();
-  c.longitude = j.at(1).get<float>();
+  c.latitude  = j.at(1).get<float>();
+  c.longitude = j.at(0).get<float>();
   if (j.size() > 2)
     c.altitude = j.at(2).get<float>();
 }

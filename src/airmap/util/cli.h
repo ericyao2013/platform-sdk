@@ -45,8 +45,7 @@ namespace cli {
 class ProgressBar {
  public:
   /// @brief ProgressBar initializes an instance with out, prefix and width.
-  ProgressBar(std::ostream& out, const std::string& prefix = std::string{},
-              std::uint32_t width = 80);
+  ProgressBar(std::ostream& out, const std::string& prefix = std::string{}, std::uint32_t width = 80);
   /// @brief ~ProgressBar cleans up and inserts a std::endl into out.
   ~ProgressBar();
 
@@ -351,8 +350,7 @@ typename TypedReferenceFlag<T>::Ptr make_flag(const Name& name, const Descriptio
 /// @brief make_flag returns a flag with the given name and description, updating the given optional
 /// value.
 template <typename T>
-typename OptionalTypedReferenceFlag<T>::Ptr make_flag(const Name& name, const Description& desc,
-                                                      Optional<T>& value) {
+typename OptionalTypedReferenceFlag<T>::Ptr make_flag(const Name& name, const Description& desc, Optional<T>& value) {
   return std::make_shared<OptionalTypedReferenceFlag<T>>(name, desc, value);
 }
 }  // namespace cli

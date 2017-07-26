@@ -3,6 +3,7 @@
 
 #include <airmap/flight.h>
 #include <airmap/flights.h>
+#include <airmap/optional.h>
 #include <airmap/telemetry.h>
 #include <airmap/util/cli.h>
 
@@ -19,12 +20,12 @@ class SimulateTelemetry : public util::cli::CommandWithFlagsAndAction {
   struct {
     std::string api_key;
     std::string authorization;
-    std::string flight_id;
     std::string host{"127.0.0.1"};
     std::uint16_t port{16060};
     std::uint16_t frequency{5};
     Flight flight{};
     std::string encryption_key{"MDAwMDExMTEyMjIyMzMzMzQ0NDQ1NTU1NjY2Njc3Nzc="};
+    Optional<std::string> geometry_file;
   } params_;
 };
 
