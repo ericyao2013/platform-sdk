@@ -40,12 +40,10 @@ class Communicator : public airmap::rest::Communicator,
   void stop() override;
 
   // From airmap::rest::Communicator
-  void get(const std::string& host, const std::string& path,
-           std::unordered_map<std::string, std::string>&& query,
+  void get(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& query,
            std::unordered_map<std::string, std::string>&& headers, DoCallback cb) override;
-  void post(const std::string& host, const std::string& path,
-            std::unordered_map<std::string, std::string>&& headers, const std::string& body,
-            DoCallback cb) override;
+  void post(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& headers,
+            const std::string& body, DoCallback cb) override;
   void send_udp(const std::string& host, std::uint16_t port, const std::string& body) override;
   void dispatch(const std::function<void()>& task) override;
 

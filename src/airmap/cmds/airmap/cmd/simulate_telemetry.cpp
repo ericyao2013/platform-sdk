@@ -15,40 +15,34 @@ using json = nlohmann::json;
 
 namespace {
 
-auto polygon = airmap::Geometry::polygon(
-    {airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043, airmap::Optional<double>{},
-                                  airmap::Optional<double>{}},
-     airmap::Geometry::Coordinate{47.37629618703235, 8.545989990234375, airmap::Optional<double>{},
-                                  airmap::Optional<double>{}},
-     airmap::Geometry::Coordinate{47.37667398429217, 8.548049926757812, airmap::Optional<double>{},
-                                  airmap::Optional<double>{}},
-     airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043, airmap::Optional<double>{},
-                                  airmap::Optional<double>{}}});
+auto polygon =
+    airmap::Geometry::polygon({airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043,
+                                                            airmap::Optional<double>{}, airmap::Optional<double>{}},
+                               airmap::Geometry::Coordinate{47.37629618703235, 8.545989990234375,
+                                                            airmap::Optional<double>{}, airmap::Optional<double>{}},
+                               airmap::Geometry::Coordinate{47.37667398429217, 8.548049926757812,
+                                                            airmap::Optional<double>{}, airmap::Optional<double>{}},
+                               airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043,
+                                                            airmap::Optional<double>{}, airmap::Optional<double>{}}});
 }
 
 cmd::SimulateTelemetry::SimulateTelemetry()
-    : cli::CommandWithFlagsAndAction{
-          cli::Name{"simulate-telemetry"},
-          cli::Usage{"inject artificial telemetry data for a given flight"},
-          cli::Description{"inject artificial telemetry data for a given flight"}} {
-  flag(cli::make_flag(cli::Name{"api-key"},
-                      cli::Description{"api-key for authenticating with the AirMap services"},
+    : cli::CommandWithFlagsAndAction{cli::Name{"simulate-telemetry"},
+                                     cli::Usage{"inject artificial telemetry data for a given flight"},
+                                     cli::Description{"inject artificial telemetry data for a given flight"}} {
+  flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       params_.api_key));
   flag(cli::make_flag(cli::Name{"authorization"},
-                      cli::Description{"token used for authorizing with the AirMap services"},
-                      params_.authorization));
-  flag(cli::make_flag(cli::Name{"encryption-key"},
-                      cli::Description{"key used for encrypting telemetry messages"},
+                      cli::Description{"token used for authorizing with the AirMap services"}, params_.authorization));
+  flag(cli::make_flag(cli::Name{"encryption-key"}, cli::Description{"key used for encrypting telemetry messages"},
                       params_.encryption_key));
   flag(cli::make_flag(cli::Name{"host"}, cli::Description{"telemetry host address"}, params_.host));
   flag(cli::make_flag(cli::Name{"port"}, cli::Description{"telemetry host port"}, params_.port));
-  flag(cli::make_flag(cli::Name{"frequency"},
-                      cli::Description{"telemetry is sent with `FREQUENCY` Hz"},
+  flag(cli::make_flag(cli::Name{"frequency"}, cli::Description{"telemetry is sent with `FREQUENCY` Hz"},
                       params_.frequency));
-  flag(cli::make_flag(cli::Name{"flight-id"},
-                      cli::Description{"telemetry is sent for this flight id"}, params_.flight.id));
-  flag(cli::make_flag(cli::Name{"geometry-file"},
-                      cli::Description{"use the polygon defined in this geojson file"},
+  flag(cli::make_flag(cli::Name{"flight-id"}, cli::Description{"telemetry is sent for this flight id"},
+                      params_.flight.id));
+  flag(cli::make_flag(cli::Name{"geometry-file"}, cli::Description{"use the polygon defined in this geojson file"},
                       params_.geometry_file));
 
   action([this](const cli::Command::Context& ctxt) {
@@ -71,8 +65,7 @@ cmd::SimulateTelemetry::SimulateTelemetry()
     }
 
     auto result = Client::create_with_credentials(
-        Client::Credentials{params_.api_key},
-        [this, &ctxt, geometry](const Client::CreateResult& result) {
+        Client::Credentials{params_.api_key}, [this, &ctxt, geometry](const Client::CreateResult& result) {
           if (not result)
             return;
 
@@ -87,9 +80,8 @@ cmd::SimulateTelemetry::SimulateTelemetry()
 
               client->telemetry().submit_updates(
                   params_.flight, params_.encryption_key,
-                  {Telemetry::Update{
-                      Telemetry::Position{milliseconds_since_epoch(Clock::universal_time()),
-                                          data.latitude, data.longitude, 100, 100, 2}}});
+                  {Telemetry::Update{Telemetry::Position{milliseconds_since_epoch(Clock::universal_time()),
+                                                         data.latitude, data.longitude, 100, 100, 2}}});
               std::this_thread::sleep_for(std::chrono::milliseconds{1000 / params_.frequency});
             }
           }};

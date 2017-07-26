@@ -34,8 +34,7 @@ airmap::Geometry::Coordinate airmap::util::TelemetrySimulator::update() {
   auto now = Clock::now();
   auto dt  = std::chrono::duration_cast<std::chrono::milliseconds>(now - current_time_);
 
-  current_data_ =
-      segment_ruler_.destination(current_data_, (dt.count() / 1E3) * 2., segment_bearing_);
+  current_data_ = segment_ruler_.destination(current_data_, (dt.count() / 1E3) * 2., segment_bearing_);
   current_time_ = Clock::now();
 
   return current_data_;

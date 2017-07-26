@@ -38,8 +38,7 @@ inline void decode(const nlohmann::json& j, Flights::DeleteFlight::Response& res
   get(response.id, j, "id");
 }
 
-inline void decode(const nlohmann::json& j,
-                   Flights::StartFlightCommunications::Response& response) {
+inline void decode(const nlohmann::json& j, Flights::StartFlightCommunications::Response& response) {
   get(response.key, j, "key");
 }
 

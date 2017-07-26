@@ -9,29 +9,25 @@
 
 using json = nlohmann::json;
 
-airmap::rest::Airspaces::Airspaces(airmap::rest::Communicator& communicator)
-    : communicator_{communicator} {
+airmap::rest::Airspaces::Airspaces(airmap::rest::Communicator& communicator) : communicator_{communicator} {
 }
 
-void airmap::rest::Airspaces::search(const Search::Parameters& parameters,
-                                     const Search::Callback& cb) {
+void airmap::rest::Airspaces::search(const Search::Parameters& parameters, const Search::Callback& cb) {
   std::unordered_map<std::string, std::string> query, headers;
   codec::http::query::encode(query, parameters);
 
-  communicator_.get("https://api.airmap.com", "/airspace/v2/search", std::move(query),
-                    std::move(headers), [cb](const Communicator::DoResult& result) {
+  communicator_.get("https://api.airmap.com", "/airspace/v2/search", std::move(query), std::move(headers),
+                    [cb](const Communicator::DoResult& result) {
                       if (result) {
                         cb(jsend::to_outcome<std::vector<Airspace>>(json::parse(result.value())));
                       }
                     });
 }
 
-void airmap::rest::Airspaces::for_ids(const ForIds::Parameters& parameters,
-                                      const ForIds::Callback& cb) {
+void airmap::rest::Airspaces::for_ids(const ForIds::Parameters& parameters, const ForIds::Callback& cb) {
   std::unordered_map<std::string, std::string> query, headers;
-  communicator_.get("https://api.airmap.com",
-                    (boost::format("/airspace/v2/%1%") % parameters.id).str(), std::move(query),
-                    std::move(headers), [cb](const Communicator::DoResult& result) {
+  communicator_.get("https://api.airmap.com", (boost::format("/airspace/v2/%1%") % parameters.id).str(),
+                    std::move(query), std::move(headers), [cb](const Communicator::DoResult& result) {
                       if (result) {
                         cb(jsend::to_outcome<std::vector<Airspace>>(json::parse(result.value())));
                       }

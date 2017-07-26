@@ -32,8 +32,8 @@ double airmap::util::CheapRuler::distance(const airmap::Geometry::Coordinate& p1
   return std::sqrt(dx * dx + dy * dy);
 }
 
-airmap::Geometry::Coordinate airmap::util::CheapRuler::destination(
-    const airmap::Geometry::Coordinate& c, double distance, double bearing) const {
+airmap::Geometry::Coordinate airmap::util::CheapRuler::destination(const airmap::Geometry::Coordinate& c,
+                                                                   double distance, double bearing) const {
   auto a      = (90 - bearing) * M_PI / 180;
   auto result = c;
 

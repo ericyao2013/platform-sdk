@@ -16,14 +16,12 @@ namespace codec {
 namespace http {
 namespace query {
 
-inline void encode(std::unordered_map<std::string, std::string>& query,
-                   const Flights::ForId::Parameters& parameters) {
+inline void encode(std::unordered_map<std::string, std::string>& query, const Flights::ForId::Parameters& parameters) {
   if (parameters.enhance)
     query["enhance"] = parameters.enhance.get() ? "true" : "false";
 }
 
-inline void encode(std::unordered_map<std::string, std::string>& query,
-                   const Flights::Search::Parameters& parameters) {
+inline void encode(std::unordered_map<std::string, std::string>& query, const Flights::Search::Parameters& parameters) {
   if (parameters.limit)
     query["limit"] = boost::lexical_cast<std::string>(parameters.limit.get());
   if (parameters.geometry) {

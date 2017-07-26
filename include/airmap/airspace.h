@@ -100,8 +100,8 @@ class Airspace {
     hospital             = 1 << 10,
     fire                 = 1 << 11,
     emergency            = 1 << 12,
-    all = airport | controlled_airspace | special_use_airspace | tfr | wildfire | park |
-          power_plant | heliport | prison | school | hospital | fire | emergency
+    all = airport | controlled_airspace | special_use_airspace | tfr | wildfire | park | power_plant | heliport |
+          prison | school | hospital | fire | emergency
   };
 
   using Id = std::string;

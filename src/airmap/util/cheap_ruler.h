@@ -14,8 +14,7 @@ class CheapRuler {
 
   double bearing(const Geometry::Coordinate& p1, const Geometry::Coordinate& p2) const;
   double distance(const Geometry::Coordinate& p1, const Geometry::Coordinate& p2) const;
-  Geometry::Coordinate destination(const Geometry::Coordinate& c, double distance,
-                                   double bearing) const;
+  Geometry::Coordinate destination(const Geometry::Coordinate& c, double distance, double bearing) const;
 
  private:
   double kx_{0.f};

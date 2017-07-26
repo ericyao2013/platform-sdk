@@ -7,24 +7,23 @@
 
 using json = nlohmann::json;
 
-airmap::rest::Authenticator::Authenticator(Communicator& communicator)
-    : communicator_{communicator} {
+airmap::rest::Authenticator::Authenticator(Communicator& communicator) : communicator_{communicator} {
 }
 
-void airmap::rest::Authenticator::authenticate_with_password(
-    const AuthenticateWithPassword::Params&, const AuthenticateWithPassword::Callback&) {
+void airmap::rest::Authenticator::authenticate_with_password(const AuthenticateWithPassword::Params&,
+                                                             const AuthenticateWithPassword::Callback&) {
   throw std::runtime_error{"not implemented"};
 }
 
-void airmap::rest::Authenticator::authenticate_anonymously(
-    const AuthenticateAnonymously::Params& params, const AuthenticateAnonymously::Callback& cb) {
+void airmap::rest::Authenticator::authenticate_anonymously(const AuthenticateAnonymously::Params& params,
+                                                           const AuthenticateAnonymously::Callback& cb) {
   std::unordered_map<std::string, std::string> headers;
 
   json j;
   j = params;
 
-  communicator_.post("https://api.airmap.com", "/auth/v1/anonymous/token", std::move(headers),
-                     j.dump(), [cb](const Communicator::DoResult& result) {
+  communicator_.post("https://api.airmap.com", "/auth/v1/anonymous/token", std::move(headers), j.dump(),
+                     [cb](const Communicator::DoResult& result) {
                        if (result) {
                          cb(jsend::to_outcome<AnonymousToken>(json::parse(result.value())));
                        }

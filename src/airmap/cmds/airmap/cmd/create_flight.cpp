@@ -26,44 +26,31 @@ void print_flight(std::ostream& out, const airmap::Flight& flight) {
 }  // namespace
 
 cmd::CreateFlight::CreateFlight()
-    : cli::CommandWithFlagsAndAction{
-          cli::Name{"create-flight"},
-          cli::Usage{"creates a flight and registers it with the airmap services"},
-          cli::Description{"creates a flight and registers it with the airmap services"}} {
+    : cli::CommandWithFlagsAndAction{cli::Name{"create-flight"},
+                                     cli::Usage{"creates a flight and registers it with the airmap services"},
+                                     cli::Description{"creates a flight and registers it with the airmap services"}} {
   params_.start_time = Clock::universal_time();
   params_.end_time   = params_.start_time + Minutes(5);
 
-  flag(cli::make_flag(cli::Name{"api-key"},
-                      cli::Description{"api-key for authenticating with the AirMap services"},
+  flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       api_key_));
   flag(cli::make_flag(cli::Name{"authorization"},
-                      cli::Description{"token used for authorizing with the AirMap services"},
-                      params_.authorization));
-  flag(cli::make_flag(cli::Name{"latitude"}, cli::Description{"latitude of take-off point"},
-                      params_.latitude));
-  flag(cli::make_flag(cli::Name{"longitude"}, cli::Description{"longitude of take-off point"},
-                      params_.longitude));
-  flag(cli::make_flag(cli::Name{"max-altitude"},
-                      cli::Description{"maximum altitude reached during flight"},
+                      cli::Description{"token used for authorizing with the AirMap services"}, params_.authorization));
+  flag(cli::make_flag(cli::Name{"latitude"}, cli::Description{"latitude of take-off point"}, params_.latitude));
+  flag(cli::make_flag(cli::Name{"longitude"}, cli::Description{"longitude of take-off point"}, params_.longitude));
+  flag(cli::make_flag(cli::Name{"max-altitude"}, cli::Description{"maximum altitude reached during flight"},
                       params_.max_altitude));
-  flag(cli::make_flag(cli::Name{"aircraft-id"},
-                      cli::Description{"id of aircraft that executes the flight"},
+  flag(cli::make_flag(cli::Name{"aircraft-id"}, cli::Description{"id of aircraft that executes the flight"},
                       params_.aircraft_id));
-  flag(cli::make_flag(cli::Name{"start-time"}, cli::Description{"planned start-time of flight"},
-                      params_.start_time));
-  flag(cli::make_flag(cli::Name{"end-time"}, cli::Description{"planned end-time of flight"},
-                      params_.end_time));
-  flag(cli::make_flag(cli::Name{"is-public"},
-                      cli::Description{"mark the flight as publicly visible on dashboards"},
+  flag(cli::make_flag(cli::Name{"start-time"}, cli::Description{"planned start-time of flight"}, params_.start_time));
+  flag(cli::make_flag(cli::Name{"end-time"}, cli::Description{"planned end-time of flight"}, params_.end_time));
+  flag(cli::make_flag(cli::Name{"is-public"}, cli::Description{"mark the flight as publicly visible on dashboards"},
                       params_.is_public));
-  flag(cli::make_flag(cli::Name{"give-digital-notice"},
-                      cli::Description{"give digital notice to regulators"},
+  flag(cli::make_flag(cli::Name{"give-digital-notice"}, cli::Description{"give digital notice to regulators"},
                       params_.give_digital_notice));
-  flag(cli::make_flag(cli::Name{"buffer"},
-                      cli::Description{"radius of flight zone centered around the take-off point"},
+  flag(cli::make_flag(cli::Name{"buffer"}, cli::Description{"radius of flight zone centered around the take-off point"},
                       params_.buffer));
-  flag(cli::make_flag(cli::Name{"geometry-file"},
-                      cli::Description{"use the polygon defined in this geojson file"},
+  flag(cli::make_flag(cli::Name{"geometry-file"}, cli::Description{"use the polygon defined in this geojson file"},
                       geometry_file_));
 
   action([this](const cli::Command::Context& ctxt) {
@@ -81,8 +68,7 @@ cmd::CreateFlight::CreateFlight()
           auto context = result.value().context;
           auto client  = result.value().client;
 
-          auto handler = [this, &ctxt, context,
-                          client](const Flights::CreateFlight::Result& result) {
+          auto handler = [this, &ctxt, context, client](const Flights::CreateFlight::Result& result) {
             if (result)
               print_flight(ctxt.cout, result.value());
             else

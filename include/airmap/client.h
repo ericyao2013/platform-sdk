@@ -49,8 +49,7 @@ class Client : DoNotCopyOrMove {
   ///
   /// TODO(tvoss): Depending on the scope of this core SDK, determine whether
   /// the embedded libc++ used by NuttX properly supports std::shared_ptr.
-  static ContextResult create_with_credentials(const Credentials& credentials,
-                                               const CreateCallback& cb);
+  static ContextResult create_with_credentials(const Credentials& credentials, const CreateCallback& cb);
 
   /// authenticator returns the Authenticator implementation provided by the client.
   virtual Authenticator& authenticator() = 0;
