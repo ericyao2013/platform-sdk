@@ -132,6 +132,8 @@ void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::st
 
   std::string cipher;
 
+  using byte = unsigned char;
+
   std::vector<std::uint8_t> iv(16, 0);
   rng_.GenerateBlock(iv.data(), iv.size());
 
@@ -139,7 +141,7 @@ void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::st
   CryptoPP::StringSource decoder(key, true, new CryptoPP::Base64Decoder(new CryptoPP::StringSink(decoded_key)));
 
   CryptoPP::CBC_Mode<CryptoPP::AES>::Encryption enc;
-  enc.SetKeyWithIV(reinterpret_cast<const CryptoPP::byte*>(decoded_key.c_str()), decoded_key.size(), iv.data());
+  enc.SetKeyWithIV(reinterpret_cast<const byte*>(decoded_key.c_str()), decoded_key.size(), iv.data());
 
   CryptoPP::StringSource s(payload.get(), true,
                            new CryptoPP::StreamTransformationFilter(enc, new CryptoPP::StringSink(cipher)));
