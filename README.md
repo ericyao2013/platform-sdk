@@ -11,14 +11,11 @@ cd build && cmake .. && make
 make format
 ```
 
-## Dependencies:
-  * boost:
-    * date-time
-    * program-options
-    * system
-  * protobuf
-  * cryptopp 
-  * libsoup
-  * libglib
+## Setup & Dependencies:
 
-Please use your package manager to install the dev versions of these dependencies.
+Please refer to the `setup-*.sh` scripts in the `tools/` subfolder. For Ubuntu, and under the assumption of `docker` being available,
+you can bootstrap a development environment in a `docker` container with:
+```
+docker run -v $(PWD):/airmapd -it ubuntu:16.04 bash
+tools/setup-ubuntu.sh
+```
