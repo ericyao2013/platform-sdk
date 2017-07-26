@@ -108,7 +108,9 @@ add_executable(
   src/airmap/cmds/airmap/cmd/create_flight.h
   src/airmap/cmds/airmap/cmd/create_flight.cpp
   src/airmap/cmds/airmap/cmd/simulate_telemetry.h
-  src/airmap/cmds/airmap/cmd/simulate_telemetry.cpp)
+  src/airmap/cmds/airmap/cmd/simulate_telemetry.cpp
+  src/airmap/cmds/airmap/cmd/start_flight_comms.h
+  src/airmap/cmds/airmap/cmd/start_flight_comms.cpp)
 
 add_executable(
   airmapd

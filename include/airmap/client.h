@@ -29,9 +29,17 @@ class Client : DoNotCopyOrMove {
   /// ContextResult models the synchronous result of creating a client.
   using ContextResult = Outcome<std::shared_ptr<Context>, std::exception_ptr>;
 
+  /// ClientWithContext bundles together a 'client' and its 'context'.
+  /// API users can leverage the context instance to shutdown operation
+  /// cleanly.
+  struct ClientWithContext {
+    std::shared_ptr<Context> context;
+    std::shared_ptr<Client> client;
+  };
+
   /// CreateResult models the async result of creating a new client instance xor
   /// an exception describing why creation of an instance failed.
-  using CreateResult = Outcome<std::shared_ptr<Client>, std::exception_ptr>;
+  using CreateResult = Outcome<ClientWithContext, std::exception_ptr>;
 
   /// CreateCallback is invoked when the creation of a client finishes.
   using CreateCallback = std::function<void(const CreateResult&)>;

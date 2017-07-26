@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
             return;
           }
 
-          auto client = result.value();
+          auto client = result.value().client;
 
           std::thread submitter{[client]() {
             airmap::util::TelemetrySimulator simulator{polygon.details_for_polygon()};

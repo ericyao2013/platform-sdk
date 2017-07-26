@@ -1,10 +1,29 @@
 #include <airmap/cmds/airmap/cmd/create_flight.h>
 
 #include <airmap/client.h>
+#include <airmap/codec.h>
 #include <airmap/date_time.h>
 
 namespace cli = airmap::util::cli;
 namespace cmd = airmap::cmds::airmap::cmd;
+
+using json = nlohmann::json;
+
+namespace {
+
+void print_flight(std::ostream& out, const airmap::Flight& flight) {
+  out << "Created flight with: " << std::endl
+      << "  id:         " << flight.id << std::endl
+      << "  pilot:      " << flight.pilot.id << std::endl
+      << "  aircraft:   " << flight.aircraft.id << std::endl
+      << "  latitude:   " << flight.latitude << std::endl
+      << "  longitude:  " << flight.longitude << std::endl
+      << "  created-at: " << airmap::iso8601::generate(flight.created_at) << std::endl
+      << "  start-time: " << airmap::iso8601::generate(flight.start_time) << std::endl
+      << "  end-time:   " << airmap::iso8601::generate(flight.end_time) << std::endl;
+}
+
+}  // namespace
 
 cmd::CreateFlight::CreateFlight()
     : cli::CommandWithFlagsAndAction{
@@ -43,6 +62,9 @@ cmd::CreateFlight::CreateFlight()
   flag(cli::make_flag(cli::Name{"buffer"},
                       cli::Description{"radius of flight zone centered around the take-off point"},
                       params_.buffer));
+  flag(cli::make_flag(cli::Name{"geometry-file"},
+                      cli::Description{"use the polygon defined in this geojson file"},
+                      geometry_file_));
 
   action([this](const cli::Command::Context& ctxt) {
     auto result = Client::create_with_credentials(
@@ -50,27 +72,28 @@ cmd::CreateFlight::CreateFlight()
           if (not result)
             return;
 
-          auto client = result.value();
+          if (geometry_file_) {
+            std::ifstream in{geometry_file_.get()};
+            Geometry geometry = json::parse(in);
+            params_.geometry  = geometry;
+          }
 
-          client->flights().create_flight_by_point(
-              params_, [this, &ctxt, client](const Flights::CreateFlight::Result& result) {
-                if (result) {
-                  ctxt.cout << "Created flight with: " << std::endl
-                            << "  id: " << result.value().id << std::endl
-                            << "  pilot: " << result.value().pilot.id << std::endl
-                            << "  aircraft: " << result.value().aircraft.id << std::endl
-                            << "  latitude: " << result.value().latitude << std::endl
-                            << "  longitude: " << result.value().longitude << std::endl
-                            << "  created-at: " << iso8601::generate(result.value().created_at)
-                            << std::endl
-                            << "  start-time: " << iso8601::generate(result.value().start_time)
-                            << std::endl
-                            << "  end-time: " << iso8601::generate(result.value().end_time)
-                            << std::endl;
-                } else {
-                  ctxt.cout << "Failed to create flight with id" << std::endl;
-                }
-              });
+          auto context = result.value().context;
+          auto client  = result.value().client;
+
+          auto handler = [this, &ctxt, context,
+                          client](const Flights::CreateFlight::Result& result) {
+            if (result)
+              print_flight(ctxt.cout, result.value());
+            else
+              ctxt.cout << "Failed to create flight with id" << std::endl;
+            context->stop();
+          };
+
+          if (!params_.geometry)
+            client->flights().create_flight_by_point(params_, handler);
+          else
+            client->flights().create_flight_by_polygon(params_, handler);
         });
 
     if (result)

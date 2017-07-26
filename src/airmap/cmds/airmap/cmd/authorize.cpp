@@ -22,18 +22,21 @@ cmd::Authorize::Authorize()
           if (not result)
             return;
 
-          auto client = result.value();
+          auto context = result.value().context;
+          auto client  = result.value().client;
 
-          client->authenticator().authenticate_anonymously(
-              params_,
-              [this, &ctxt, client](const Authenticator::AuthenticateAnonymously::Result& result) {
-                if (result) {
-                  ctxt.cout << "Authenticated successfully and received id: " << result.value().id
-                            << std::endl;
-                } else {
-                  ctxt.cout << "Failed to authorize " << params_.user_id << std::endl;
-                }
-              });
+          auto handler = [this, &ctxt, context,
+                          client](const Authenticator::AuthenticateAnonymously::Result& result) {
+            if (result)
+              ctxt.cout << "Authenticated successfully and received id: " << result.value().id
+                        << std::endl;
+            else
+              ctxt.cout << "Failed to authorize " << params_.user_id << std::endl;
+
+            context->stop();
+          };
+
+          client->authenticator().authenticate_anonymously(params_, handler);
         });
 
     if (result)
