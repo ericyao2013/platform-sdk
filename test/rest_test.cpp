@@ -3,6 +3,7 @@
 #include <airmap/rest/aircrafts.h>
 #include <airmap/rest/airspaces.h>
 #include <airmap/rest/communicator.h>
+#include <airmap/rest/flights.h>
 
 #include <airmap/codec.h>
 
@@ -95,6 +96,36 @@ TEST_CASE("rest") {
 
       airmap::rest::Airspaces airspaces{communicator};
       airspaces.for_ids(parameters, [](const airmap::Airspaces::ForIds::Result&) {});
+    }
+  }
+
+  SECTION("flights") {
+    SECTION("search issues get request with correct parameters") {
+      airmap::Flights::Search::Parameters parameters;
+      StringMap query;
+      airmap::codec::http::query::encode(query, parameters);
+
+      MockCommunicator communicator;
+      REQUIRE_CALL(communicator,
+                   get(mock::eq<std::string>("https://api.airmap.com"),
+                       mock::eq<std::string>("/flight/v2"), mock::eq<StringMap>(query),
+                       ANY(StringMap), ANY(airmap::rest::Communicator::DoCallback)));
+
+      airmap::rest::Flights flights{communicator};
+      flights.search(parameters, [](const airmap::Flights::Search::Result&) {});
+    }
+    SECTION("for id issues get request with correct parameters") {
+      airmap::Flights::ForId::Parameters parameters;
+      parameters.id = "flight|abc";
+
+      MockCommunicator communicator;
+      REQUIRE_CALL(communicator,
+                   get(mock::eq<std::string>("https://api.airmap.com"),
+                       mock::eq<std::string>("/flights/v2/" + parameters.id), ANY(StringMap),
+                       ANY(StringMap), ANY(airmap::rest::Communicator::DoCallback)));
+
+      airmap::rest::Flights flights{communicator};
+      flights.for_id(parameters, [](const airmap::Flights::ForId::Result&) {});
     }
   }
 }
