@@ -37,7 +37,7 @@ protobuf_generate_cpp(
   src/airmap/rest/telemetry.proto)
 
 add_library(
-  airmap-client SHARED
+  airmap-client
 
   include/airmap/aircraft.h
   include/airmap/aircrafts.h
@@ -94,7 +94,7 @@ add_library(
 )
 
 add_library(
-  airmap-server SHARED
+  airmap-server
 
   src/airmap/daemon.h
   src/airmap/daemon.cpp)
