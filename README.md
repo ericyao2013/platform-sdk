@@ -16,6 +16,6 @@ make format
 Please refer to the `setup-*.sh` scripts in the `tools/` subfolder. For Ubuntu, and under the assumption of `docker` being available,
 you can bootstrap a development environment in a `docker` container with:
 ```
-docker run -v $(PWD):/airmapd -it ubuntu:16.04 bash
+docker run -v $(PWD):/airmapd -it ubuntu:17.04 bash
 tools/setup-ubuntu.sh
 ```
