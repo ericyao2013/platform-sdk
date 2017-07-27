@@ -18,9 +18,15 @@ pkg_check_modules(GIO_UNIX gio-unix-2.0)
 # we will likely have to adjust the brew formula
 set(CRYPTOPP_LIBRARIES cryptopp)
 
+# All vendored dependencies should be listed here
+add_subdirectory(vendor/fmt)
+add_subdirectory(vendor/spdlog)
+
 include_directories(
   include
   src
+  vendor/fmt
+  vendor/spdlog/include
 
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}/src
@@ -62,6 +68,7 @@ add_library(
   src/airmap/geometry.cpp
   src/airmap/jsend.h
   src/airmap/jsend.cpp
+  src/airmap/logger.cpp
   src/airmap/rule.cpp
   src/airmap/telemetry.cpp
 
@@ -128,7 +135,7 @@ set_property(TARGET airmap PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmapd PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap-telemetry-simulator PROPERTY CXX_STANDARD 14)
 
-target_link_libraries(airmap-client ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${LIBSOUP_LDFLAGS} ${PROTOBUF_LIBRARIES})
+target_link_libraries(airmap-client fmt spdlog ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${LIBSOUP_LDFLAGS} ${PROTOBUF_LIBRARIES})
 target_link_libraries(airmap airmap-client )
 target_link_libraries(airmap-server airmap-client)
 target_link_libraries(airmapd airmap-server)

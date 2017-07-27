@@ -15,7 +15,7 @@ cmd::Authorize::Authorize()
                       params_.user_id));
 
   action([this](const cli::Command::Context& ctxt) {
-    auto result = ::airmap::Context::create();
+    auto result = ::airmap::Context::create(create_default_logger());
 
     if (!result) {
       ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;

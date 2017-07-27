@@ -4,6 +4,8 @@
 
 `airmapd` uses CMake for building and testing. We envision the following development workflow:
 ```
+# Clone airmapd and all its dependencies
+git clone --recursive github.com/airmap/airmapd
 # Please execute these commands at the root of the source tree
 mkdir build
 cd build && cmake .. && make

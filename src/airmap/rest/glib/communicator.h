@@ -2,6 +2,7 @@
 #define AIRMAP_REST_GLIB_COMMUNICATOR_H_
 
 #include <airmap/context.h>
+#include <airmap/logger.h>
 #include <airmap/rest/communicator.h>
 
 #include <glib.h>
@@ -31,7 +32,7 @@ class Communicator : public airmap::rest::Communicator,
   using DoResult     = Outcome<std::string, Status>;
   using DoCallback   = std::function<void(const DoResult&)>;
 
-  Communicator();
+  Communicator(const std::shared_ptr<Logger>& logger);
   ~Communicator();
 
   // From airmap::Context
@@ -57,6 +58,8 @@ class Communicator : public airmap::rest::Communicator,
   static void on_pipe_fd_read_finished(GObject* source, GAsyncResult* result, gpointer user_data);
 
   void on_pipe_fd_read_finished();
+
+  std::shared_ptr<Logger> logger_;
 
   std::shared_ptr<GMainContext> main_context_;
   std::shared_ptr<GMainLoop> main_loop_;

@@ -1,6 +1,7 @@
 #include <airmap/rest/glib/communicator.h>
 
 #include <airmap/rest/client.h>
+#include <fmt/format.h>
 
 #include <gio/gunixinputstream.h>
 #include <glib.h>
@@ -17,6 +18,8 @@ std::array<int, 2> create_pipe_or_throw() {
     throw std::system_error{errno, std::system_category()};
   return result;
 }
+
+constexpr const char* component{"rest::glib::Communicator"};
 
 }  // namespace
 
@@ -64,9 +67,14 @@ void airmap::rest::glib::Communicator::get(const std::string& host, const std::s
   soup_uri_free(uri);
 
   dispatch([this, wp, cb, msg]() {
-    if (auto sp = wp.lock())
+    if (auto sp = wp.lock()) {
+      auto uri = soup_message_get_uri(msg);
+      logger_->info(
+          fmt::format("enqueuing GET request for {}{}", soup_uri_get_host(uri), soup_uri_get_path(uri)).c_str(),
+          component);
       soup_session_queue_message(session_.get(), msg, Communicator::soup_session_callback,
                                  new SoupSessionCallbackContext{cb, wp});
+    }
   });
 }
 
@@ -87,14 +95,23 @@ void airmap::rest::glib::Communicator::post(const std::string& host, const std::
   soup_uri_free(uri);
 
   dispatch([this, wp, cb, msg]() {
-    if (auto sp = wp.lock())
+    if (auto sp = wp.lock()) {
+      auto uri = soup_message_get_uri(msg);
+      logger_->info(
+          fmt::format("enqueuing POST request for {}{}", soup_uri_get_host(uri), soup_uri_get_path(uri)).c_str(),
+          component);
       soup_session_queue_message(session_.get(), msg, Communicator::soup_session_callback,
                                  new SoupSessionCallbackContext{cb, wp});
+    }
   });
 }
 
 void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::uint16_t port, const std::string& body) {
-  dispatch([ host, port, body = std::move(body) ]() {
+  dispatch([ this, host, port, body = std::move(body) ]() {
+    logger_->info(fmt::format("sending out UDP packet to {}:{}", host, port).c_str(), component);
+
+    GError* error{nullptr};
+
     if (auto connectable = g_network_address_parse(host.c_str(), port, nullptr)) {
       if (auto enumerator = g_socket_connectable_enumerate(connectable)) {
         if (auto address = g_socket_address_enumerator_next(enumerator, nullptr, nullptr)) {
@@ -108,9 +125,14 @@ void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::ui
                 if (socket)
                   g_object_unref(socket);
               }};
-
-          // TODO(tvoss): Add error handling here.
-          g_socket_send_to(s.get(), sa.get(), body.c_str(), body.size(), nullptr, nullptr);
+          if (body.size() == g_socket_send_to(s.get(), sa.get(), body.c_str(), body.size(), nullptr, &error)) {
+            logger_->info("successfully sent UDP packet", component);
+          } else if (error) {
+            logger_->error(fmt::format("error sending UDP packet: {}", error->message).c_str(), component);
+            g_error_free(error);
+          } else {
+            logger_->error("error sending UDP packet", component);
+          }
         }
         g_object_unref(enumerator);
       }
@@ -122,6 +144,10 @@ void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::ui
 void airmap::rest::glib::Communicator::soup_session_callback(SoupSession*, SoupMessage* msg, gpointer user_data) {
   if (auto context = static_cast<SoupSessionCallbackContext*>(user_data)) {
     if (auto sp = context->wp.lock()) {
+      auto uri = soup_message_get_uri(msg);
+      sp->logger_->info(
+          fmt::format("receiving reply for request to {}{}", soup_uri_get_host(uri), soup_uri_get_path(uri)).c_str(),
+          component);
       auto cb = std::move(context->cb);
       delete (context);
 
@@ -140,8 +166,9 @@ void airmap::rest::glib::Communicator::on_pipe_fd_read_finished(GObject*, GAsync
   }
 }
 
-airmap::rest::glib::Communicator::Communicator()
-    : main_context_{g_main_context_new(), [](GMainContext* context) { g_main_context_unref(context); }},
+airmap::rest::glib::Communicator::Communicator(const std::shared_ptr<Logger>& logger)
+    : logger_{logger},
+      main_context_{g_main_context_new(), [](GMainContext* context) { g_main_context_unref(context); }},
       main_loop_{g_main_loop_new(main_context_.get(), FALSE), [](GMainLoop* ml) { g_main_loop_unref(ml); }},
       pipe_fds_{create_pipe_or_throw()},
       pipe_input_stream_{g_unix_input_stream_new(pipe_fds_[0], FALSE),

@@ -3,6 +3,7 @@
 
 #include <airmap/client.h>
 #include <airmap/do_not_copy_or_move.h>
+#include <airmap/logger.h>
 #include <airmap/outcome.h>
 
 #include <functional>
@@ -16,7 +17,7 @@ class Context : DoNotCopyOrMove {
   using CreateResult         = Outcome<std::shared_ptr<Context>, std::exception_ptr>;
 
   /// create tries to assemble and return a new Context instance.
-  static CreateResult create();
+  static CreateResult create(const std::shared_ptr<Logger>& logger);
 
   /// create_client_with_credentials schedules creation of a new client with 'credentials'
   /// and reports results to 'cb'.
