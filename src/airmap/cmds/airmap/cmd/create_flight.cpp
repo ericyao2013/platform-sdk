@@ -2,6 +2,7 @@
 
 #include <airmap/client.h>
 #include <airmap/codec.h>
+#include <airmap/context.h>
 #include <airmap/date_time.h>
 
 namespace cli = airmap::util::cli;
@@ -54,8 +55,17 @@ cmd::CreateFlight::CreateFlight()
                       geometry_file_));
 
   action([this](const cli::Command::Context& ctxt) {
-    auto result = Client::create_with_credentials(
-        Client::Credentials{api_key_}, [this, &ctxt](const Client::CreateResult& result) {
+    auto result = ::airmap::Context::create();
+
+    if (!result) {
+      ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
+      return 1;
+    }
+
+    auto context = result.value();
+
+    context->create_client_with_credentials(
+        Client::Credentials{api_key_}, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 
@@ -65,8 +75,7 @@ cmd::CreateFlight::CreateFlight()
             params_.geometry  = geometry;
           }
 
-          auto context = result.value().context;
-          auto client  = result.value().client;
+          auto client = result.value();
 
           auto handler = [this, &ctxt, context, client](const Flights::CreateFlight::Result& result) {
             if (result)
@@ -82,8 +91,7 @@ cmd::CreateFlight::CreateFlight()
             client->flights().create_flight_by_polygon(params_, handler);
         });
 
-    if (result)
-      result.value()->run();
+    context->run();
 
     return 0;
   });

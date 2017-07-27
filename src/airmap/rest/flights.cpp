@@ -18,7 +18,7 @@ void airmap::rest::Flights::search(const Search::Parameters& parameters, const S
     headers["Authorization"] = (boost::format("Bearer %1%") % parameters.authorization.get()).str();
   codec::http::query::encode(query, parameters);
 
-  communicator_.get("https://api.airmap.com", "/flight/v2/", std::move(query), std::move(headers),
+  communicator_.get("https://api.airmap.com", "/flight/v2", std::move(query), std::move(headers),
                     [cb](const Communicator::DoResult& result) {
                       if (result) {
                         cb(jsend::to_outcome<std::vector<Flight>>(json::parse(result.value())));

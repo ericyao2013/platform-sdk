@@ -107,9 +107,8 @@ TEST_CASE("rest") {
 
       MockCommunicator communicator;
       REQUIRE_CALL(communicator,
-                   get(mock::eq<std::string>("https://api.airmap.com"),
-                       mock::eq<std::string>("/flight/v2"), mock::eq<StringMap>(query),
-                       ANY(StringMap), ANY(airmap::rest::Communicator::DoCallback)));
+                   get(mock::eq<std::string>("https://api.airmap.com"), mock::eq<std::string>("/flight/v2"),
+                       mock::eq<StringMap>(query), ANY(StringMap), ANY(airmap::rest::Communicator::DoCallback)));
 
       airmap::rest::Flights flights{communicator};
       flights.search(parameters, [](const airmap::Flights::Search::Result&) {});
@@ -119,10 +118,9 @@ TEST_CASE("rest") {
       parameters.id = "flight|abc";
 
       MockCommunicator communicator;
-      REQUIRE_CALL(communicator,
-                   get(mock::eq<std::string>("https://api.airmap.com"),
-                       mock::eq<std::string>("/flights/v2/" + parameters.id), ANY(StringMap),
-                       ANY(StringMap), ANY(airmap::rest::Communicator::DoCallback)));
+      REQUIRE_CALL(communicator, get(mock::eq<std::string>("https://api.airmap.com"),
+                                     mock::eq<std::string>("/flight/v2/" + parameters.id), ANY(StringMap),
+                                     ANY(StringMap), ANY(airmap::rest::Communicator::DoCallback)));
 
       airmap::rest::Flights flights{communicator};
       flights.for_id(parameters, [](const airmap::Flights::ForId::Result&) {});

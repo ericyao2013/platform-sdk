@@ -2,6 +2,7 @@
 
 #include <airmap/client.h>
 #include <airmap/codec.h>
+#include <airmap/context.h>
 #include <airmap/util/telemetry_simulator.h>
 
 #include <fstream>
@@ -25,13 +26,22 @@ cmd::StartFlightComms::StartFlightComms()
                       params_.flight_id));
 
   action([this](const cli::Command::Context& ctxt) {
-    auto result = Client::create_with_credentials(
-        Client::Credentials{params_.api_key}, [this, &ctxt](const Client::CreateResult& result) {
+    auto result = ::airmap::Context::create();
+
+    if (!result) {
+      ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
+      return 1;
+    }
+
+    auto context = result.value();
+
+    context->create_client_with_credentials(
+        Client::Credentials{params_.api_key},
+        [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 
-          auto context = result.value().context;
-          auto client  = result.value().client;
+          auto client = result.value();
 
           client->flights().start_flight_communications(
               Flights::StartFlightCommunications::Parameters{params_.authorization, params_.flight_id},
@@ -47,9 +57,7 @@ cmd::StartFlightComms::StartFlightComms()
               });
         });
 
-    if (result)
-      result.value()->run();
-
+    context->run();
     return 0;
   });
 }

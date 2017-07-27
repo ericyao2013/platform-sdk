@@ -1,5 +1,7 @@
 #include <airmap/rest/glib/communicator.h>
 
+#include <airmap/rest/client.h>
+
 #include <gio/gunixinputstream.h>
 #include <glib.h>
 
@@ -18,8 +20,9 @@ std::array<int, 2> create_pipe_or_throw() {
 
 }  // namespace
 
-airmap::rest::glib::Communicator::CreateResult airmap::rest::glib::Communicator::create(const std::string& api_key) {
-  return CreateResult{std::shared_ptr<Communicator>{new Communicator{api_key}}};
+void airmap::rest::glib::Communicator::create_client_with_credentials(const Client::Credentials& credentials,
+                                                                      const ClientCreateCallback& cb) {
+  cb(ClientCreateResult{std::make_shared<rest::Client>(credentials, shared_from_this())});
 }
 
 void airmap::rest::glib::Communicator::run() {
@@ -39,8 +42,6 @@ void airmap::rest::glib::Communicator::get(const std::string& host, const std::s
                                            std::unordered_map<std::string, std::string>&& headers, DoCallback cb) {
   auto sp = shared_from_this();
   std::weak_ptr<Communicator> wp{sp};
-
-  headers["X-API-Key"] = api_key_;
 
   auto uri = soup_uri_new(host.c_str());
   soup_uri_set_path(uri, path.c_str());
@@ -74,8 +75,6 @@ void airmap::rest::glib::Communicator::post(const std::string& host, const std::
                                             const std::string& body, DoCallback cb) {
   auto sp = shared_from_this();
   std::weak_ptr<Communicator> wp{sp};
-
-  headers["X-API-Key"] = api_key_;
 
   auto uri = soup_uri_new(host.c_str());
   soup_uri_set_path(uri, path.c_str());
@@ -141,9 +140,8 @@ void airmap::rest::glib::Communicator::on_pipe_fd_read_finished(GObject*, GAsync
   }
 }
 
-airmap::rest::glib::Communicator::Communicator(const std::string& api_key)
-    : api_key_{api_key},
-      main_context_{g_main_context_new(), [](GMainContext* context) { g_main_context_unref(context); }},
+airmap::rest::glib::Communicator::Communicator()
+    : main_context_{g_main_context_new(), [](GMainContext* context) { g_main_context_unref(context); }},
       main_loop_{g_main_loop_new(main_context_.get(), FALSE), [](GMainLoop* ml) { g_main_loop_unref(ml); }},
       pipe_fds_{create_pipe_or_throw()},
       pipe_input_stream_{g_unix_input_stream_new(pipe_fds_[0], FALSE),
@@ -158,6 +156,8 @@ airmap::rest::glib::Communicator::Communicator(const std::string& api_key)
 }
 
 airmap::rest::glib::Communicator::~Communicator() {
+  ::close(pipe_fds_[0]);
+  ::close(pipe_fds_[1]);
 }
 
 void airmap::rest::glib::Communicator::dispatch(const std::function<void()>& task) {

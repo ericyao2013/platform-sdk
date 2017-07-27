@@ -1,4 +1,5 @@
 #include <airmap/client.h>
+#include <airmap/context.h>
 #include <airmap/date_time.h>
 #include <airmap/flight.h>
 #include <airmap/geometry.h>
@@ -67,6 +68,15 @@ int main(int argc, char** argv) {
                            params.encryption_key));
 
   cmd.action([](const cli::Command::Context& ctxt) {
+    auto result = airmap::Context::create();
+
+    if (!result) {
+      ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
+      return 1;
+    }
+
+    auto context = result.value();
+
     ctxt.cout << "Sending telemetry package to" << std::endl
               << "  host:      " << params.host << std::endl
               << "  port:      " << params.port << std::endl
@@ -78,13 +88,13 @@ int main(int argc, char** argv) {
     ::setenv("AIRMAP_TELEMETRY_HOST", params.host.c_str(), 1);
     ::setenv("AIRMAP_TELEMETRY_PORT", boost::lexical_cast<std::string>(params.port).c_str(), 1);
 
-    auto result = airmap::Client::create_with_credentials(
-        airmap::Client::Credentials{params.api_key}, [](const airmap::Client::CreateResult& result) {
+    context->create_client_with_credentials(
+        airmap::Client::Credentials{params.api_key}, [](const airmap::Context::ClientCreateResult& result) {
           if (!result) {
             return;
           }
 
-          auto client = result.value().client;
+          auto client = result.value();
 
           std::thread submitter{[client]() {
             airmap::util::TelemetrySimulator simulator{polygon.details_for_polygon()};
@@ -104,8 +114,7 @@ int main(int argc, char** argv) {
           submitter.detach();
         });
 
-    if (result)
-      result.value()->run();
+    context->run();
     return 0;
   });
 

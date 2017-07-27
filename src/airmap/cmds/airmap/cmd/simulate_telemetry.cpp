@@ -2,6 +2,7 @@
 
 #include <airmap/client.h>
 #include <airmap/codec.h>
+#include <airmap/context.h>
 #include <airmap/util/telemetry_simulator.h>
 
 #include <fstream>
@@ -46,6 +47,15 @@ cmd::SimulateTelemetry::SimulateTelemetry()
                       params_.geometry_file));
 
   action([this](const cli::Command::Context& ctxt) {
+    auto result = ::airmap::Context::create();
+
+    if (!result) {
+      ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
+      return 1;
+    }
+
+    auto context = result.value();
+
     ctxt.cout << "Sending telemetry package to" << std::endl
               << "  host:      " << params_.host << std::endl
               << "  port:      " << params_.port << std::endl
@@ -64,13 +74,13 @@ cmd::SimulateTelemetry::SimulateTelemetry()
       geometry = json::parse(in);
     }
 
-    auto result = Client::create_with_credentials(
-        Client::Credentials{params_.api_key}, [this, &ctxt, geometry](const Client::CreateResult& result) {
+    context->create_client_with_credentials(
+        Client::Credentials{params_.api_key},
+        [this, &ctxt, context, geometry](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 
-          auto context = result.value().context;
-          auto client  = result.value().client;
+          auto client = result.value();
 
           std::thread submitter{[this, &ctxt, geometry, context, client, result]() {
             util::TelemetrySimulator simulator{geometry.details_for_polygon()};
@@ -88,9 +98,7 @@ cmd::SimulateTelemetry::SimulateTelemetry()
           submitter.detach();
         });
 
-    if (result)
-      result.value()->run();
-
+    context->run();
     return 0;
   });
 }

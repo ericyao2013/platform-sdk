@@ -31,11 +31,11 @@ class Communicator : public airmap::rest::Communicator,
   using DoResult     = Outcome<std::string, Status>;
   using DoCallback   = std::function<void(const DoResult&)>;
 
-  static CreateResult create(const std::string& api_key);
-
+  Communicator();
   ~Communicator();
 
   // From airmap::Context
+  void create_client_with_credentials(const Client::Credentials& credentials, const ClientCreateCallback& cb) override;
   void run() override;
   void stop() override;
 
@@ -56,11 +56,7 @@ class Communicator : public airmap::rest::Communicator,
   static void soup_session_callback(SoupSession* session, SoupMessage* msg, gpointer user_data);
   static void on_pipe_fd_read_finished(GObject* source, GAsyncResult* result, gpointer user_data);
 
-  explicit Communicator(const std::string& api_key);
-
   void on_pipe_fd_read_finished();
-
-  std::string api_key_;
 
   std::shared_ptr<GMainContext> main_context_;
   std::shared_ptr<GMainLoop> main_loop_;

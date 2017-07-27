@@ -1,12 +1,13 @@
 #include <airmap/rest/client.h>
 
-airmap::rest::Client::Client(const std::shared_ptr<Communicator>& communicator)
-    : communicator_{communicator},
-      aircrafts_{*communicator},
-      airspaces_{*communicator},
-      authenticator_{*communicator},
-      flights_{*communicator},
-      telemetry_{*communicator} {
+airmap::rest::Client::Client(const Credentials& credentials, const std::shared_ptr<Communicator>& communicator)
+    : credentials_{credentials},
+      communicator_{communicator},
+      aircrafts_{*this},
+      airspaces_{*this},
+      authenticator_{*this},
+      flights_{*this},
+      telemetry_{*this} {
 }
 
 airmap::Aircrafts& airmap::rest::Client::aircrafts() {
@@ -27,4 +28,26 @@ airmap::Flights& airmap::rest::Client::flights() {
 
 airmap::Telemetry& airmap::rest::Client::telemetry() {
   return telemetry_;
+}
+
+void airmap::rest::Client::get(const std::string& host, const std::string& path,
+                               std::unordered_map<std::string, std::string>&& query,
+                               std::unordered_map<std::string, std::string>&& headers, DoCallback cb) {
+  headers["X-API-Key"] = credentials_.api_key;
+  communicator_->get(host, path, std::move(query), std::move(headers), std::move(cb));
+}
+
+void airmap::rest::Client::post(const std::string& host, const std::string& path,
+                                std::unordered_map<std::string, std::string>&& headers, const std::string& body,
+                                DoCallback cb) {
+  headers["X-API-Key"] = credentials_.api_key;
+  communicator_->post(host, path, std::move(headers), body, std::move(cb));
+}
+
+void airmap::rest::Client::send_udp(const std::string& host, std::uint16_t port, const std::string& body) {
+  communicator_->send_udp(host, port, body);
+}
+
+void airmap::rest::Client::dispatch(const std::function<void()>& task) {
+  communicator_->dispatch(task);
 }
