@@ -2,8 +2,8 @@
 #define AIRMAP_REST_GLIB_COMMUNICATOR_H_
 
 #include <airmap/context.h>
-#include <airmap/logger.h>
 #include <airmap/rest/communicator.h>
+#include <airmap/util/formatting_logger.h>
 
 #include <glib.h>
 #include <libsoup/soup.h>
@@ -59,7 +59,7 @@ class Communicator : public airmap::rest::Communicator,
 
   void on_pipe_fd_read_finished();
 
-  std::shared_ptr<Logger> logger_;
+  util::FormattingLogger log_;
 
   std::shared_ptr<GMainContext> main_context_;
   std::shared_ptr<GMainLoop> main_loop_;

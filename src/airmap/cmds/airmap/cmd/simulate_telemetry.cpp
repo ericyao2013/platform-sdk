@@ -3,6 +3,7 @@
 #include <airmap/client.h>
 #include <airmap/codec.h>
 #include <airmap/context.h>
+#include <airmap/util/formatting_logger.h>
 #include <airmap/util/telemetry_simulator.h>
 
 #include <fstream>
@@ -25,7 +26,9 @@ auto polygon =
                                                             airmap::Optional<double>{}, airmap::Optional<double>{}},
                                airmap::Geometry::Coordinate{47.37708083985247, 8.546290397644043,
                                                             airmap::Optional<double>{}, airmap::Optional<double>{}}});
-}
+
+constexpr const char* component{"telemetry-simulator"};
+}  // namespace
 
 cmd::SimulateTelemetry::SimulateTelemetry()
     : cli::CommandWithFlagsAndAction{cli::Name{"simulate-telemetry"},
@@ -47,7 +50,8 @@ cmd::SimulateTelemetry::SimulateTelemetry()
                       params_.geometry_file));
 
   action([this](const cli::Command::Context& ctxt) {
-    auto result = ::airmap::Context::create(create_default_logger());
+    auto logger = create_default_logger();
+    auto result = ::airmap::Context::create(logger);
 
     if (!result) {
       ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
@@ -76,17 +80,20 @@ cmd::SimulateTelemetry::SimulateTelemetry()
 
     context->create_client_with_credentials(
         Client::Credentials{params_.api_key},
-        [this, &ctxt, context, geometry](const ::airmap::Context::ClientCreateResult& result) {
+        [this, &ctxt, context, logger, geometry](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 
           auto client = result.value();
 
-          std::thread submitter{[this, &ctxt, geometry, context, client, result]() {
+          std::thread submitter{[this, &ctxt, geometry, context, logger, client]() {
+            util::FormattingLogger log{logger};
             util::TelemetrySimulator simulator{geometry.details_for_polygon()};
 
             while (true) {
               auto data = simulator.update();
+
+              log.infof(component, "Submitting update for position (%f,%f)", data.latitude, data.longitude);
 
               client->telemetry().submit_updates(
                   params_.flight, params_.encryption_key,

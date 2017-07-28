@@ -1,7 +1,6 @@
 #include <airmap/rest/glib/communicator.h>
 
 #include <airmap/rest/client.h>
-#include <fmt/format.h>
 
 #include <gio/gunixinputstream.h>
 #include <glib.h>
@@ -69,9 +68,7 @@ void airmap::rest::glib::Communicator::get(const std::string& host, const std::s
   dispatch([this, wp, cb, msg]() {
     if (auto sp = wp.lock()) {
       auto uri = soup_message_get_uri(msg);
-      logger_->info(
-          fmt::format("enqueuing GET request for {}{}", soup_uri_get_host(uri), soup_uri_get_path(uri)).c_str(),
-          component);
+      log_.infof(component, "enqueuing GET request for %s%s", soup_uri_get_host(uri), soup_uri_get_path(uri));
       soup_session_queue_message(session_.get(), msg, Communicator::soup_session_callback,
                                  new SoupSessionCallbackContext{cb, wp});
     }
@@ -97,9 +94,7 @@ void airmap::rest::glib::Communicator::post(const std::string& host, const std::
   dispatch([this, wp, cb, msg]() {
     if (auto sp = wp.lock()) {
       auto uri = soup_message_get_uri(msg);
-      logger_->info(
-          fmt::format("enqueuing POST request for {}{}", soup_uri_get_host(uri), soup_uri_get_path(uri)).c_str(),
-          component);
+      log_.infof(component, "enqueuing POST request for %s%s", soup_uri_get_host(uri), soup_uri_get_path(uri));
       soup_session_queue_message(session_.get(), msg, Communicator::soup_session_callback,
                                  new SoupSessionCallbackContext{cb, wp});
     }
@@ -108,7 +103,7 @@ void airmap::rest::glib::Communicator::post(const std::string& host, const std::
 
 void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::uint16_t port, const std::string& body) {
   dispatch([ this, host, port, body = std::move(body) ]() {
-    logger_->info(fmt::format("sending out UDP packet to {}:{}", host, port).c_str(), component);
+    log_.infof(component, "sending out UDP packet to %s:%d", host, port);
 
     GError* error{nullptr};
 
@@ -126,12 +121,12 @@ void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::ui
                   g_object_unref(socket);
               }};
           if (body.size() == g_socket_send_to(s.get(), sa.get(), body.c_str(), body.size(), nullptr, &error)) {
-            logger_->info("successfully sent UDP packet", component);
+            log_.infof(component, "successfully sent UDP packet");
           } else if (error) {
-            logger_->error(fmt::format("error sending UDP packet: {}", error->message).c_str(), component);
+            log_.errorf(component, "error sending UDP packet: %s", error->message);
             g_error_free(error);
           } else {
-            logger_->error("error sending UDP packet", component);
+            log_.errorf(component, "error sending UDP packet");
           }
         }
         g_object_unref(enumerator);
@@ -145,9 +140,7 @@ void airmap::rest::glib::Communicator::soup_session_callback(SoupSession*, SoupM
   if (auto context = static_cast<SoupSessionCallbackContext*>(user_data)) {
     if (auto sp = context->wp.lock()) {
       auto uri = soup_message_get_uri(msg);
-      sp->logger_->info(
-          fmt::format("receiving reply for request to {}{}", soup_uri_get_host(uri), soup_uri_get_path(uri)).c_str(),
-          component);
+      sp->log_.infof(component, "receiving reply for request to %s%s", soup_uri_get_host(uri), soup_uri_get_path(uri));
       auto cb = std::move(context->cb);
       delete (context);
 
@@ -167,7 +160,7 @@ void airmap::rest::glib::Communicator::on_pipe_fd_read_finished(GObject*, GAsync
 }
 
 airmap::rest::glib::Communicator::Communicator(const std::shared_ptr<Logger>& logger)
-    : logger_{logger},
+    : log_{logger},
       main_context_{g_main_context_new(), [](GMainContext* context) { g_main_context_unref(context); }},
       main_loop_{g_main_loop_new(main_context_.get(), FALSE), [](GMainLoop* ml) { g_main_loop_unref(ml); }},
       pipe_fds_{create_pipe_or_throw()},
