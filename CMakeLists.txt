@@ -93,6 +93,8 @@ add_library(
   src/airmap/util/cheap_ruler.cpp
   src/airmap/util/cli.h
   src/airmap/util/cli.cpp
+  src/airmap/util/scenario_simulator.h
+  src/airmap/util/scenario_simulator.cpp
   src/airmap/util/telemetry_simulator.h
   src/airmap/util/telemetry_simulator.cpp
 
@@ -114,6 +116,8 @@ add_executable(
   src/airmap/cmds/airmap/cmd/authorize.cpp
   src/airmap/cmds/airmap/cmd/create_flight.h
   src/airmap/cmds/airmap/cmd/create_flight.cpp
+  src/airmap/cmds/airmap/cmd/simulate_scenario.h
+  src/airmap/cmds/airmap/cmd/simulate_scenario.cpp
   src/airmap/cmds/airmap/cmd/simulate_telemetry.h
   src/airmap/cmds/airmap/cmd/simulate_telemetry.cpp
   src/airmap/cmds/airmap/cmd/start_flight_comms.h

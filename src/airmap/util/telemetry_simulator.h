@@ -1,6 +1,7 @@
 #ifndef AIRMAP_UTIL_TELEMETRY_SIMULATOR_H_
 #define AIRMAP_UTIL_TELEMETRY_SIMULATOR_H_
 
+#include <airmap/date_time.h>
 #include <airmap/geometry.h>
 #include <airmap/util/cheap_ruler.h>
 
@@ -14,20 +15,18 @@ class TelemetrySimulator {
   explicit TelemetrySimulator(const airmap::Geometry::Polygon& polygon);
 
   // Updates the state of the simulator and calculates a new position.
-  Geometry::Coordinate update();
+  Geometry::Coordinate update(const DateTime& now = airmap::Clock::universal_time());
 
  private:
-  using Clock = std::chrono::high_resolution_clock;
-
   airmap::Geometry::Polygon polygon_;
   std::vector<airmap::Geometry::Coordinate>::iterator segment_begin_;
   std::vector<airmap::Geometry::Coordinate>::iterator segment_end_;
   CheapRuler segment_ruler_;
-  Clock::time_point segment_start_time_;
+  DateTime segment_start_time_;
   double segment_bearing_;
   double segment_length_;
-  airmap::Geometry::Coordinate current_data_;
-  Clock::time_point current_time_;
+  Geometry::Coordinate current_data_;
+  DateTime current_time_;
 };
 
 }  // namespace util
