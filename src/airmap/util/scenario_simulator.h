@@ -43,17 +43,17 @@ struct Scenario {
 class ScenarioSimulator {
  public:
   class Runner {
-    public:
-      explicit Runner(std::uint32_t frequency);
-      ~Runner();
+   public:
+    explicit Runner(std::uint32_t frequency);
+    ~Runner();
 
-      void start(const std::shared_ptr<ScenarioSimulator>& simulator, const std::shared_ptr<Client>& client);
-      void stop();
+    void start(const std::shared_ptr<ScenarioSimulator>& simulator, const std::shared_ptr<Client>& client);
+    void stop();
 
-    private:
-      std::uint32_t frequency_;
-      std::thread worker_;
-      std::atomic<bool> running_;
+   private:
+    std::uint32_t frequency_;
+    std::thread worker_;
+    std::atomic<bool> running_;
   };
 
   explicit ScenarioSimulator(const Scenario& scenario, const std::shared_ptr<Logger>& logger);
@@ -64,7 +64,8 @@ class ScenarioSimulator {
 
   /// update advances the simulation, and submits telemetry
   /// updates for all participants in the simulation.
-  void update(const std::function<void(const DateTime&, const Scenario::Participant&, const Geometry::Coordinate&)>& enumerator);
+  void update(const std::function<void(const DateTime&, const Scenario::Participant&, const Geometry::Coordinate&)>&
+                  enumerator);
 
  private:
   Scenario scenario_;

@@ -17,7 +17,7 @@ namespace cmd = airmap::cmds::airmap::cmd;
 using json = nlohmann::json;
 
 namespace {
-constexpr const char* component{"scenario-simulator"};
+constexpr const char* component{"simulate-scenario-cli"};
 }  // namespace
 
 cmd::SimulateScenario::Collector::Collector(const util::Scenario& scenario) : scenario_{scenario} {
@@ -54,8 +54,10 @@ cmd::SimulateScenario::SimulateScenario()
                       params_.scenario_file));
 
   action([this](const cli::Command::Context& ctxt) {
+    logger_ = create_default_logger(ctxt.cout);
+
     if (!params_.scenario_file) {
-      ctxt.cout << "missing parameter 'scenario-file'" << std::endl;
+      logger_->error("missing parameter 'scenario-file'", component);
       return 1;
     }
 
@@ -64,11 +66,10 @@ cmd::SimulateScenario::SimulateScenario()
 
     collector_  = std::make_shared<Collector>(scenario);
     runner_     = std::make_shared<util::ScenarioSimulator::Runner>(5);
-    logger_     = create_default_logger();
     auto result = ::airmap::Context::create(logger_);
 
     if (!result) {
-      ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
+      logger_->error("could not acquire resources for accessing AirMap services", component);
       return 1;
     }
 
@@ -79,26 +80,26 @@ cmd::SimulateScenario::SimulateScenario()
 
     context_->create_client_with_credentials(Client::Credentials{params_.api_key}, [this, &ctxt](const auto& result) {
       if (not result) {
-        ctxt.cout << "Could not create client for accessing AirMap services" << std::endl;
+        logger_->error("could not create client for accessing AirMap services", component);
         context_->stop();
         return;
       }
-      ctxt.cout << "Successfully created client for AirMap services" << std::endl;
+      logger_->info("successfully created client for AirMap services", component);
 
       client_ = result.value();
 
       client_->authenticator().authenticate_anonymously({"thomas@airmap.com"}, [this, &ctxt](const auto& result) {
         if (not result) {
-          ctxt.cout << "Could not authenticate with the Airmap services" << std::endl;
+          logger_->error("could not authenticate with the Airmap services", component);
           context_->stop();
           return;
         }
-        ctxt.cout << "Successfully authenticated with AirMap services" << std::endl;
+        logger_->info("successfully authenticated with AirMap services", component);
 
         Flights::CreateFlight::Parameters params;
         params.authorization = result.value().id;
         params.start_time    = Clock::universal_time();
-        params.end_time      = Clock::universal_time() + Minutes{1};
+        params.end_time      = Clock::universal_time() + Minutes{20};
 
         for (std::size_t i = 0; i < collector_->scenario().participants.size(); i++) {
           collector_->collect_authentication_for_index(i, result.value().id);
@@ -111,22 +112,22 @@ cmd::SimulateScenario::SimulateScenario()
           params.geometry    = participant.geometry;
           client_->flights().create_flight_by_polygon(params, [this, &ctxt, i](const auto& result) {
             if (!result) {
-              ctxt.cout << "Could not create flight for polygon" << std::endl;
+              logger_->error("could not create flight for polygon", component);
               context_->stop();
               return;
             }
-            ctxt.cout << "Successfully created flight for polygon" << std::endl;
+            logger_->info("successfully created flight for polygon", component);
 
             collector_->collect_flight_id_for_index(i, result.value());
             const auto& participant = collector_->scenario().participants.at(i);
             client_->flights().start_flight_communications(
                 {participant.authentication.get(), participant.flight.get().id}, [this, &ctxt, i](const auto& result) {
                   if (!result) {
-                    ctxt.cout << "Could not start flight comms" << std::endl;
+                    logger_->error("could not start flight comms", component);
                     context_->stop();
                     return;
                   }
-                  ctxt.cout << "Successfully started flight comms" << std::endl;
+                  logger_->info("successfully started flight comms", component);
 
                   if (collector_->collect_key_for_index(i, result.value().key)) {
                     auto simulator = std::make_shared<util::ScenarioSimulator>(collector_->scenario(), logger_);

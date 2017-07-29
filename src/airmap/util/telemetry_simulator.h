@@ -13,14 +13,15 @@ namespace util {
 class TelemetrySimulator {
  public:
   explicit TelemetrySimulator(const airmap::Geometry::Polygon& polygon);
-
+  TelemetrySimulator(const TelemetrySimulator& other);
+  TelemetrySimulator& operator=(const TelemetrySimulator& rhs);
   // Updates the state of the simulator and calculates a new position.
   Geometry::Coordinate update(const DateTime& now = airmap::Clock::universal_time());
 
  private:
   airmap::Geometry::Polygon polygon_;
-  std::vector<airmap::Geometry::Coordinate>::iterator segment_begin_;
-  std::vector<airmap::Geometry::Coordinate>::iterator segment_end_;
+  std::vector<airmap::Geometry::Coordinate>::const_iterator segment_begin_;
+  std::vector<airmap::Geometry::Coordinate>::const_iterator segment_end_;
   CheapRuler segment_ruler_;
   DateTime segment_start_time_;
   double segment_bearing_;

@@ -9,7 +9,7 @@ namespace {
 constexpr const char* component{"ScenarioSimulator"};
 }  // namespace
 
-airmap::util::ScenarioSimulator::Runner::Runner(std::uint32_t frequency) : frequency_{frequency} {
+airmap::util::ScenarioSimulator::Runner::Runner(std::uint32_t frequency) : frequency_{frequency}, running_{false} {
 }
 
 airmap::util::ScenarioSimulator::Runner::~Runner() {
@@ -20,6 +20,7 @@ airmap::util::ScenarioSimulator::Runner::~Runner() {
 
 void airmap::util::ScenarioSimulator::Runner::start(const std::shared_ptr<ScenarioSimulator>& simulator,
                                                     const std::shared_ptr<Client>& client) {
+  std::cout << simulator << std::endl;
   if (!running_.exchange(true)) {
     worker_ = std::thread{[this, simulator, client]() {
       simulator->start();
@@ -51,9 +52,8 @@ void airmap::util::ScenarioSimulator::Runner::stop() {
 
 airmap::util::ScenarioSimulator::ScenarioSimulator(const Scenario& scenario, const std::shared_ptr<Logger>& logger)
     : scenario_{scenario}, log_{logger} {
-        std::cout << scenario_.participants.size() << std::endl;
   for (const auto& participant : scenario_.participants) {
-    state_.push_back(TelemetrySimulator{participant.geometry.details_for_polygon()});
+    state_.emplace_back(participant.geometry.details_for_polygon());
   }
 }
 
@@ -68,7 +68,8 @@ void airmap::util::ScenarioSimulator::update(
   for (std::size_t i = 0; i < scenario_.participants.size(); i++) {
     const auto& participant = scenario_.participants.at(i);
     auto new_state          = state_.at(i).update(now);
-    log_.infof(component, "updating participant %s on %s: (%f, %f)", participant.pilot.username, participant.aircraft.id, new_state.latitude, new_state.longitude);
+    log_.infof(component, "updating participant %s on %s: (%f, %f)", participant.pilot.username,
+               participant.aircraft.id, new_state.latitude, new_state.longitude);
 
     enumerator(now, participant, new_state);
   }
