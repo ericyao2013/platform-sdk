@@ -73,7 +73,7 @@ airmap::rest::Telemetry::Telemetry(Communicator& communicator) : communicator_{c
 
 void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::string& key,
                                              const std::initializer_list<Update>& updates) {
-  static std::uint32_t counter{0};
+  static std::uint32_t counter{1};
 
   Buffer payload;
 
