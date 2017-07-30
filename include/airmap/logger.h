@@ -4,6 +4,7 @@
 #include <airmap/do_not_copy_or_move.h>
 
 #include <iostream>
+#include <memory>
 
 namespace airmap {
 
