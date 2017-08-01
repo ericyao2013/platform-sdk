@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
                            params.encryption_key));
 
   cmd.action([](const cli::Command::Context& ctxt) {
-    auto result = airmap::Context::create(std::shared_ptr<airmap::Logger>{});
+    auto result = airmap::Context::create(airmap::create_default_logger(ctxt.cout));
 
     if (!result) {
       ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
