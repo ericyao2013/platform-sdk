@@ -23,6 +23,10 @@ class FormattingLogger {
     logger_->info(fmt::sprintf(format, std::forward<Args>(args)...).c_str(), component);
   }
 
+  const std::shared_ptr<Logger>& logger() const {
+    return logger_;
+  }
+
  private:
   std::shared_ptr<Logger> logger_;
 };

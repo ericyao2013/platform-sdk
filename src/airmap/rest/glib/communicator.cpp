@@ -147,7 +147,7 @@ void airmap::rest::glib::Communicator::soup_session_callback(SoupSession*, SoupM
       if (msg->response_body) {
         cb(DoResult{std::string{msg->response_body->data, static_cast<std::size_t>(msg->response_body->length)}});
       } else {
-        cb(DoResult{static_cast<std::uint16_t>(msg->status_code)});
+        cb(DoResult{std::make_exception_ptr(std::runtime_error{"error accessing AirMap services"})});
       }
     }
   }
