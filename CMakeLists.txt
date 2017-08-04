@@ -3,9 +3,6 @@ project(airmap)
 
 enable_testing()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra -fPIC")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -Wextra -fPIC")
-
 find_package(Boost REQUIRED date_time program_options system)
 find_package(PkgConfig)
 find_package(Protobuf REQUIRED)
@@ -13,6 +10,7 @@ find_package(Protobuf REQUIRED)
 pkg_check_modules(LIBSOUP REQUIRED libsoup-2.4)
 pkg_check_modules(GIO gio-2.0)
 pkg_check_modules(GIO_UNIX gio-unix-2.0)
+pkg_check_modules(OPENSSL REQUIRED openssl)
 
 # cryptopp lacks a pkgconfig setup on OS X and
 # we will likely have to adjust the brew formula
@@ -21,12 +19,18 @@ set(CRYPTOPP_LIBRARIES cryptopp)
 # All vendored dependencies should be listed here
 add_subdirectory(vendor/fmt)
 add_subdirectory(vendor/spdlog)
+add_subdirectory(vendor/uri)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -Wextra -fPIC")
 
 include_directories(
   include
   src
+  vendor/beast/include
   vendor/fmt
   vendor/spdlog/include
+  vendor/uri/include
 
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}/src
@@ -35,6 +39,7 @@ include_directories(
   ${GIO_INCLUDE_DIRS}
   ${GIO_UNIX_INCLUDE_DIRS}
   ${LIBSOUP_INCLUDE_DIRS}
+  ${OPENSSL_INCLUDE_DIRS}
   ${PROTOBUF_INCLUDE_DIRS})
 
 protobuf_generate_cpp(
@@ -75,6 +80,8 @@ add_library(
   src/airmap/rest/client.h
   src/airmap/rest/client.cpp
   src/airmap/rest/communicator.h
+  src/airmap/rest/boost/communicator.h
+  src/airmap/rest/boost/communicator.cpp
   src/airmap/rest/glib/communicator.h
   src/airmap/rest/glib/communicator.cpp
 
@@ -143,7 +150,7 @@ set_property(TARGET airmap PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmapd PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap-telemetry-simulator PROPERTY CXX_STANDARD 14)
 
-target_link_libraries(airmap-client fmt spdlog ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${LIBSOUP_LDFLAGS} ${PROTOBUF_LIBRARIES})
+target_link_libraries(airmap-client fmt network-uri spdlog ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${LIBSOUP_LDFLAGS} ${OPENSSL_LDFLAGS} ${PROTOBUF_LIBRARIES})
 target_link_libraries(airmap airmap-client )
 target_link_libraries(airmap-server airmap-client)
 target_link_libraries(airmapd airmap-server)

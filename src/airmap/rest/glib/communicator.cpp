@@ -45,7 +45,7 @@ void airmap::rest::glib::Communicator::get(const std::string& host, const std::s
   auto sp = shared_from_this();
   std::weak_ptr<Communicator> wp{sp};
 
-  auto uri = soup_uri_new(host.c_str());
+  auto uri = soup_uri_new(("https://" + host).c_str());
   soup_uri_set_path(uri, path.c_str());
 
   GHashTable* query_table = g_hash_table_new(g_str_hash, g_str_equal);
@@ -81,7 +81,7 @@ void airmap::rest::glib::Communicator::post(const std::string& host, const std::
   auto sp = shared_from_this();
   std::weak_ptr<Communicator> wp{sp};
 
-  auto uri = soup_uri_new(host.c_str());
+  auto uri = soup_uri_new(("https://" + host).c_str());
   soup_uri_set_path(uri, path.c_str());
 
   auto msg = soup_message_new("POST", soup_uri_to_string(uri, FALSE));
@@ -148,7 +148,7 @@ void airmap::rest::glib::Communicator::soup_session_callback(SoupSession*, SoupM
       if (msg->response_body) {
         cb(DoResult{std::string{msg->response_body->data, static_cast<std::size_t>(msg->response_body->length)}});
       } else {
-        cb(DoResult{static_cast<std::uint16_t>(msg->status_code)});
+        cb(DoResult{std::make_exception_ptr(std::runtime_error{"error accessing AirMap services"})});
       }
     }
   }

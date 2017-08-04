@@ -26,12 +26,6 @@ class Communicator : public airmap::rest::Communicator,
                      public airmap::Context,
                      public std::enable_shared_from_this<Communicator> {
  public:
-  using Status = std::uint16_t;
-
-  using CreateResult = Outcome<std::shared_ptr<Communicator>, std::exception_ptr>;
-  using DoResult     = Outcome<std::string, Status>;
-  using DoCallback   = std::function<void(const DoResult&)>;
-
   Communicator(const std::shared_ptr<Logger>& logger);
   ~Communicator();
 

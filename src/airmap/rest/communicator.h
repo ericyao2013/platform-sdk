@@ -20,7 +20,7 @@ class Communicator : DoNotCopyOrMove {
   using Status = std::uint16_t;
 
   using CreateResult = Outcome<std::shared_ptr<Communicator>, std::exception_ptr>;
-  using DoResult     = Outcome<std::string, Status>;
+  using DoResult     = Outcome<std::string, std::exception_ptr>;
   using DoCallback   = std::function<void(const DoResult&)>;
 
   virtual void get(const std::string& host, const std::string& path,
