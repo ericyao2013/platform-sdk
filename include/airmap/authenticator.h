@@ -32,7 +32,7 @@ class Authenticator : DoNotCopyOrMove {
   struct RefreshedToken {
     enum class Type { bearer };
     Type type;
-    std::uint32_t expires_in;
+    std::chrono::seconds expires_in;
     std::string id;
   };
 

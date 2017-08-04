@@ -38,7 +38,9 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
 
           auto handler = [this, &ctxt, context, client](const Authenticator::RenewAuthentication::Result& result) {
             if (result) {
-              ctxt.cout << "Refreshed token successfully and received id: " << result.value().id << std::endl;
+              ctxt.cout << "Refreshed token successfully and received id: " 
+                        << "  id:         " << result.value().id << std::endl
+                        << "  expires in: " << result.value().expires_in.count() << std::endl;
             } else
               ctxt.cout << "Failed to renew " << params_.id_token << std::endl;
 
