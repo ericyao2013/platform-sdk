@@ -17,7 +17,7 @@ void airmap::rest::Authenticator::authenticate_with_password(const AuthenticateW
   json j;
   j = params;
 
-  communicator_.post("https://sso.airmap.io", "/oauth/ro", std::move(headers), j.dump(),
+  communicator_.post("sso.airmap.io", "/oauth/ro", std::move(headers), j.dump(),
                      [cb](const Communicator::DoResult& result) {
                        if (result) {
                          cb(jsend::to_outcome<OAuthToken>(json::parse(result.value())));
@@ -47,7 +47,7 @@ void airmap::rest::Authenticator::renew_authentication(const RenewAuthentication
   json j;
   j = params;
 
-  communicator_.post("https://sso.airmap.io", "/delegation", std::move(headers), j.dump(),
+  communicator_.post("sso.airmap.io", "/delegation", std::move(headers), j.dump(),
                      [cb](const Communicator::DoResult& result) {
                        if (result) {
                          cb(jsend::to_outcome<RefreshedToken>(json::parse(result.value())));

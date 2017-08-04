@@ -102,10 +102,6 @@ class Communicator : public airmap::rest::Communicator,
 
   std::shared_ptr<::boost::asio::io_service> io_service_;
   std::shared_ptr<::boost::asio::io_service::work> keep_alive_;
-<<<<<<< HEAD
-  std::shared_ptr<::boost::asio::ssl::context> ssl_context_;
-=======
->>>>>>> f875dd891547b95823b7645b70baf5d5d9e31202
 };
 
 }  // namespace boost
