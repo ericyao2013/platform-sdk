@@ -1,5 +1,5 @@
-#ifndef AIRMAP_CMDS_AIRMAP_CMD_AUTHORIZE_H_
-#define AIRMAP_CMDS_AIRMAP_CMD_AUTHORIZE_H_
+#ifndef AIRMAP_CMDS_AIRMAP_CMD_AUTHORIZE_ANONYMOUS_H_
+#define AIRMAP_CMDS_AIRMAP_CMD_AUTHORIZE_ANONYMOUS_H_
 
 #include <airmap/authenticator.h>
 #include <airmap/util/cli.h>
@@ -9,9 +9,9 @@ namespace cmds {
 namespace airmap {
 namespace cmd {
 
-class Authorize : public util::cli::CommandWithFlagsAndAction {
+class AuthorizeAnonymous : public util::cli::CommandWithFlagsAndAction {
  public:
-  Authorize();
+  AuthorizeAnonymous();
 
  private:
   std::string api_key_;
@@ -23,4 +23,4 @@ class Authorize : public util::cli::CommandWithFlagsAndAction {
 }  // namespace cmds
 }  // namespace airmap
 
-#endif  // AIRMAP_CMDS_AIRMAP_CMD_AUTHORIZE_H_
+#endif  // AIRMAP_CMDS_AIRMAP_CMD_AUTHORIZE_ANONYMOUS_H_

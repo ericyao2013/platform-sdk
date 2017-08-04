@@ -45,7 +45,7 @@ void airmap::rest::glib::Communicator::get(const std::string& host, const std::s
   auto sp = shared_from_this();
   std::weak_ptr<Communicator> wp{sp};
 
-  auto uri = soup_uri_new(host.c_str());
+  auto uri = soup_uri_new(("https://" + host).c_str());
   soup_uri_set_path(uri, path.c_str());
 
   GHashTable* query_table = g_hash_table_new(g_str_hash, g_str_equal);
@@ -81,7 +81,7 @@ void airmap::rest::glib::Communicator::post(const std::string& host, const std::
   auto sp = shared_from_this();
   std::weak_ptr<Communicator> wp{sp};
 
-  auto uri = soup_uri_new(host.c_str());
+  auto uri = soup_uri_new(("https://" + host).c_str());
   soup_uri_set_path(uri, path.c_str());
 
   auto msg = soup_message_new("POST", soup_uri_to_string(uri, FALSE));
@@ -120,7 +120,8 @@ void airmap::rest::glib::Communicator::send_udp(const std::string& host, std::ui
                 if (socket)
                   g_object_unref(socket);
               }};
-          if (body.size() == g_socket_send_to(s.get(), sa.get(), body.c_str(), body.size(), nullptr, &error)) {
+          if (static_cast<ssize_t>(body.size()) ==
+              g_socket_send_to(s.get(), sa.get(), body.c_str(), body.size(), nullptr, &error)) {
             log_.infof(component, "successfully sent UDP packet");
           } else if (error) {
             log_.errorf(component, "error sending UDP packet: %s", error->message);

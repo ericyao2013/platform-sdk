@@ -13,6 +13,10 @@ namespace airmap {
 
 class Authenticator : DoNotCopyOrMove {
  public:
+  enum class Scope { access_token = 0, open_id = 1, open_id_offline_access = 2 };
+
+  enum class GrantType { password = 0, bearer = 1 };
+
   struct AnonymousToken {
     std::string id;
   };
@@ -26,8 +30,9 @@ class Authenticator : DoNotCopyOrMove {
   };
 
   struct RefreshedToken {
-    OAuthToken::Type type;
-    std::chrono::seconds expires_in;
+    enum class Type { bearer };
+    Type type;
+    std::uint32_t expires_in;
     std::string id;
   };
 
@@ -38,6 +43,8 @@ class Authenticator : DoNotCopyOrMove {
       std::string username;
       std::string password;
       std::string device;
+      GrantType grant_type{GrantType::password};
+      Scope scope{Scope::open_id_offline_access};
     };
 
     using Result   = Outcome<OAuthToken, std::exception_ptr>;
@@ -54,9 +61,13 @@ class Authenticator : DoNotCopyOrMove {
 
   struct RenewAuthentication {
     struct Params {
-      std::string user_id;
+      std::string client_id;
+      std::string device;
+      std::string id_token;
+      GrantType grant_type{GrantType::bearer};
+      Scope scope{Scope::open_id_offline_access};
     };
-    using Result   = Outcome<AnonymousToken, std::exception_ptr>;
+    using Result   = Outcome<RefreshedToken, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 

@@ -3,9 +3,6 @@ project(airmap)
 
 enable_testing()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra -fPIC")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -Wextra -fPIC")
-
 find_package(Boost REQUIRED date_time program_options system)
 find_package(PkgConfig)
 find_package(Protobuf REQUIRED)
@@ -23,6 +20,9 @@ set(CRYPTOPP_LIBRARIES cryptopp)
 add_subdirectory(vendor/fmt)
 add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/uri)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -Wextra -fPIC")
 
 include_directories(
   include
@@ -119,8 +119,12 @@ add_executable(
   airmap
 
   src/airmap/cmds/airmap/airmap.cpp
-  src/airmap/cmds/airmap/cmd/authorize.h
-  src/airmap/cmds/airmap/cmd/authorize.cpp
+  src/airmap/cmds/airmap/cmd/authorize-refresh.h
+  src/airmap/cmds/airmap/cmd/authorize-refresh.cpp
+  src/airmap/cmds/airmap/cmd/authorize-anonymous.h
+  src/airmap/cmds/airmap/cmd/authorize-anonymous.cpp
+  src/airmap/cmds/airmap/cmd/authorize-password.h
+  src/airmap/cmds/airmap/cmd/authorize-password.cpp
   src/airmap/cmds/airmap/cmd/create_flight.h
   src/airmap/cmds/airmap/cmd/create_flight.cpp
   src/airmap/cmds/airmap/cmd/simulate_scenario.h
