@@ -1,4 +1,4 @@
-#include <airmap/cmds/airmap/cmd/authorize.h>
+#include <airmap/cmds/airmap/cmd/authorize-anonymous.h>
 
 #include <airmap/client.h>
 #include <airmap/context.h>
@@ -6,12 +6,14 @@
 namespace cli = airmap::util::cli;
 namespace cmd = airmap::cmds::airmap::cmd;
 
-cmd::Authorize::Authorize()
-    : cli::CommandWithFlagsAndAction{cli::Name{"authorize"}, cli::Usage{"authorize with the AirMap services"},
-                                     cli::Description{"authorize with the AirMap services"}} {
+cmd::AuthorizeAnonymous::AuthorizeAnonymous()
+    : cli::CommandWithFlagsAndAction{cli::Name{"authorize-anonymously"},
+                                     cli::Usage{"anonymously authorize with the AirMap services"},
+                                     cli::Description{"anonymously authorize with the AirMap services"}} {
   flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       api_key_));
-  flag(cli::make_flag(cli::Name{"user-id"}, cli::Description{"user-id used for authorizing with the AirMap services"},
+  flag(cli::make_flag(cli::Name{"user-id"},
+                      cli::Description{"user-id used for authorizing anonymously with the AirMap services"},
                       params_.user_id));
 
   action([this](const cli::Command::Context& ctxt) {
