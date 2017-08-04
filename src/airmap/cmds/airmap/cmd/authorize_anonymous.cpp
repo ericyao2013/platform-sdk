@@ -1,4 +1,4 @@
-#include <airmap/cmds/airmap/cmd/authorize-anonymous.h>
+#include <airmap/cmds/airmap/cmd/authorize_anonymous.h>
 
 #include <airmap/client.h>
 #include <airmap/context.h>

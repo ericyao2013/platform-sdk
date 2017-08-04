@@ -1,6 +1,6 @@
-#include <airmap/cmds/airmap/cmd/authorize-anonymous.h>
-#include <airmap/cmds/airmap/cmd/authorize-password.h>
-#include <airmap/cmds/airmap/cmd/authorize-refresh.h>
+#include <airmap/cmds/airmap/cmd/authorize_anonymous.h>
+#include <airmap/cmds/airmap/cmd/authorize_password.h>
+#include <airmap/cmds/airmap/cmd/authorize_refresh.h>
 #include <airmap/cmds/airmap/cmd/create_flight.h>
 #include <airmap/cmds/airmap/cmd/simulate_scenario.h>
 #include <airmap/cmds/airmap/cmd/simulate_telemetry.h>

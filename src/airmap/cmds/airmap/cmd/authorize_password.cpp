@@ -1,4 +1,4 @@
-#include <airmap/cmds/airmap/cmd/authorize-refresh.h>
+#include <airmap/cmds/airmap/cmd/authorize_password.h>
 
 #include <airmap/client.h>
 #include <airmap/context.h>
@@ -6,18 +6,22 @@
 namespace cli = airmap::util::cli;
 namespace cmd = airmap::cmds::airmap::cmd;
 
-cmd::AuthorizeRefresh::AuthorizeRefresh()
-    : cli::CommandWithFlagsAndAction{cli::Name{"authorize-refresh"},
-                                     cli::Usage{"renew authorization with the AirMap services"},
-                                     cli::Description{"renew authorization with the AirMap services"}} {
+cmd::AuthorizePassword::AuthorizePassword()
+    : cli::CommandWithFlagsAndAction{cli::Name{"authorize-password"}, cli::Usage{"authorize with the AirMap services"},
+                                     cli::Description{"authorize with the AirMap services"}} {
   flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       api_key_));
   flag(cli::make_flag(cli::Name{"client-id"},
                       cli::Description{"client-id used for authorizing with the AirMap services"}, params_.client_id));
+  flag(cli::make_flag(cli::Name{"connection-name"},
+                      cli::Description{"connection-name used for authorizing with the AirMap services"},
+                      params_.connection_name));
+  flag(cli::make_flag(cli::Name{"username"}, cli::Description{"username used for authorizing with the AirMap services"},
+                      params_.username));
+  flag(cli::make_flag(cli::Name{"password"}, cli::Description{"password used for authorizing with the AirMap services"},
+                      params_.password));
   flag(cli::make_flag(cli::Name{"device"}, cli::Description{"device used for authorizing with the AirMap services"},
                       params_.device));
-  flag(cli::make_flag(cli::Name{"id-token"}, cli::Description{"id-token used for authorizing with the AirMap services"},
-                      params_.id_token));
 
   action([this](const cli::Command::Context& ctxt) {
     auto result = ::airmap::Context::create(create_default_logger());
@@ -36,18 +40,16 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
 
           auto client = result.value();
 
-          auto handler = [this, &ctxt, context, client](const Authenticator::RenewAuthentication::Result& result) {
+          auto handler = [this, &ctxt, context, client](const Authenticator::AuthenticateWithPassword::Result& result) {
             if (result) {
-              ctxt.cout << "Refreshed token successfully and received id: "
-                        << "  id:         " << result.value().id << std::endl
-                        << "  expires in: " << result.value().expires_in.count() << std::endl;
+              ctxt.cout << "Authenticated successfully and received id: " << result.value().id << std::endl;
             } else
-              ctxt.cout << "Failed to renew " << params_.id_token << std::endl;
+              ctxt.cout << "Failed to authorize " << params_.username << std::endl;
 
             context->stop();
           };
 
-          client->authenticator().renew_authentication(params_, handler);
+          client->authenticator().authenticate_with_password(params_, handler);
 
         });
 
