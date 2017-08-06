@@ -11,3 +11,6 @@
 [submodule "vendor/uri"]
 	path = vendor/uri
 	url = https://github.com/cpp-netlib/uri.git
+[submodule "vendor/mavlink"]
+	path = vendor/mavlink
+	url = https://github.com/mavlink/c_library_v2.git

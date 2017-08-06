@@ -33,6 +33,10 @@ class Communicator : public airmap::rest::Communicator,
   Communicator(const std::shared_ptr<Logger>& logger);
   ~Communicator();
 
+  // Enable access to the underlying io_service such that other elements of
+  // the component can integrate easily.
+  const std::shared_ptr<::boost::asio::io_service>& io_service() const;
+
   // From airmap::Context
   void create_client_with_credentials(const Client::Credentials& credentials, const ClientCreateCallback& cb) override;
   void run() override;

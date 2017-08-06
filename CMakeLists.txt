@@ -27,8 +27,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -We
 include_directories(
   include
   src
+
   vendor/beast/include
   vendor/fmt
+  vendor/mavlink
   vendor/spdlog/include
   vendor/uri/include
 
@@ -77,6 +79,9 @@ add_library(
   src/airmap/rule.cpp
   src/airmap/telemetry.cpp
 
+  src/airmap/daemon.h
+  src/airmap/daemon.cpp
+
   src/airmap/rest/client.h
   src/airmap/rest/client.cpp
   src/airmap/rest/communicator.h
@@ -95,6 +100,11 @@ add_library(
   src/airmap/rest/flights.cpp
   src/airmap/rest/telemetry.h
   src/airmap/rest/telemetry.cpp
+
+  src/airmap/mavlink/channel.h
+  src/airmap/mavlink/channel.cpp
+  src/airmap/mavlink/boost/serial_channel.h
+  src/airmap/mavlink/boost/serial_channel.cpp  
 
   src/airmap/util/cheap_ruler.h
   src/airmap/util/cheap_ruler.cpp
@@ -127,17 +137,14 @@ add_executable(
   src/airmap/cmds/airmap/cmd/authorize_password.cpp
   src/airmap/cmds/airmap/cmd/create_flight.h
   src/airmap/cmds/airmap/cmd/create_flight.cpp
+  src/airmap/cmds/airmap/cmd/daemon.h
+  src/airmap/cmds/airmap/cmd/daemon.cpp
   src/airmap/cmds/airmap/cmd/simulate_scenario.h
   src/airmap/cmds/airmap/cmd/simulate_scenario.cpp
   src/airmap/cmds/airmap/cmd/simulate_telemetry.h
   src/airmap/cmds/airmap/cmd/simulate_telemetry.cpp
   src/airmap/cmds/airmap/cmd/start_flight_comms.h
   src/airmap/cmds/airmap/cmd/start_flight_comms.cpp)
-
-add_executable(
-  airmapd
-
-  src/airmap/cmds/airmapd/airmapd.cpp)
 
 add_executable(
   airmap-telemetry-simulator
@@ -147,13 +154,11 @@ add_executable(
 set_property(TARGET airmap-client PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap-server PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap PROPERTY CXX_STANDARD 14)
-set_property(TARGET airmapd PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap-telemetry-simulator PROPERTY CXX_STANDARD 14)
 
 target_link_libraries(airmap-client fmt network-uri spdlog ${Boost_LIBRARIES} ${CRYPTOPP_LIBRARIES} ${LIBSOUP_LDFLAGS} ${OPENSSL_LDFLAGS} ${PROTOBUF_LIBRARIES})
 target_link_libraries(airmap airmap-client )
 target_link_libraries(airmap-server airmap-client)
-target_link_libraries(airmapd airmap-server)
 target_link_libraries(airmap-telemetry-simulator airmap-client)
 
 find_program(CLANG_FORMAT_EXECUTABLE

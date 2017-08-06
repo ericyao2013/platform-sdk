@@ -1,55 +1,57 @@
 #ifndef AIRMAP_DAEMON_H_
 #define AIRMAP_DAEMON_H_
 
+#include <airmap/authenticator.h>
 #include <airmap/client.h>
-#include <airmap/outcome.h>
+#include <airmap/flights.h>
+#include <airmap/logger.h>
+#include <airmap/mavlink/channel.h>
+#include <airmap/optional.h>
+#include <airmap/telemetry.h>
+#include <airmap/util/formatting_logger.h>
 
 #include <memory>
 
 namespace airmap {
-
-class MissionPlanner;
-class TelemetrySource;
 
 /// Daemon respresents AirMap and all of its services within
 /// the system. It listens to incoming data (both in terms of
 /// sensors as well as in terms of control messages) and enables
 /// a drone operation platform to deeply integrate airspace intelligence
 /// in its operations.
-class Daemon {
+class Daemon : public std::enable_shared_from_this<Daemon> {
  public:
-  /// Configuration contains all runtime dependencies of Daemon.
   struct Configuration {
-    static Outcome<Configuration, std::exception_ptr> from_command_line(int argc, char** argv);
-
-    std::shared_ptr<TelemetrySource> telemetry_source;
-    std::shared_ptr<MissionPlanner> mission_planner;
+    std::string api_key;
+    std::string user_id;
+    std::string aircraft_id;
+    std::shared_ptr<Logger> logger;
+    std::shared_ptr<mavlink::Channel> channel;
+    std::shared_ptr<Client> client;
   };
-
-  /// main assembles a Configuration from command line
-  /// arguments, environment variables and configuration files
-  /// and executes the daemon.
-  ///
-  /// airmapd help
-  ///   --device-identifier=identifier one of {random, mac}
-  static int main(int argc, char** argv);
 
   /// Daemon initializes a new instance with the functional
   /// dependencies provided via 'configuration'.
-  explicit Daemon(Configuration&& configuration);
+  explicit Daemon(const Configuration& configuration);
+  ~Daemon();
 
-  /// run executes the daemon, blocking the current thread until
-  /// either stop() is called or an error occurs.
-  void run();
-
-  /// stop requests the Daemon instance to shut down and return
-  /// from a previous call to run.
-  void stop();
+  /// Puts the daemon to execution.
+  void start();
 
  private:
-  std::unique_ptr<Client> client;
-  std::shared_ptr<TelemetrySource> telemetry_source;
-  std::shared_ptr<MissionPlanner> mission_planner;
+  void handle_mavlink_message(const mavlink_message_t& msg);
+  void handle_authorized(const Authenticator::AuthenticateAnonymously::Result& result);
+  void handle_flight(const airmap::Flights::CreateFlight::Result& result);
+  void handle_flight_comms_started(const airmap::Flights::StartFlightCommunications::Result& result);
+
+  Configuration configuration_;
+
+  util::FormattingLogger log_;
+  mavlink::Channel::Subscription mavlink_channel_subscription_;
+  
+  Optional<std::string> flight_id_;
+  Optional<std::string> authorization_;
+  Optional<std::string> encryption_key_;
 };
 
 }  // namespace airmap

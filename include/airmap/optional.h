@@ -70,6 +70,10 @@ class Optional {
     return storage.value;
   }
 
+  T& get() {
+    return storage.value;
+  }
+
   void set(const T& value) {
     reset();
 

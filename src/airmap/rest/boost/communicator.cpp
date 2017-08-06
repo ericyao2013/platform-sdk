@@ -29,6 +29,10 @@ airmap::rest::boost::Communicator::Communicator(const std::shared_ptr<Logger>& l
 airmap::rest::boost::Communicator::~Communicator() {
 }
 
+const std::shared_ptr<::boost::asio::io_service>& airmap::rest::boost::Communicator::io_service() const {
+  return io_service_;
+}
+
 // From airmap::Context
 void airmap::rest::boost::Communicator::create_client_with_credentials(const Client::Credentials& credentials,
                                                                        const ClientCreateCallback& cb) {

@@ -89,6 +89,7 @@ cmd::SimulateScenario::SimulateScenario()
       client_ = result.value();
 
       for (std::size_t i = 0; i < collector_->scenario().participants.size(); i++) {
+        std::this_thread::sleep_for(std::chrono::seconds{1});
         client_->authenticator().authenticate_anonymously(
             {collector_->scenario().participants.at(i).pilot.id}, [this, &ctxt, i](const auto& result) {
               if (not result) {
