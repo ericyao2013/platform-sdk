@@ -17,6 +17,6 @@ void airmap::mavlink::Channel::invoke_subscribers(const std::vector<mavlink_mess
 
   for (const auto& msg : msgs) {
     for (const auto& subscriber : subscribers)
-        subscriber(msg);
+      subscriber(msg);
   }
 }

@@ -25,7 +25,8 @@ cmd::Daemon::Daemon()
     }
     auto logger       = create_default_logger(ctxt.cout);
     auto communicator = std::make_shared<rest::boost::Communicator>(logger);
-    auto channel = std::make_shared<mavlink::boost::SerialChannel>(logger, communicator->io_service(), serial_device_.get());
+    auto channel =
+        std::make_shared<mavlink::boost::SerialChannel>(logger, communicator->io_service(), serial_device_.get());
 
     communicator->create_client_with_credentials(
         Client::Credentials{api_key_},

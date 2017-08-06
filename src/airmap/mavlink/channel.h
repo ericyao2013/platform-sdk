@@ -17,9 +17,9 @@ namespace mavlink {
 
 class Channel : DoNotCopyOrMove {
  public:
-  using Subscriber = std::function<void(const mavlink_message_t&)>;
+  using Subscriber    = std::function<void(const mavlink_message_t&)>;
   using SubscriberSet = std::list<Subscriber>;
-  using Subscription = SubscriberSet::const_iterator;
+  using Subscription  = SubscriberSet::const_iterator;
 
   Subscription subscribe(const Subscriber&);
   void unsubscribe(Subscription&& subscription);
@@ -30,7 +30,7 @@ class Channel : DoNotCopyOrMove {
  protected:
   Channel() = default;
 
-  void invoke_subscribers(const std::vector<mavlink_message_t> & msgs);
+  void invoke_subscribers(const std::vector<mavlink_message_t>& msgs);
 
  private:
   std::mutex guard_;

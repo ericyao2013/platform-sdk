@@ -16,7 +16,8 @@ class SerialChannel : public Channel, public std::enable_shared_from_this<Serial
  public:
   static constexpr std::size_t buffer_size{1024};
 
-  explicit SerialChannel(const std::shared_ptr<Logger>& logger, const std::shared_ptr<::boost::asio::io_service>& io_service, const std::string& device_file);
+  explicit SerialChannel(const std::shared_ptr<Logger>& logger,
+                         const std::shared_ptr<::boost::asio::io_service>& io_service, const std::string& device_file);
 
   // From Channel
   void start() override;

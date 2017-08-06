@@ -48,7 +48,7 @@ class Daemon : public std::enable_shared_from_this<Daemon> {
 
   util::FormattingLogger log_;
   mavlink::Channel::Subscription mavlink_channel_subscription_;
-  
+
   Optional<std::string> flight_id_;
   Optional<std::string> authorization_;
   Optional<std::string> encryption_key_;

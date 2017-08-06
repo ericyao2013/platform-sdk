@@ -26,7 +26,7 @@ void airmap::mavlink::boost::SerialChannel::start() {
 
     if (auto result = handle_read(size))
       invoke_subscribers(result.get());
-    
+
     start();
   });
 }
