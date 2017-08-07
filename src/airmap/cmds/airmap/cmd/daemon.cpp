@@ -1,6 +1,7 @@
 #include <airmap/cmds/airmap/cmd/daemon.h>
 
 #include <airmap/daemon.h>
+#include <airmap/mavlink/boost/udp_channel.h>
 #include <airmap/mavlink/boost/serial_channel.h>
 #include <airmap/rest/boost/communicator.h>
 
@@ -55,15 +56,29 @@ cmd::Daemon::Daemon()
       return 1;
     }
 
-    if (!serial_device_) {
-      log_.errorf(component, "missing parameter 'serial-device'");
-      return 1;
+    bool has_valid_serial_device = serial_device_ && serial_device_.get().validate();
+    bool has_valid_udp_endpoint = udp_endpoint_ip_ && udp_endpoint_ip_.get().validate() && udp_endpoint_port_;
+
+    if (!(has_valid_serial_device || has_valid_udp_endpoint)) {
+        log_.errorf(component, "neither a valid serial port nor a valid udp endpoint was specified");
+        return 1;
+    }
+
+    if (has_valid_serial_device && has_valid_udp_endpoint) {
+        log_.errorf(component, "both a serial port and a udp endpoint were specified");
+        return 1;
     }
 
     auto communicator = std::make_shared<rest::boost::Communicator>(log_.logger());
 
-    auto channel = std::make_shared<mavlink::boost::SerialChannel>(log_.logger(), communicator->io_service(),
-                                                                   serial_device_.get());
+    std::shared_ptr<mavlink::Channel> channel;
+
+    if (has_valid_serial_device)
+        channel = std::make_shared<mavlink::boost::SerialChannel>(
+            log_.logger(), communicator->io_service(), serial_device_.get());
+    if (has_valid_udp_endpoint)
+        channel = std::make_shared<mavlink::boost::UdpChannel>(
+            log_.logger(), communicator->io_service(), boost::asio::ip::address::from_string(udp_endpoint_ip_.get()), udp_endpoint_port_.get());
 
     communicator->create_client_with_credentials(
         Client::Credentials{api_key_.get()},
