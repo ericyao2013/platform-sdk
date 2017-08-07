@@ -21,7 +21,7 @@ void airmap::Daemon::start() {
 }
 
 void airmap::Daemon::handle_mavlink_message(const mavlink_message_t& msg) {
-  log_.infof(component, "receiving mavlink message: %d", msg.msgid);
+  log_.infof(component, "receiving mavlink message with id %d from %d:%d", msg.msgid, msg.sysid, msg.compid);
   start();
 }
 

@@ -22,6 +22,10 @@ cmd::Daemon::Daemon()
   flag(cli::make_flag(cli::Name{"aircraft-id"}, cli::Description{"id of the device the daemon runs on"}, aircraft_id_));
   flag(cli::make_flag(cli::Name{"serial-device"}, cli::Description{"the device file to read mavlink messages from"},
                       serial_device_));
+  flag(cli::make_flag(cli::Name{"udp-endpoint-ip"}, cli::Description{"the ip of the UDP endpoint to read mavlink messages from"},
+                      udp_endpoint_ip_));
+  flag(cli::make_flag(cli::Name{"udp-endpoint-port"}, cli::Description{"the port of the UDP endpoint to read mavlink messages from"},
+                      udp_endpoint_port_));
 
   action([this](const cli::Command::Context& ctxt) {
     log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};

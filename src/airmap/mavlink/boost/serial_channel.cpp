@@ -14,6 +14,10 @@ airmap::mavlink::boost::SerialChannel::SerialChannel(const std::shared_ptr<Logge
                                                      const std::shared_ptr<::boost::asio::io_service>& io_service,
                                                      const std::string& device_file)
     : log_{logger}, io_service_{io_service}, serial_port_{*io_service_, device_file} {
+      ::memset(&parse_buffer_.msg, 0, sizeof(parse_buffer_.msg));
+      ::memset(&parse_buffer_.status, 0, sizeof(parse_buffer_.status));
+
+      serial_port_.set_option(::boost::asio::serial_port::baud_rate(57600));
 }
 
 void airmap::mavlink::boost::SerialChannel::start() {
@@ -32,8 +36,9 @@ void airmap::mavlink::boost::SerialChannel::handle_read(const ::boost::system::e
     return;
   }
 
-  if (auto result = process_mavlink_data(transferred))
+  if (auto result = process_mavlink_data(transferred)) {
     invoke_subscribers(result.get());
+  }
 
   start();
 }
