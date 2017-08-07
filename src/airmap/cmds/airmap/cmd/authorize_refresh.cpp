@@ -14,10 +14,8 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
                       api_key_));
   flag(cli::make_flag(cli::Name{"client-id"},
                       cli::Description{"client-id used for authorizing with the AirMap services"}, params_.client_id));
-  flag(cli::make_flag(cli::Name{"device"}, cli::Description{"device used for authorizing with the AirMap services"},
-                      params_.device));
-  flag(cli::make_flag(cli::Name{"id-token"}, cli::Description{"id-token used for authorizing with the AirMap services"},
-                      params_.id_token));
+  flag(cli::make_flag(cli::Name{"refresh-token"}, cli::Description{"refresh-token used for authorizing with the AirMap services"},
+                      params_.refresh_token));
 
   action([this](const cli::Command::Context& ctxt) {
     auto result = ::airmap::Context::create(create_default_logger());
@@ -42,7 +40,7 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
                         << "  id:         " << result.value().id << std::endl
                         << "  expires in: " << result.value().expires_in.count() << std::endl;
             } else
-              ctxt.cout << "Failed to renew " << params_.id_token << std::endl;
+              ctxt.cout << "Failed to renew with " << params_.refresh_token << std::endl;
 
             context->stop();
           };
