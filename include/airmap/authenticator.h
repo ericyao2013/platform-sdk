@@ -62,10 +62,9 @@ class Authenticator : DoNotCopyOrMove {
   struct RenewAuthentication {
     struct Params {
       std::string client_id;
-      std::string device;
-      std::string id_token;
+      std::string refresh_token;
       GrantType grant_type{GrantType::bearer};
-      Scope scope{Scope::open_id_offline_access};
+      Scope scope{Scope::open_id};
     };
     using Result   = Outcome<RefreshedToken, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;

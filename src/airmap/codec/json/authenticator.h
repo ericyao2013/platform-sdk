@@ -87,8 +87,7 @@ inline void encode(nlohmann::json& j, const Authenticator::AuthenticateAnonymous
 
 inline void encode(nlohmann::json& j, const Authenticator::RenewAuthentication::Params& params) {
   j["client_id"] = params.client_id;
-  j["device"]    = params.device;
-  j["id_token"]  = params.id_token;
+  j["refresh_token"]  = params.refresh_token;
 
   encode(j, params.grant_type);
   encode(j, params.scope);
