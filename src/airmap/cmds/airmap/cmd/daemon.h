@@ -1,8 +1,11 @@
 #ifndef AIRMAP_CMDS_AIRMAP_CMD_DAEMON_H_
 #define AIRMAP_CMDS_AIRMAP_CMD_DAEMON_H_
 
+#include <airmap/logger.h>
 #include <airmap/optional.h>
 #include <airmap/util/cli.h>
+#include <airmap/util/formatting_logger.h>
+#include <airmap/util/tagged_string.h>
 
 namespace airmap {
 namespace cmds {
@@ -14,10 +17,16 @@ class Daemon : public util::cli::CommandWithFlagsAndAction {
   Daemon();
 
  private:
-  std::string api_key_;
-  std::string user_id_;
-  std::string aircraft_id_;
-  Optional<std::string> serial_device_;
+  using ApiKey       = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using UserId       = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using AircraftId   = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using SerialDevice = util::TaggedString<util::tags::MustNotBeEmpty>;
+
+  util::FormattingLogger log_{create_null_logger()};
+  Optional<ApiKey> api_key_;
+  Optional<UserId> user_id_;
+  Optional<AircraftId> aircraft_id_;
+  Optional<SerialDevice> serial_device_;
 };
 
 }  // namespace cmd

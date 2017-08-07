@@ -14,6 +14,10 @@ namespace cmd = airmap::cmds::airmap::cmd;
 
 using json = nlohmann::json;
 
+namespace {
+constexpr const char* component{"start-flight-comms"};
+}
+
 cmd::StartFlightComms::StartFlightComms()
     : cli::CommandWithFlagsAndAction{cli::Name{"start-flight-comms"},
                                      cli::Usage{"prepare flight for injection of telemetry data"},
@@ -26,7 +30,39 @@ cmd::StartFlightComms::StartFlightComms()
                       params_.flight_id));
 
   action([this](const cli::Command::Context& ctxt) {
-    auto result = ::airmap::Context::create(create_default_logger());
+    log_ = util::FormattingLogger{create_default_logger()};
+
+    if (!params_.api_key) {
+      log_.errorf(component, "missing parameter 'api-key'");
+      return 1;
+    }
+
+    if (!params_.api_key.get().validate()) {
+      log_.errorf(component, "parameter 'api-key' for accessing AirMap services must not be empty");
+      return 1;
+    }
+
+    if (!params_.authorization) {
+      log_.errorf(component, "missing parameter 'authorization'");
+      return 1;
+    }
+
+    if (!params_.authorization.get().validate()) {
+      log_.errorf(component, "parameter 'authorization' for accessing AirMap services must not be empty");
+      return 1;
+    }
+
+    if (!params_.flight_id) {
+      log_.errorf(component, "missing parameter 'flight-id'");
+      return 1;
+    }
+
+    if (!params_.flight_id.get().validate()) {
+      log_.errorf(component, "parameter 'flight-id' for accessing AirMap services must not be empty");
+      return 1;
+    }
+
+    auto result = ::airmap::Context::create(log_.logger());
 
     if (!result) {
       ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
@@ -36,7 +72,7 @@ cmd::StartFlightComms::StartFlightComms()
     auto context = result.value();
 
     context->create_client_with_credentials(
-        Client::Credentials{params_.api_key},
+        Client::Credentials{params_.api_key.get()},
         [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
@@ -44,7 +80,7 @@ cmd::StartFlightComms::StartFlightComms()
           auto client = result.value();
 
           client->flights().start_flight_communications(
-              Flights::StartFlightCommunications::Parameters{params_.authorization, params_.flight_id},
+              Flights::StartFlightCommunications::Parameters{params_.authorization.get(), params_.flight_id.get()},
               [this, &ctxt, context, client](const Flights::StartFlightCommunications::Result& result) {
                 if (!result) {
                   ctxt.cout << "Failed to start flight communications" << std::endl;

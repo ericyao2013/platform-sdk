@@ -50,8 +50,49 @@ cmd::SimulateTelemetry::SimulateTelemetry()
                       params_.geometry_file));
 
   action([this](const cli::Command::Context& ctxt) {
-    auto logger = create_default_logger();
-    auto result = ::airmap::Context::create(logger);
+    log_ = util::FormattingLogger{create_default_logger()};
+
+    if (!params_.api_key) {
+      log_.errorf(component, "missing parameter 'api-key'");
+      return 1;
+    }
+
+    if (!params_.api_key.get().validate()) {
+      log_.errorf(component, "parameter 'api-key' for accessing AirMap services must not be empty");
+      return 1;
+    }
+
+    if (!params_.authorization) {
+      log_.errorf(component, "missing parameter 'authorization'");
+      return 1;
+    }
+
+    if (!params_.authorization.get().validate()) {
+      log_.errorf(component, "parameter 'authorization' for accessing AirMap services must not be empty");
+      return 1;
+    }
+
+    if (!params_.host) {
+      log_.errorf(component, "missing parameter 'host'");
+      return 1;
+    }
+
+    if (!params_.host.get().validate()) {
+      log_.errorf(component, "parameter 'host' must not be empty");
+      return 1;
+    }
+
+    if (!params_.encryption_key) {
+      log_.errorf(component, "missing parameter 'encryption-key'");
+      return 1;
+    }
+
+    if (!params_.encryption_key.get().validate()) {
+      log_.errorf(component, "parameter 'encryption-key' must not be empty");
+      return 1;
+    }
+
+    auto result = ::airmap::Context::create(log_.logger());
 
     if (!result) {
       ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
@@ -61,42 +102,45 @@ cmd::SimulateTelemetry::SimulateTelemetry()
     auto context = result.value();
 
     ctxt.cout << "Sending telemetry package to" << std::endl
-              << "  host:      " << params_.host << std::endl
+              << "  host:      " << params_.host.get() << std::endl
               << "  port:      " << params_.port << std::endl
               << "  frequency: " << params_.frequency << std::endl
               << "  flight-id: " << params_.flight.id << std::endl
-              << "  api-key:   " << params_.api_key << std::endl
-              << "  enc-key:   " << params_.encryption_key << std::endl;
+              << "  api-key:   " << params_.api_key.get() << std::endl
+              << "  enc-key:   " << params_.encryption_key.get() << std::endl;
 
-    ::setenv("AIRMAP_TELEMETRY_HOST", params_.host.c_str(), 1);
+    ::setenv("AIRMAP_TELEMETRY_HOST", params_.host.get().string().c_str(), 1);
     ::setenv("AIRMAP_TELEMETRY_PORT", boost::lexical_cast<std::string>(params_.port).c_str(), 1);
 
     auto geometry = polygon;
 
     if (params_.geometry_file) {
       std::ifstream in{params_.geometry_file.get()};
+      if (!in) {
+        log_.errorf(component, "failed to open %s for reading", params_.geometry_file.get());
+        return 1;
+      }
       geometry = json::parse(in);
     }
 
     context->create_client_with_credentials(
-        Client::Credentials{params_.api_key},
-        [this, &ctxt, context, logger, geometry](const ::airmap::Context::ClientCreateResult& result) {
+        Client::Credentials{params_.api_key.get()},
+        [this, &ctxt, context, geometry](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 
           auto client = result.value();
 
-          std::thread submitter{[this, &ctxt, geometry, context, logger, client]() {
-            util::FormattingLogger log{logger};
+          std::thread submitter{[this, &ctxt, geometry, context, client]() {
             util::TelemetrySimulator simulator{geometry.details_for_polygon()};
 
             while (true) {
               auto data = simulator.update();
 
-              log.infof(component, "Submitting update for position (%f,%f)", data.latitude, data.longitude);
+              log_.infof(component, "Submitting update for position (%f,%f)", data.latitude, data.longitude);
 
               client->telemetry().submit_updates(
-                  params_.flight, params_.encryption_key,
+                  params_.flight, params_.encryption_key.get(),
                   {Telemetry::Update{Telemetry::Position{milliseconds_since_epoch(Clock::universal_time()),
                                                          data.latitude, data.longitude, 100, 100, 2}}});
               std::this_thread::sleep_for(std::chrono::milliseconds{1000 / params_.frequency});

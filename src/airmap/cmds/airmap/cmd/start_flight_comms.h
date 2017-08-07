@@ -5,6 +5,8 @@
 #include <airmap/flights.h>
 #include <airmap/telemetry.h>
 #include <airmap/util/cli.h>
+#include <airmap/util/formatting_logger.h>
+#include <airmap/util/tagged_string.h>
 
 namespace airmap {
 namespace cmds {
@@ -16,10 +18,15 @@ class StartFlightComms : public util::cli::CommandWithFlagsAndAction {
   StartFlightComms();
 
  private:
+  using ApiKey        = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using Authorization = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using FlightId      = util::TaggedString<util::tags::MustNotBeEmpty>;
+
+  util::FormattingLogger log_{create_null_logger()};
   struct {
-    std::string api_key;
-    std::string authorization;
-    std::string flight_id;
+    Optional<ApiKey> api_key;
+    Optional<Authorization> authorization;
+    Optional<FlightId> flight_id;
   } params_;
 };
 

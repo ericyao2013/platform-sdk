@@ -34,6 +34,10 @@ class Logger : DoNotCopyOrMove {
 /// log messages to 'out'.
 std::shared_ptr<Logger> create_default_logger(std::ostream& out = std::cerr);
 
+/// create_null_logger returns a logger that does the equivalent of
+/// > /dev/null.
+std::shared_ptr<Logger> create_null_logger();
+
 }  // namespace airmap
 
 #endif  // AIRMAP_LOGGER_H_

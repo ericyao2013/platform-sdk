@@ -24,6 +24,7 @@ void print_flight(std::ostream& out, const airmap::Flight& flight) {
       << "  end-time:   " << airmap::iso8601::generate(flight.end_time) << std::endl;
 }
 
+constexpr const char* component{"create-flight"};
 }  // namespace
 
 cmd::CreateFlight::CreateFlight()
@@ -36,7 +37,7 @@ cmd::CreateFlight::CreateFlight()
   flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       api_key_));
   flag(cli::make_flag(cli::Name{"authorization"},
-                      cli::Description{"token used for authorizing with the AirMap services"}, params_.authorization));
+                      cli::Description{"token used for authorizing with the AirMap services"}, authorization_));
   flag(cli::make_flag(cli::Name{"latitude"}, cli::Description{"latitude of take-off point"}, params_.latitude));
   flag(cli::make_flag(cli::Name{"longitude"}, cli::Description{"longitude of take-off point"}, params_.longitude));
   flag(cli::make_flag(cli::Name{"max-altitude"}, cli::Description{"maximum altitude reached during flight"},
@@ -55,25 +56,58 @@ cmd::CreateFlight::CreateFlight()
                       geometry_file_));
 
   action([this](const cli::Command::Context& ctxt) {
-    auto result = ::airmap::Context::create(create_default_logger());
+    log_ = util::FormattingLogger(create_default_logger(ctxt.cout));
+
+    if (!api_key_) {
+      log_.errorf(component, "missing parameter 'api-key'");
+      return 1;
+    }
+
+    if (!api_key_.get().validate()) {
+      log_.errorf(component, "parameter 'api-key' for accessing AirMap services must not be empty");
+      return 1;
+    }
+
+    if (!authorization_) {
+      log_.errorf(component, "missing parameter 'authorization'");
+      return 1;
+    }
+
+    if (!authorization_.get().validate()) {
+      log_.errorf(component, "parameter 'authorization' for accessing AirMap services must not be empty");
+      return 1;
+    }
+
+    params_.authorization = authorization_.get();
+
+    if (!geometry_file_) {
+      log_.errorf(component, "missing parameter 'geometry-file'");
+      return 1;
+    }
+
+    if (geometry_file_) {
+      std::ifstream in{geometry_file_.get()};
+      if (!in) {
+        log_.errorf(component, "failed to open %s for reading", geometry_file_.get());
+        return 1;
+      }
+      Geometry geometry = json::parse(in);
+      params_.geometry = geometry;
+    }
+
+    auto result = ::airmap::Context::create(log_.logger());
 
     if (!result) {
-      ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
+      log_.errorf(component, "Could not acquire resources for accessing AirMap services");
       return 1;
     }
 
     auto context = result.value();
 
     context->create_client_with_credentials(
-        Client::Credentials{api_key_}, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
+        Client::Credentials{api_key_.get()}, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
-
-          if (geometry_file_) {
-            std::ifstream in{geometry_file_.get()};
-            Geometry geometry = json::parse(in);
-            params_.geometry  = geometry;
-          }
 
           auto client = result.value();
 
@@ -81,7 +115,7 @@ cmd::CreateFlight::CreateFlight()
             if (result)
               print_flight(ctxt.cout, result.value());
             else
-              ctxt.cout << "Failed to create flight with id" << std::endl;
+              log_.errorf(component, "Failed to create flight");
             context->stop();
           };
 

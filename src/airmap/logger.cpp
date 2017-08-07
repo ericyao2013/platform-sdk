@@ -17,6 +17,12 @@ using json   = nlohmann::json;
 
 namespace {
 
+struct NullLogger : public airmap::Logger {
+  NullLogger() = default;
+  void log(Severity, const char*, const char*) override {
+  }
+};
+
 class BunyanFormatter : public spdlog::formatter {
  public:
   static uint bunyan_version() {
@@ -89,4 +95,8 @@ void airmap::Logger::error(const char* message, const char* component) {
 
 std::shared_ptr<airmap::Logger> airmap::create_default_logger(std::ostream& out) {
   return std::make_shared<DefaultLogger>(out);
+}
+
+std::shared_ptr<airmap::Logger> airmap::create_null_logger() {
+  return std::make_shared<NullLogger>();
 }

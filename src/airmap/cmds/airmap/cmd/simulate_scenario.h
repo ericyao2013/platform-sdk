@@ -10,6 +10,7 @@
 #include <airmap/util/cli.h>
 #include <airmap/util/formatting_logger.h>
 #include <airmap/util/scenario_simulator.h>
+#include <airmap/util/tagged_string.h>
 
 #include <memory>
 #include <string>
@@ -24,6 +25,10 @@ class SimulateScenario : public util::cli::CommandWithFlagsAndAction {
   SimulateScenario();
 
  private:
+  using ApiKey       = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using Host         = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using ScenarioFile = util::TaggedString<util::tags::MustNotBeEmpty>;
+
   class Collector {
    public:
     explicit Collector(const util::Scenario& scenario);
@@ -38,13 +43,13 @@ class SimulateScenario : public util::cli::CommandWithFlagsAndAction {
   };
 
   struct {
-    std::string api_key;
-    std::string host{"127.0.0.1"};
+    Optional<ApiKey> api_key;
+    Optional<Host> host{Host{"127.0.0.1"}};
     std::uint16_t port{16060};
-    Optional<std::string> scenario_file;
+    Optional<ScenarioFile> scenario_file;
   } params_;
   std::shared_ptr<util::ScenarioSimulator::Runner> runner_;
-  std::shared_ptr<Logger> logger_;
+  util::FormattingLogger log_{create_null_logger()};
   std::shared_ptr<Collector> collector_;
   std::shared_ptr<::airmap::Context> context_;
   std::shared_ptr<Client> client_;
