@@ -17,25 +17,28 @@ airmap::mavlink::boost::SerialChannel::SerialChannel(const std::shared_ptr<Logge
 }
 
 void airmap::mavlink::boost::SerialChannel::start() {
-  auto sp = shared_from_this();
-  serial_port_.async_read_some(::boost::asio::buffer(buffer_), [this, sp](const auto& ec, auto size) {
-    if (ec) {
-      log_.errorf(component, "failed to read from serial device: %s", ec.message());
-      return;
-    }
-
-    if (auto result = handle_read(size))
-      invoke_subscribers(result.get());
-
-    start();
-  });
+  using std::placeholders::_1;
+  using std::placeholders::_2;
+  serial_port_.async_read_some(::boost::asio::buffer(buffer_), std::bind(&SerialChannel::handle_read, shared_from_this(), _1, _2));
 }
 
 void airmap::mavlink::boost::SerialChannel::cancel() {
   serial_port_.cancel();
 }
 
-airmap::Optional<std::vector<mavlink_message_t>> airmap::mavlink::boost::SerialChannel::handle_read(
+void airmap::mavlink::boost::SerialChannel::handle_read(const ::boost::system::error_code& ec, std::size_t transferred) {
+  if (ec) {
+    log_.errorf(component, "failed to read from serial device: %s", ec.message());
+    return;
+  }
+
+  if (auto result = process_mavlink_data(transferred))
+    invoke_subscribers(result.get());
+
+  start();
+}
+
+airmap::Optional<std::vector<mavlink_message_t>> airmap::mavlink::boost::SerialChannel::process_mavlink_data(
     std::size_t transferred) {
   Optional<std::vector<mavlink_message_t>> result;
 

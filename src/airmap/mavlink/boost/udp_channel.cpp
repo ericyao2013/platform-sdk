@@ -11,31 +11,34 @@ constexpr const char* component{"airmap::mavlink::UdpChannel"};
 }  // namespace
 
 airmap::mavlink::boost::UdpChannel::UdpChannel(const std::shared_ptr<Logger>& logger,
-                                                     const std::shared_ptr<::boost::asio::io_service>& io_service,
-                                                     const ::boost::asio::ip::address& ip, std::uint16_t port)
+                                               const std::shared_ptr<::boost::asio::io_service>& io_service,
+                                               const ::boost::asio::ip::address& ip, std::uint16_t port)
     : log_{logger}, io_service_{io_service}, endpoint_{ip, port}, socket_{*io_service_} {
 }
 
 void airmap::mavlink::boost::UdpChannel::start() {
-  auto sp = shared_from_this();
-  socket_.async_receive_from(::boost::asio::buffer(buffer_), endpoint_, [this, sp](const auto& ec, auto size) {
-    if (ec) {
-      log_.errorf(component, "failed to read from udp endpoint: %s", ec.message());
-      return;
-    }
-
-    if (auto result = handle_read(size))
-      invoke_subscribers(result.get());
-
-    start();
-  });
+  using std::placeholders::_1;
+  using std::placeholders::_2;
+  socket_.async_receive_from(::boost::asio::buffer(buffer_), endpoint_, std::bind(&UdpChannel::handle_read, shared_from_this(), _1, _2));
 }
 
 void airmap::mavlink::boost::UdpChannel::cancel() {
   socket_.cancel();
 }
 
-airmap::Optional<std::vector<mavlink_message_t>> airmap::mavlink::boost::UdpChannel::handle_read(
+void airmap::mavlink::boost::UdpChannel::handle_read(const ::boost::system::error_code& ec, std::size_t transferred) {
+  if (ec) {
+    log_.errorf(component, "failed to read from udp endpoint: %s", ec.message());
+    return;
+  }
+
+  if (auto result = process_mavlink_data(transferred))
+    invoke_subscribers(result.get());
+
+  start();
+}
+
+airmap::Optional<std::vector<mavlink_message_t>> airmap::mavlink::boost::UdpChannel::process_mavlink_data(
     std::size_t transferred) {
   Optional<std::vector<mavlink_message_t>> result;
 

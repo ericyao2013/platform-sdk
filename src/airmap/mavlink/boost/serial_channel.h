@@ -24,7 +24,8 @@ class SerialChannel : public Channel, public std::enable_shared_from_this<Serial
   void cancel() override;
 
  private:
-  Optional<std::vector<mavlink_message_t>> handle_read(std::size_t transferred);
+  void handle_read(const ::boost::system::error_code& ec, std::size_t transferred);
+  Optional<std::vector<mavlink_message_t>> process_mavlink_data(std::size_t transferred);
 
   util::FormattingLogger log_;
   std::shared_ptr<::boost::asio::io_service> io_service_;
