@@ -40,6 +40,10 @@ class Daemon : public std::enable_shared_from_this<Daemon> {
 
  private:
   void handle_mavlink_message(const mavlink_message_t& msg);
+  void handle_mavlink_heartbeat_message(const mavlink_message_t& msg);
+  void handle_mavlink_system_status_message(const mavlink_message_t& msg);
+  void handle_mavlink_gps_raw_int_message(const mavlink_message_t& msg);
+
   void handle_authorized(const Authenticator::AuthenticateAnonymously::Result& result);
   void handle_flight(const airmap::Flights::CreateFlight::Result& result);
   void handle_flight_comms_started(const airmap::Flights::StartFlightCommunications::Result& result);
@@ -48,7 +52,7 @@ class Daemon : public std::enable_shared_from_this<Daemon> {
 
   util::FormattingLogger log_;
   mavlink::Channel::Subscription mavlink_channel_subscription_;
-
+  MAV_STATE state_{MAV_STATE_UNINIT};
   Optional<std::string> flight_id_;
   Optional<std::string> authorization_;
   Optional<std::string> encryption_key_;

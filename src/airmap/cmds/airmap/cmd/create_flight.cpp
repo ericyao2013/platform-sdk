@@ -92,7 +92,7 @@ cmd::CreateFlight::CreateFlight()
         return 1;
       }
       Geometry geometry = json::parse(in);
-      params_.geometry = geometry;
+      params_.geometry  = geometry;
     }
 
     auto result = ::airmap::Context::create(log_.logger());
@@ -105,7 +105,8 @@ cmd::CreateFlight::CreateFlight()
     auto context = result.value();
 
     context->create_client_with_credentials(
-        Client::Credentials{api_key_.get()}, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
+        Client::Credentials{api_key_.get()},
+        [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 

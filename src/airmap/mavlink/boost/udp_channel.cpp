@@ -19,7 +19,8 @@ airmap::mavlink::boost::UdpChannel::UdpChannel(const std::shared_ptr<Logger>& lo
 void airmap::mavlink::boost::UdpChannel::start() {
   using std::placeholders::_1;
   using std::placeholders::_2;
-  socket_.async_receive_from(::boost::asio::buffer(buffer_), endpoint_, std::bind(&UdpChannel::handle_read, shared_from_this(), _1, _2));
+  socket_.async_receive_from(::boost::asio::buffer(buffer_), endpoint_,
+                             std::bind(&UdpChannel::handle_read, shared_from_this(), _1, _2));
 }
 
 void airmap::mavlink::boost::UdpChannel::cancel() {

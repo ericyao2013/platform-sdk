@@ -17,11 +17,11 @@ class Daemon : public util::cli::CommandWithFlagsAndAction {
   Daemon();
 
  private:
-  using ApiKey         = util::TaggedString<util::tags::MustNotBeEmpty>;
-  using UserId         = util::TaggedString<util::tags::MustNotBeEmpty>;
-  using AircraftId     = util::TaggedString<util::tags::MustNotBeEmpty>;
-  using SerialDevice   = util::TaggedString<util::tags::MustNotBeEmpty>;
-  using UdpEndpointIp  = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using ApiKey        = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using UserId        = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using AircraftId    = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using SerialDevice  = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using UdpEndpointIp = util::TaggedString<util::tags::MustNotBeEmpty>;
 
   util::FormattingLogger log_{create_null_logger()};
   Optional<ApiKey> api_key_;

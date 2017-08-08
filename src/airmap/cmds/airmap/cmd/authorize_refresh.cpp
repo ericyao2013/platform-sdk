@@ -14,7 +14,8 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
                       api_key_));
   flag(cli::make_flag(cli::Name{"client-id"},
                       cli::Description{"client-id used for authorizing with the AirMap services"}, params_.client_id));
-  flag(cli::make_flag(cli::Name{"refresh-token"}, cli::Description{"refresh-token used for authorizing with the AirMap services"},
+  flag(cli::make_flag(cli::Name{"refresh-token"},
+                      cli::Description{"refresh-token used for authorizing with the AirMap services"},
                       params_.refresh_token));
 
   action([this](const cli::Command::Context& ctxt) {

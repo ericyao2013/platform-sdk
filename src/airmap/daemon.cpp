@@ -21,8 +21,30 @@ void airmap::Daemon::start() {
 }
 
 void airmap::Daemon::handle_mavlink_message(const mavlink_message_t& msg) {
-  log_.infof(component, "receiving mavlink message with id %d from %d:%d", msg.msgid, msg.sysid, msg.compid);
+  switch (msg.msgid) {
+    case MAVLINK_MSG_ID_HEARTBEAT:
+      handle_mavlink_heartbeat_message(msg);
+      break;
+    case MAVLINK_MSG_ID_SYS_STATUS:
+      handle_mavlink_system_status_message(msg);
+      break;
+    default:
+      break;
+  }
+
   start();
+}
+
+void airmap::Daemon::handle_mavlink_heartbeat_message(const mavlink_message_t&) {
+  log_.infof(component, "received heartbeat message");
+}
+
+void airmap::Daemon::handle_mavlink_system_status_message(const mavlink_message_t&) {
+  log_.infof(component, "received system status message");
+}
+
+void airmap::Daemon::handle_mavlink_gps_raw_int_message(const mavlink_message_t&) {
+  log_.infof(component, "received gps raw int message");
 }
 
 void airmap::Daemon::handle_authorized(const Authenticator::AuthenticateAnonymously::Result& result) {

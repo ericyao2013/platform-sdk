@@ -18,9 +18,9 @@ class CreateFlight : public util::cli::CommandWithFlagsAndAction {
   CreateFlight();
 
  private:
-  using ApiKey       = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using ApiKey        = util::TaggedString<util::tags::MustNotBeEmpty>;
   using Authorization = util::TaggedString<util::tags::MustNotBeEmpty>;
-  using GeometryFile = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using GeometryFile  = util::TaggedString<util::tags::MustNotBeEmpty>;
 
   util::FormattingLogger log_{create_null_logger()};
   Optional<ApiKey> api_key_;
