@@ -3,6 +3,8 @@
 
 #include <airmap/authenticator.h>
 #include <airmap/util/cli.h>
+#include <airmap/util/formatting_logger.h>
+#include <airmap/util/tagged_string.h>
 
 namespace airmap {
 namespace cmds {
@@ -14,8 +16,20 @@ class AuthorizePassword : public util::cli::CommandWithFlagsAndAction {
   AuthorizePassword();
 
  private:
-  std::string api_key_;
-  Authenticator::AuthenticateWithPassword::Params params_;
+  using ApiKey   = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using ClientId = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using Username = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using Password = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using Device   = util::TaggedString<util::tags::MustNotBeEmpty>;
+
+  util::FormattingLogger log_{create_null_logger()};
+  struct {
+    Optional<ApiKey> api_key;
+    Optional<ClientId> client_id;
+    Optional<Username> username;
+    Optional<Password> password;
+    Optional<Device> device;
+  } params_;
 };
 
 }  // namespace cmd

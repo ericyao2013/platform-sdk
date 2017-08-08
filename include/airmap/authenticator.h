@@ -17,6 +17,8 @@ class Authenticator : DoNotCopyOrMove {
 
   enum class GrantType { password = 0, bearer = 1 };
 
+  enum class Connection { username_password_authentication = 0 };
+
   struct AnonymousToken {
     std::string id;
   };
@@ -39,12 +41,12 @@ class Authenticator : DoNotCopyOrMove {
   struct AuthenticateWithPassword {
     struct Params {
       std::string client_id;
-      std::string connection_name;
       std::string username;
       std::string password;
       std::string device;
       GrantType grant_type{GrantType::password};
       Scope scope{Scope::open_id_offline_access};
+      Connection connection{Connection::username_password_authentication};
     };
 
     using Result   = Outcome<OAuthToken, std::exception_ptr>;

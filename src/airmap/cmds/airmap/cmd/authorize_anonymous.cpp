@@ -6,18 +6,44 @@
 namespace cli = airmap::util::cli;
 namespace cmd = airmap::cmds::airmap::cmd;
 
+namespace {
+constexpr const char* component{"authorize-anonymously"};
+}
+
 cmd::AuthorizeAnonymous::AuthorizeAnonymous()
     : cli::CommandWithFlagsAndAction{cli::Name{"authorize-anonymously"},
                                      cli::Usage{"anonymously authorize with the AirMap services"},
                                      cli::Description{"anonymously authorize with the AirMap services"}} {
   flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
-                      api_key_));
+                      params_.api_key));
   flag(cli::make_flag(cli::Name{"user-id"},
                       cli::Description{"user-id used for authorizing anonymously with the AirMap services"},
                       params_.user_id));
 
   action([this](const cli::Command::Context& ctxt) {
-    auto result = ::airmap::Context::create(create_default_logger());
+    log_ = util::FormattingLogger{create_default_logger()};
+
+    if (!params_.api_key) {
+      log_.errorf(component, "missing parameter 'api-key'");
+      return 1;
+    }
+
+    if (!params_.api_key.get().validate()) {
+      log_.errorf(component, "parameter 'api-key' for accessing AirMap services must not be empty");
+      return 1;
+    }
+
+    if (!params_.user_id) {
+      log_.errorf(component, "missing parameter 'user-id'");
+      return 1;
+    }
+
+    if (!params_.user_id.get().validate()) {
+      log_.errorf(component, "parameter 'user-id' for accessing AirMap services must not be empty");
+      return 1;
+    }
+
+    auto result = ::airmap::Context::create(log_.logger());
 
     if (!result) {
       ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
@@ -27,7 +53,8 @@ cmd::AuthorizeAnonymous::AuthorizeAnonymous()
     auto context = result.value();
 
     context->create_client_with_credentials(
-        Client::Credentials{api_key_}, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
+        Client::Credentials{params_.api_key.get()},
+        [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 
@@ -37,12 +64,13 @@ cmd::AuthorizeAnonymous::AuthorizeAnonymous()
             if (result)
               ctxt.cout << "Authenticated successfully and received id: " << result.value().id << std::endl;
             else
-              ctxt.cout << "Failed to authorize " << params_.user_id << std::endl;
+              ctxt.cout << "Failed to authorize " << params_.user_id.get() << std::endl;
 
             context->stop();
           };
 
-          client->authenticator().authenticate_anonymously(params_, handler);
+          client->authenticator().authenticate_anonymously(
+              Authenticator::AuthenticateAnonymously::Params{params_.user_id.get()}, handler);
         });
 
     if (result)
