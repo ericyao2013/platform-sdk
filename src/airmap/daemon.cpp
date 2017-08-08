@@ -9,7 +9,7 @@ airmap::Daemon::Daemon(const Configuration& configuration)
 }
 
 airmap::Daemon::~Daemon() {
-  configuration_.channel->cancel();
+  configuration_.channel->stop();
   configuration_.channel->unsubscribe(std::move(mavlink_channel_subscription_));
 }
 
@@ -28,11 +28,15 @@ void airmap::Daemon::handle_mavlink_message(const mavlink_message_t& msg) {
     case MAVLINK_MSG_ID_SYS_STATUS:
       handle_mavlink_system_status_message(msg);
       break;
+    case MAVLINK_MSG_ID_GPS_RAW_INT:
+      handle_mavlink_gps_raw_int_message(msg);
+      break;
     default:
       break;
   }
 
-  start();
+  log_.infof(component, "received messages %d, good %d, bad %d", configuration_.channel->counters().received,
+             configuration_.channel->counters().good, configuration_.channel->counters().bad);
 }
 
 void airmap::Daemon::handle_mavlink_heartbeat_message(const mavlink_message_t&) {

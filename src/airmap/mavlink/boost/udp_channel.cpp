@@ -16,14 +16,14 @@ airmap::mavlink::boost::UdpChannel::UdpChannel(const std::shared_ptr<Logger>& lo
     : log_{logger}, io_service_{io_service}, endpoint_{ip, port}, socket_{*io_service_} {
 }
 
-void airmap::mavlink::boost::UdpChannel::start() {
+void airmap::mavlink::boost::UdpChannel::start_impl() {
   using std::placeholders::_1;
   using std::placeholders::_2;
   socket_.async_receive_from(::boost::asio::buffer(buffer_), endpoint_,
                              std::bind(&UdpChannel::handle_read, shared_from_this(), _1, _2));
 }
 
-void airmap::mavlink::boost::UdpChannel::cancel() {
+void airmap::mavlink::boost::UdpChannel::stop_impl() {
   socket_.cancel();
 }
 
@@ -33,31 +33,8 @@ void airmap::mavlink::boost::UdpChannel::handle_read(const ::boost::system::erro
     return;
   }
 
-  if (auto result = process_mavlink_data(transferred))
+  if (auto result = process_mavlink_data(buffer_.begin(), buffer_.begin() + transferred))
     invoke_subscribers(result.get());
 
-  start();
-}
-
-airmap::Optional<std::vector<mavlink_message_t>> airmap::mavlink::boost::UdpChannel::process_mavlink_data(
-    std::size_t transferred) {
-  Optional<std::vector<mavlink_message_t>> result;
-
-  for (std::size_t i = 0; i < transferred; i++) {
-    auto rc = mavlink_frame_char_buffer(&parse_buffer_.msg, &parse_buffer_.status, buffer_[i], &parse_out_.msg,
-                                        &parse_out_.status);
-
-    switch (rc) {
-      case MAVLINK_FRAMING_INCOMPLETE:
-        break;
-      case MAVLINK_FRAMING_OK:
-        if (not result)
-          result = std::vector<mavlink_message_t>{};
-        result.get().push_back(parse_out_.msg);
-        break;
-      case MAVLINK_FRAMING_BAD_CRC:
-        break;
-    }
-  }
-  return result;
+  start_impl();
 }
