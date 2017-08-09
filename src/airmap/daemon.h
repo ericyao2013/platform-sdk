@@ -34,9 +34,9 @@ class Daemon : public mavlink::VehicleTracker::Monitor,
     std::shared_ptr<Client> client;
   };
 
-  /// Daemon initializes a new instance with the functional
-  /// dependencies provided via 'configuration'.
-  explicit Daemon(const Configuration& configuration);
+  // create returns a new Daemon instance ready for startup.
+  static std::shared_ptr<Daemon> create(const Configuration& configuration);
+
   ~Daemon();
 
   /// Puts the daemon to execution.
@@ -52,6 +52,14 @@ class Daemon : public mavlink::VehicleTracker::Monitor,
                            const mavlink_global_position_int_t& new_position) override;
 
  private:
+  /// Daemon initializes a new instance with the functional
+  /// dependencies provided via 'configuration'.
+  explicit Daemon(const Configuration& configuration);
+
+  /// finalize sets up all internal event connections that require
+  /// shared_from_this() to work properly.
+  std::shared_ptr<Daemon> finalize();
+
   void handle_mavlink_message(const mavlink_message_t& msg);
 
   void handle_authorized(const Authenticator::AuthenticateAnonymously::Result& result);

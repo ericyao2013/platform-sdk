@@ -95,7 +95,7 @@ cmd::Daemon::Daemon()
           ::airmap::Daemon::Configuration configuration{api_key_.get(), user_id_.get(), aircraft_id_.get(),
                                                         log_.logger(),  channel,        result.value()};
 
-          std::make_shared<::airmap::Daemon>(configuration)->start();
+          ::airmap::Daemon::create(configuration)->start();
         });
 
     communicator->run();

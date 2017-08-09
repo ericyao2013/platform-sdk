@@ -4,8 +4,28 @@ namespace {
 constexpr const char* component{"airmap::Daemon"};
 }  // namespace
 
+std::shared_ptr<airmap::Daemon> airmap::Daemon::create(const Configuration& configuration) {
+  return std::shared_ptr<Daemon> {
+    new Daemon {
+      configuration
+    }
+  }
+  ->finalize();
+}
+
 airmap::Daemon::Daemon(const Configuration& configuration)
     : configuration_{configuration}, log_{configuration_.logger} {
+}
+
+std::shared_ptr<airmap::Daemon> airmap::Daemon::finalize() {
+  auto sp = shared_from_this();
+
+  vehicle_monitor_         = std::make_shared<mavlink::LoggingVehicleMonitor>(component, log_.logger(), sp);
+  vehicle_tracker_monitor_ = std::make_shared<mavlink::LoggingVehicleTrackerMonitor>(component, log_.logger(), sp);
+
+  vehicle_tracker_.register_monitor(vehicle_tracker_monitor_);
+
+  return sp;
 }
 
 airmap::Daemon::~Daemon() {
@@ -15,15 +35,8 @@ airmap::Daemon::~Daemon() {
 }
 
 void airmap::Daemon::start() {
-  auto sp = shared_from_this();
-
-  vehicle_monitor_         = std::make_shared<mavlink::LoggingVehicleMonitor>(component, log_.logger(), sp);
-  vehicle_tracker_monitor_ = std::make_shared<mavlink::LoggingVehicleTrackerMonitor>(component, log_.logger(), sp);
-
-  vehicle_tracker_.register_monitor(vehicle_tracker_monitor_);
-
-  mavlink_channel_subscription_ =
-      configuration_.channel->subscribe([this, sp](const mavlink_message_t& msg) { handle_mavlink_message(msg); });
+  mavlink_channel_subscription_ = configuration_.channel->subscribe([sp = shared_from_this()](
+      const mavlink_message_t& msg) { sp->handle_mavlink_message(msg); });
   configuration_.channel->start();
 }
 
