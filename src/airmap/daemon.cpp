@@ -17,7 +17,11 @@ airmap::Daemon::~Daemon() {
 void airmap::Daemon::start() {
   auto sp = shared_from_this();
 
-  vehicle_tracker_.register_monitor(sp);
+  vehicle_monitor_         = std::make_shared<mavlink::LoggingVehicleMonitor>(component, log_.logger(), sp);
+  vehicle_tracker_monitor_ = std::make_shared<mavlink::LoggingVehicleTrackerMonitor>(component, log_.logger(), sp);
+
+  vehicle_tracker_.register_monitor(vehicle_tracker_monitor_);
+
   mavlink_channel_subscription_ =
       configuration_.channel->subscribe([this, sp](const mavlink_message_t& msg) { handle_mavlink_message(msg); });
   configuration_.channel->start();
@@ -30,20 +34,18 @@ void airmap::Daemon::handle_mavlink_message(const mavlink_message_t& msg) {
 }
 
 void airmap::Daemon::on_vehicle_added(const std::shared_ptr<mavlink::Vehicle>& vehicle) {
-  vehicle->register_monitor(shared_from_this());
+  vehicle->register_monitor(vehicle_monitor_);
 }
 
 void airmap::Daemon::on_vehicle_removed(const std::shared_ptr<mavlink::Vehicle>& vehicle) {
-  vehicle->unregister_monitor(shared_from_this());
+  vehicle->unregister_monitor(vehicle_monitor_);
 }
 
 void airmap::Daemon::on_system_status_changed(const Optional<mavlink::State>& old_state, mavlink::State new_state) {
-  log_.infof(component, "system status changed: %s -> %s", old_state, static_cast<mavlink::State>(new_state));
 }
 
 void airmap::Daemon::on_position_changed(const Optional<mavlink::GlobalPositionInt>& old_position,
                                          const mavlink::GlobalPositionInt& new_position) {
-  log_.infof(component, "position changed: %s -> %s", old_position, new_position);
 }
 
 void airmap::Daemon::handle_authorized(const Authenticator::AuthenticateAnonymously::Result& result) {

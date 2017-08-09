@@ -61,6 +61,8 @@ class Daemon : public mavlink::VehicleTracker::Monitor,
   Configuration configuration_;
 
   util::FormattingLogger log_;
+  std::shared_ptr<mavlink::LoggingVehicleMonitor> vehicle_monitor_;
+  std::shared_ptr<mavlink::LoggingVehicleTrackerMonitor> vehicle_tracker_monitor_;
   mavlink::VehicleTracker vehicle_tracker_;
   mavlink::Channel::Subscription mavlink_channel_subscription_;
   Optional<std::string> flight_id_;

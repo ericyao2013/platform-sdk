@@ -3,6 +3,7 @@
 
 #include <airmap/do_not_copy_or_move.h>
 #include <airmap/optional.h>
+#include <airmap/util/formatting_logger.h>
 
 #include <airmap/mavlink/global_position_int.h>
 #include <airmap/mavlink/state.h>
@@ -42,6 +43,22 @@ class Vehicle {
 
   State system_status_{MAV_STATE_UNINIT};
   Optional<GlobalPositionInt> global_position_int_;
+};
+
+class LoggingVehicleMonitor : public Vehicle::Monitor {
+ public:
+  explicit LoggingVehicleMonitor(const char* component, const std::shared_ptr<Logger>& logger,
+                                 const std::shared_ptr<Vehicle::Monitor>& next);
+
+  // From Vehicle::Monitor
+  void on_system_status_changed(const Optional<State>& old_state, State new_state) override;
+  void on_position_changed(const Optional<GlobalPositionInt>& old_position,
+                           const GlobalPositionInt& new_position) override;
+
+ private:
+  const char* component_;
+  util::FormattingLogger log_;
+  std::shared_ptr<Vehicle::Monitor> next_;
 };
 
 }  // namespace mavlink

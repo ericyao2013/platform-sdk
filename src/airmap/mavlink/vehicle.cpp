@@ -50,3 +50,22 @@ void airmap::mavlink::Vehicle::handle_msg_global_position_int(const mavlink_mess
   }
   global_position_int_ = gpi;
 }
+
+airmap::mavlink::LoggingVehicleMonitor::LoggingVehicleMonitor(const char* component,
+                                                              const std::shared_ptr<Logger>& logger,
+                                                              const std::shared_ptr<Vehicle::Monitor>& next)
+    : component_{component}, log_{logger}, next_{next} {
+}
+
+// From Vehicle::Monitor
+void airmap::mavlink::LoggingVehicleMonitor::on_system_status_changed(const Optional<State>& old_state,
+                                                                      State new_state) {
+  log_.infof(component_, "system status changed: %s -> %s", old_state, new_state);
+  next_->on_system_status_changed(old_state, new_state);
+}
+
+void airmap::mavlink::LoggingVehicleMonitor::on_position_changed(const Optional<GlobalPositionInt>& old_position,
+                                                                 const GlobalPositionInt& new_position) {
+  log_.infof(component_, "position changed: %s -> %s", old_position, new_position);
+  next_->on_position_changed(old_position, new_position);
+}
