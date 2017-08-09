@@ -61,7 +61,7 @@ inline void encode(nlohmann::json& j, const Authenticator::Scope& scope) {
       j["scope"] = "openid";
       break;
     case Authenticator::Scope::open_id_offline_access:
-      j["scope"] = "openid offline access";
+      j["scope"] = "openid offline_access";
       break;
     case Authenticator::Scope::access_token:
       j["scope"] = "";
@@ -70,15 +70,25 @@ inline void encode(nlohmann::json& j, const Authenticator::Scope& scope) {
   }
 }
 
+inline void encode(nlohmann::json& j, const Authenticator::Connection& connection) {
+  switch (connection) {
+    case Authenticator::Connection::username_password_authentication:
+      j["connection"] = "Username-Password-Authentication";
+      break;
+    default:
+      break;
+  }
+}
+
 inline void encode(nlohmann::json& j, const Authenticator::AuthenticateWithPassword::Params& params) {
-  j["client_id"]  = params.client_id;
-  j["connection"] = params.connection_name;
-  j["username"]   = params.username;
-  j["password"]   = params.password;
-  j["device"]     = params.device;
+  j["client_id"] = params.client_id;
+  j["username"]  = params.username;
+  j["password"]  = params.password;
+  j["device"]    = params.device;
 
   encode(j, params.grant_type);
   encode(j, params.scope);
+  encode(j, params.connection);
 }
 
 inline void encode(nlohmann::json& j, const Authenticator::AuthenticateAnonymously::Params& params) {
