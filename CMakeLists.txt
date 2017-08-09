@@ -103,6 +103,16 @@ add_library(
 
   src/airmap/mavlink/channel.h
   src/airmap/mavlink/channel.cpp
+  src/airmap/mavlink/global_position_int.h
+  src/airmap/mavlink/global_position_int.cpp
+  src/airmap/mavlink/heartbeat.h
+  src/airmap/mavlink/heartbeat.cpp
+  src/airmap/mavlink/state.h
+  src/airmap/mavlink/state.cpp
+  src/airmap/mavlink/vehicle.h
+  src/airmap/mavlink/vehicle.cpp
+  src/airmap/mavlink/vehicle_tracker.h
+  src/airmap/mavlink/vehicle_tracker.cpp
   src/airmap/mavlink/boost/serial_channel.h
   src/airmap/mavlink/boost/serial_channel.cpp
   src/airmap/mavlink/boost/udp_channel.h

@@ -1,6 +1,7 @@
 #ifndef AIRMAP_OPTIONAL_H_
 #define AIRMAP_OPTIONAL_H_
 
+#include <iostream>
 #include <type_traits>
 
 namespace airmap {
@@ -97,6 +98,16 @@ class Optional {
     T value;
   } storage;
 };
+
+template <typename T>
+inline std::ostream& operator<<(std::ostream& out, const Optional<T>& value) {
+  if (value)
+    out << value.get();
+  else
+    out << "not set";
+  return out;
+}
+
 }  // namespace airmap
 
 #endif  // AIRMAP_OPTIONAL_H_
