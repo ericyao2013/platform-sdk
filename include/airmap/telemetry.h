@@ -17,9 +17,9 @@ class Telemetry : DoNotCopyOrMove {
     std::uint64_t timestamp;
     double latitude;
     double longitude;
-    float altitude_msl;
-    float altitude_gl;
-    float horizontal_accuracy;
+    double altitude_msl;
+    double altitude_gl;
+    double horizontal_accuracy;
   };
 
   struct Speed {

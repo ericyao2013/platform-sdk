@@ -27,6 +27,7 @@ class Vehicle {
    protected:
     Monitor() = default;
   };
+  using SystemId = std::uint8_t;
 
   explicit Vehicle(std::uint8_t system_id);
 
