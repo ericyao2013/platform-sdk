@@ -44,7 +44,7 @@ void airmap::rest::Airspaces::search(const Search::Parameters& parameters, const
 
 void airmap::rest::Airspaces::for_ids(const ForIds::Parameters& parameters, const ForIds::Callback& cb) {
   std::unordered_map<std::string, std::string> query, headers;
-  communicator_.get(host_, version_to_path(version_, "/airspace/v2/%1%", parameters.id), std::move(query),
+  communicator_.get(host_, version_to_path(version_, "/airspace/%s/%s", parameters.id), std::move(query),
                     std::move(headers), [cb](const Communicator::DoResult& result) {
                       if (result) {
                         cb(jsend::to_outcome<std::vector<Airspace>>(json::parse(result.value())));
