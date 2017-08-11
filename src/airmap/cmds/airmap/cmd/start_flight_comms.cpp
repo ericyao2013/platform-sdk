@@ -22,6 +22,8 @@ cmd::StartFlightComms::StartFlightComms()
     : cli::CommandWithFlagsAndAction{cli::Name{"start-flight-comms"},
                                      cli::Usage{"prepare flight for injection of telemetry data"},
                                      cli::Description{"prepare flight for injection of telemetry data"}} {
+  flag(cli::make_flag(cli::Name{"version"}, cli::Description{"work against this version of the AirMap services"},
+                      params_.version));
   flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       params_.api_key));
   flag(cli::make_flag(cli::Name{"authorization"},
@@ -70,10 +72,19 @@ cmd::StartFlightComms::StartFlightComms()
     }
 
     auto context = result.value();
+    auto config  = Client::default_configuration(params_.version, Client::Credentials{params_.api_key.get()});
 
-    context->create_client_with_credentials(
-        Client::Credentials{params_.api_key.get()},
-        [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
+    log_.infof(component,
+               "client configuration:\n"
+               "  host:                %s\n"
+               "  version:             %s\n"
+               "  telemetry.host:      %s\n"
+               "  telemetry.port:      %d\n"
+               "  credentials.api_key: %s\n",
+               config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key);
+
+    context->create_client_with_configuration(
+        config, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 

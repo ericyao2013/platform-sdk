@@ -10,7 +10,7 @@ namespace rest {
 
 class Authenticator : public airmap::Authenticator {
  public:
-  explicit Authenticator(Communicator& communicator);
+  explicit Authenticator(const std::string& host, Client::Version version, Communicator& communicator);
 
   void authenticate_with_password(const AuthenticateWithPassword::Params& params,
                                   const AuthenticateWithPassword::Callback& cb) override;
@@ -22,6 +22,8 @@ class Authenticator : public airmap::Authenticator {
                             const RenewAuthentication::Callback& cb) override;
 
  private:
+  std::string host_;
+  Client::Version version_;
   Communicator& communicator_;
 };
 

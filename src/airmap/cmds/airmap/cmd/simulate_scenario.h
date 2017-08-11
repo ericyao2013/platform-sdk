@@ -1,6 +1,7 @@
 #ifndef AIRMAP_CMDS_AIRMAP_CMD_SIMULATE_SCENARIO_H_
 #define AIRMAP_CMDS_AIRMAP_CMD_SIMULATE_SCENARIO_H_
 
+#include <airmap/client.h>
 #include <airmap/context.h>
 #include <airmap/flight.h>
 #include <airmap/flights.h>
@@ -43,9 +44,10 @@ class SimulateScenario : public util::cli::CommandWithFlagsAndAction {
   };
 
   struct {
+    Client::Version version{Client::Version::production};
     Optional<ApiKey> api_key;
-    Optional<Host> host{Host{"127.0.0.1"}};
-    std::uint16_t port{16060};
+    Optional<Host> host;
+    Optional<std::uint16_t> port;
     Optional<ScenarioFile> scenario_file;
   } params_;
   std::shared_ptr<util::ScenarioSimulator::Runner> runner_;

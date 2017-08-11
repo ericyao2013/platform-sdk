@@ -22,9 +22,9 @@ constexpr const char* component{"rest::glib::Communicator"};
 
 }  // namespace
 
-void airmap::rest::glib::Communicator::create_client_with_credentials(const Client::Credentials& credentials,
-                                                                      const ClientCreateCallback& cb) {
-  cb(ClientCreateResult{std::make_shared<rest::Client>(credentials, shared_from_this())});
+void airmap::rest::glib::Communicator::create_client_with_configuration(const Client::Configuration& configuration,
+                                                                        const ClientCreateCallback& cb) {
+  cb(ClientCreateResult{std::make_shared<rest::Client>(configuration, shared_from_this())});
 }
 
 void airmap::rest::glib::Communicator::run() {

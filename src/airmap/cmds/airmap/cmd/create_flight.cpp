@@ -34,6 +34,8 @@ cmd::CreateFlight::CreateFlight()
   params_.start_time = Clock::universal_time();
   params_.end_time   = params_.start_time + Minutes(5);
 
+  flag(cli::make_flag(cli::Name{"version"}, cli::Description{"work against this version of the AirMap services"},
+                      version_));
   flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       api_key_));
   flag(cli::make_flag(cli::Name{"authorization"},
@@ -103,10 +105,19 @@ cmd::CreateFlight::CreateFlight()
     }
 
     auto context = result.value();
+    auto config  = Client::default_configuration(version_, Client::Credentials{api_key_.get()});
 
-    context->create_client_with_credentials(
-        Client::Credentials{api_key_.get()},
-        [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
+    log_.infof(component,
+               "client configuration:\n"
+               "  host:                %s\n"
+               "  version:             %s\n"
+               "  telemetry.host:      %s\n"
+               "  telemetry.port:      %d\n"
+               "  credentials.api_key: %s\n",
+               config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key);
+
+    context->create_client_with_configuration(
+        config, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 

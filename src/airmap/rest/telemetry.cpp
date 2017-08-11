@@ -48,27 +48,12 @@ class Buffer {
 };
 
 namespace telemetry {
-
-std::string host_from_env() {
-  if (auto env = ::getenv("AIRMAP_TELEMETRY_HOST"))
-    return env;
-  return "api-udp-telemetry.airmap.com";
-}
-
-std::uint16_t port_from_env() {
-  if (auto env = ::getenv("AIRMAP_TELEMETRY_PORT"))
-    return boost::lexical_cast<std::uint16_t>(env);
-  return 16060;
-}
-
-std::string host   = host_from_env();
-std::uint16_t port = port_from_env();
 constexpr std::uint8_t encryption_type{1};
-
 }  // namespace telemetry
 }  // namespace
 
-airmap::rest::Telemetry::Telemetry(Communicator& communicator) : communicator_{communicator} {
+airmap::rest::Telemetry::Telemetry(const std::string& host, std::uint16_t port, Communicator& communicator)
+    : host_{host}, port_{port}, communicator_{communicator} {
 }
 
 void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::string& key,
@@ -147,7 +132,7 @@ void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::st
                            new CryptoPP::StreamTransformationFilter(enc, new CryptoPP::StringSink(cipher)));
 
   Buffer packet;
-  communicator_.send_udp(::telemetry::host_from_env(), ::telemetry::port_from_env(),
+  communicator_.send_udp(host_, port_,
                          packet.add<std::uint32_t>(htonl(counter++))
                              .add<std::uint8_t>(flight.id.size())
                              .add(flight.id)

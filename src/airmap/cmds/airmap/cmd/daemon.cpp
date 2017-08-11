@@ -15,6 +15,8 @@ constexpr const char* component{"daemon"};
 cmd::Daemon::Daemon()
     : cli::CommandWithFlagsAndAction{cli::Name{"daemon"}, cli::Usage{"runs the airmap daemon"},
                                      cli::Description{"runs the airmap daemon"}} {
+  flag(cli::make_flag(cli::Name{"version"}, cli::Description{"work against this version of the AirMap services"},
+                      version_));
   flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       api_key_));
   flag(cli::make_flag(cli::Name{"user-id"}, cli::Description{"user-id for authenticating with the AirMap services"},
@@ -86,9 +88,19 @@ cmd::Daemon::Daemon()
           log_.logger(), communicator->io_service(), boost::asio::ip::address::from_string(udp_endpoint_ip_.get()),
           udp_endpoint_port_.get());
 
-    communicator->create_client_with_credentials(
-        Client::Credentials{api_key_.get()},
-        [this, communicator, channel](const ::airmap::Context::ClientCreateResult& result) {
+    auto config = Client::default_configuration(version_, Client::Credentials{api_key_.get()});
+
+    log_.infof(component,
+               "client configuration:\n"
+               "  host:                %s\n"
+               "  version:             %s\n"
+               "  telemetry.host:      %s\n"
+               "  telemetry.port:      %d\n"
+               "  credentials.api_key: %s",
+               config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key);
+
+    communicator->create_client_with_configuration(
+        config, [this, communicator, channel](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 

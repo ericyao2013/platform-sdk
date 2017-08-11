@@ -1,6 +1,7 @@
 #ifndef AIRMAP_CMDS_AIRMAP_CMD_DAEMON_H_
 #define AIRMAP_CMDS_AIRMAP_CMD_DAEMON_H_
 
+#include <airmap/client.h>
 #include <airmap/logger.h>
 #include <airmap/optional.h>
 #include <airmap/util/cli.h>
@@ -24,6 +25,7 @@ class Daemon : public util::cli::CommandWithFlagsAndAction {
   using UdpEndpointIp = util::TaggedString<util::tags::MustNotBeEmpty>;
 
   util::FormattingLogger log_{create_null_logger()};
+  Client::Version version_;
   Optional<ApiKey> api_key_;
   Optional<UserId> user_id_;
   Optional<AircraftId> aircraft_id_;

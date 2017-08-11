@@ -10,17 +10,15 @@ namespace rest {
 
 class Aircrafts : public airmap::Aircrafts {
  public:
-  explicit Aircrafts(Communicator& communicator);
-  Aircrafts(const Aircrafts&) = delete;
-  Aircrafts(Aircrafts&&)      = delete;
-  Aircrafts& operator=(const Aircrafts&) = delete;
-  Aircrafts& operator=(Aircrafts&&) = delete;
+  explicit Aircrafts(const std::string& host, Client::Version version, Communicator& communicator);
 
   void manufacturers(const Manufacturers::Parameters& parameters, const Manufacturers::Callback& cb) override;
   void models(const Models::Parameters& parameters, const Models::Callback& cb) override;
   void model_for_id(const ModelForId::Parameters& parameters, const ModelForId::Callback& cb) override;
 
  private:
+  std::string host_;
+  Client::Version version_;
   Communicator& communicator_;
 };
 

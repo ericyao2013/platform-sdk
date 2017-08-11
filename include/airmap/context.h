@@ -19,10 +19,10 @@ class Context : DoNotCopyOrMove {
   /// create tries to assemble and return a new Context instance.
   static CreateResult create(const std::shared_ptr<Logger>& logger);
 
-  /// create_client_with_credentials schedules creation of a new client with 'credentials'
+  /// create_client_with_configuration schedules creation of a new client with 'configuration'
   /// and reports results to 'cb'.
-  virtual void create_client_with_credentials(const Client::Credentials& credentials,
-                                              const ClientCreateCallback& cb) = 0;
+  virtual void create_client_with_configuration(const Client::Configuration& configuration,
+                                                const ClientCreateCallback& cb) = 0;
 
   /// run hands a thread of execution to the context.
   virtual void run() = 0;

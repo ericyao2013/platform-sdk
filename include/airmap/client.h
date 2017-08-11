@@ -4,7 +4,10 @@
 #include <airmap/do_not_copy_or_move.h>
 #include <airmap/outcome.h>
 
+#include <cstdint>
+
 #include <functional>
+#include <iosfwd>
 #include <memory>
 #include <string>
 
@@ -19,11 +22,38 @@ class Telemetry;
 /// Client enables applications to use the AirMap services and APIs.
 class Client : DoNotCopyOrMove {
  public:
+  /// Version enumerates all known versions available to clients.
+  enum class Version { production, staging };
+
   /// Credentials bundles up all credentials required
   /// to use the AirMap SDK and APIs.
   struct Credentials {
     std::string api_key;
   };
+
+  /// Configuration bundles up parameters enabling
+  /// customization of a Client implementation behavior.
+  struct Configuration {
+    std::string host;  ///< Address of the host exposing the AirMap services.
+    Version version;   ///< The version of the AirMap services that should be used.
+    struct {
+      std::string host;    ///< Address of the host exposing the AirMap telemetry endpoints.
+      std::uint16_t port;  ///< Port of the host exposing the AirMap telemetry endpoints.
+    } telemetry;
+    Credentials credentials;  ///< Credentials that are required to authorize access to the AirMap services.
+  };
+
+  /// default_production_configuration returns a Configuration instance that works
+  /// against the AirMap production API and telemetry endpoints.
+  static Configuration default_production_configuration(const Credentials& credentials);
+
+  /// default_staging_configuration returns a Configuration instance that works
+  /// against the AirMap staging API and telemetry endpoints.
+  static Configuration default_staging_configuration(const Credentials& credentials);
+
+  /// default_configuration returns a Configuration instance that works against
+  /// the AirMap API and telemetry endpoints indicated by 'version'.
+  static Configuration default_configuration(Version version, const Credentials& credentials);
 
   /// authenticator returns the Authenticator implementation provided by the client.
   virtual Authenticator& authenticator() = 0;
@@ -43,6 +73,9 @@ class Client : DoNotCopyOrMove {
  protected:
   Client() = default;
 };
+
+std::istream& operator>>(std::istream& in, Client::Version& version);
+std::ostream& operator<<(std::ostream& out, Client::Version version);
 
 }  // namespace airmap
 

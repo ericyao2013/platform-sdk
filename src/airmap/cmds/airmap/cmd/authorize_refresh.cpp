@@ -14,6 +14,8 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
     : cli::CommandWithFlagsAndAction{cli::Name{"authorize-refresh"},
                                      cli::Usage{"renew authorization with the AirMap services"},
                                      cli::Description{"renew authorization with the AirMap services"}} {
+  flag(cli::make_flag(cli::Name{"version"}, cli::Description{"work against this version of the AirMap services"},
+                      params_.version));
   flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       params_.api_key));
   flag(cli::make_flag(cli::Name{"client-id"},
@@ -63,31 +65,39 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
     }
 
     auto context = result.value();
+    auto config  = Client::default_configuration(params_.version, Client::Credentials{params_.api_key.get()});
 
-    context->create_client_with_credentials(
-        Client::Credentials{params_.api_key.get()},
-        [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
-          if (not result)
-            return;
+    log_.infof(component,
+               "client configuration:\n"
+               "  host:                %s\n"
+               "  version:             %s\n"
+               "  telemetry.host:      %s\n"
+               "  telemetry.port:      %d\n"
+               "  credentials.api_key: %s\n",
+               config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key);
 
-          auto client = result.value();
+    context->create_client_with_configuration(config, [this, &ctxt,
+                                                       context](const ::airmap::Context::ClientCreateResult& result) {
+      if (not result)
+        return;
 
-          auto handler = [this, &ctxt, context, client](const Authenticator::RenewAuthentication::Result& result) {
-            if (result) {
-              ctxt.cout << "Refreshed token successfully and received id: "
-                        << "  id:         " << result.value().id << std::endl
-                        << "  expires in: " << result.value().expires_in.count() << std::endl;
-            } else
-              ctxt.cout << "Failed to renew with " << params_.refresh_token.get() << std::endl;
+      auto client = result.value();
 
-            context->stop();
-          };
+      auto handler = [this, &ctxt, context, client](const Authenticator::RenewAuthentication::Result& result) {
+        if (result) {
+          ctxt.cout << "Refreshed token successfully and received id: "
+                    << "  id:         " << result.value().id << std::endl
+                    << "  expires in: " << result.value().expires_in.count() << std::endl;
+        } else
+          ctxt.cout << "Failed to renew with " << params_.refresh_token.get() << std::endl;
 
-          client->authenticator().renew_authentication(
-              Authenticator::RenewAuthentication::Params{params_.client_id.get(), params_.refresh_token.get()},
-              handler);
+        context->stop();
+      };
 
-        });
+      client->authenticator().renew_authentication(
+          Authenticator::RenewAuthentication::Params{params_.client_id.get(), params_.refresh_token.get()}, handler);
+
+    });
 
     if (result)
       result.value()->run();

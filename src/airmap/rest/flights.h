@@ -10,7 +10,7 @@ namespace rest {
 
 class Flights : public airmap::Flights {
  public:
-  explicit Flights(Communicator& communicator);
+  explicit Flights(const std::string& host, Client::Version version, Communicator& communicator);
 
   void search(const Search::Parameters& parameters, const Search::Callback& cb) override;
   void for_id(const ForId::Parameters& parameters, const ForId::Callback& cb) override;
@@ -25,6 +25,8 @@ class Flights : public airmap::Flights {
                                          const EndFlightCommunications::Callback& cb) override;
 
  private:
+  std::string host_;
+  Client::Version version_;
   Communicator& communicator_;
 };
 

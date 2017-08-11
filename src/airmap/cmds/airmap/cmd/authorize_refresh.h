@@ -2,6 +2,7 @@
 #define AIRMAP_CMDS_AIRMAP_CMD_AUTHORIZE_REFRESH_H_
 
 #include <airmap/authenticator.h>
+#include <airmap/client.h>
 #include <airmap/util/cli.h>
 #include <airmap/util/formatting_logger.h>
 #include <airmap/util/tagged_string.h>
@@ -22,6 +23,7 @@ class AuthorizeRefresh : public util::cli::CommandWithFlagsAndAction {
 
   util::FormattingLogger log_{create_null_logger()};
   struct {
+    Client::Version version{Client::Version::production};
     Optional<ApiKey> api_key;
     Optional<ClientId> client_id;
     Optional<RefreshToken> refresh_token;

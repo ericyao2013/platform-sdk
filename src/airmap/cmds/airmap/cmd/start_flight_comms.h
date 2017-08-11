@@ -1,6 +1,7 @@
 #ifndef AIRMAP_CMDS_AIRMAP_CMD_START_FLIGHT_COMMS_H_
 #define AIRMAP_CMDS_AIRMAP_CMD_START_FLIGHT_COMMS_H_
 
+#include <airmap/client.h>
 #include <airmap/flight.h>
 #include <airmap/flights.h>
 #include <airmap/telemetry.h>
@@ -24,6 +25,7 @@ class StartFlightComms : public util::cli::CommandWithFlagsAndAction {
 
   util::FormattingLogger log_{create_null_logger()};
   struct {
+    Client::Version version{Client::Version::production};
     Optional<ApiKey> api_key;
     Optional<Authorization> authorization;
     Optional<FlightId> flight_id;

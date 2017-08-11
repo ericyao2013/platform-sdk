@@ -14,12 +14,14 @@ namespace rest {
 
 class Telemetry : public airmap::Telemetry {
  public:
-  explicit Telemetry(Communicator& communicator);
+  explicit Telemetry(const std::string& host, std::uint16_t port, Communicator& communicator);
 
   void submit_updates(const Flight& flight, const std::string& key,
                       const std::initializer_list<Update>& updates) override;
 
  private:
+  std::string host_;
+  std::uint16_t port_;
   Communicator& communicator_;
   CryptoPP::AutoSeededRandomPool rng_;
 };

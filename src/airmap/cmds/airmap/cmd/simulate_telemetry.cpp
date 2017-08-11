@@ -34,6 +34,8 @@ cmd::SimulateTelemetry::SimulateTelemetry()
     : cli::CommandWithFlagsAndAction{cli::Name{"simulate-telemetry"},
                                      cli::Usage{"inject artificial telemetry data for a given flight"},
                                      cli::Description{"inject artificial telemetry data for a given flight"}} {
+  flag(cli::make_flag(cli::Name{"version"}, cli::Description{"work against this version of the AirMap services"},
+                      params_.version));
   flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       params_.api_key));
   flag(cli::make_flag(cli::Name{"authorization"},
@@ -72,12 +74,7 @@ cmd::SimulateTelemetry::SimulateTelemetry()
       return 1;
     }
 
-    if (!params_.host) {
-      log_.errorf(component, "missing parameter 'host'");
-      return 1;
-    }
-
-    if (!params_.host.get().validate()) {
+    if (params_.host && !params_.host.get().validate()) {
       log_.errorf(component, "parameter 'host' must not be empty");
       return 1;
     }
@@ -100,17 +97,25 @@ cmd::SimulateTelemetry::SimulateTelemetry()
     }
 
     auto context = result.value();
+    auto config  = Client::default_configuration(params_.version, Client::Credentials{params_.api_key.get()});
 
-    ctxt.cout << "Sending telemetry package to" << std::endl
-              << "  host:      " << params_.host.get() << std::endl
-              << "  port:      " << params_.port << std::endl
-              << "  frequency: " << params_.frequency << std::endl
-              << "  flight-id: " << params_.flight.id << std::endl
-              << "  api-key:   " << params_.api_key.get() << std::endl
-              << "  enc-key:   " << params_.encryption_key.get() << std::endl;
+    if (params_.host)
+      config.telemetry.host = params_.host.get();
+    if (params_.port)
+      config.telemetry.port = params_.port;
 
-    ::setenv("AIRMAP_TELEMETRY_HOST", params_.host.get().string().c_str(), 1);
-    ::setenv("AIRMAP_TELEMETRY_PORT", boost::lexical_cast<std::string>(params_.port).c_str(), 1);
+    log_.infof(component,
+               "client configuration:\n"
+               "  host:                %s\n"
+               "  version:             %s\n"
+               "  telemetry.host:      %s\n"
+               "  telemetry.port:      %d\n"
+               "  credentials.api_key: %s\n"
+               "  frequency:           %f\n"
+               "  flight-id:           %s\n"
+               "  enc-key:             %s",
+               config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key,
+               params_.frequency, params_.flight.id, params_.encryption_key);
 
     auto geometry = polygon;
 
@@ -123,9 +128,8 @@ cmd::SimulateTelemetry::SimulateTelemetry()
       geometry = json::parse(in);
     }
 
-    context->create_client_with_credentials(
-        Client::Credentials{params_.api_key.get()},
-        [this, &ctxt, context, geometry](const ::airmap::Context::ClientCreateResult& result) {
+    context->create_client_with_configuration(
+        config, [this, &ctxt, context, geometry](const ::airmap::Context::ClientCreateResult& result) {
           if (not result)
             return;
 

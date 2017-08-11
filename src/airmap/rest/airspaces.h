@@ -10,7 +10,7 @@ namespace rest {
 
 class Airspaces : public airmap::Airspaces {
  public:
-  explicit Airspaces(Communicator& communicator);
+  explicit Airspaces(const std::string& host, Client::Version version, Communicator& communicator);
   Airspaces(const Airspaces&) = delete;
   Airspaces(Airspaces&&)      = delete;
   Airspaces& operator=(const Airspaces&) = delete;
@@ -20,6 +20,8 @@ class Airspaces : public airmap::Airspaces {
   void for_ids(const ForIds::Parameters& parameters, const ForIds::Callback& cb) override;
 
  private:
+  std::string host_;
+  Client::Version version_;
   Communicator& communicator_;
 };
 

@@ -38,7 +38,8 @@ class Communicator : public airmap::rest::Communicator,
   const std::shared_ptr<::boost::asio::io_service>& io_service() const;
 
   // From airmap::Context
-  void create_client_with_credentials(const Client::Credentials& credentials, const ClientCreateCallback& cb) override;
+  void create_client_with_configuration(const Client::Configuration& configuration,
+                                        const ClientCreateCallback& cb) override;
   void run() override;
   void stop() override;
 

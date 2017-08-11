@@ -46,6 +46,8 @@ cmd::SimulateScenario::SimulateScenario()
           cli::Name{"simulate-scenario"},
           cli::Usage{"simulate multiple vehicles carrying out missions and submitting telemetry"},
           cli::Description{"simulate multiple vehicles carrying out missions and submitting telemetry"}} {
+  flag(cli::make_flag(cli::Name{"version"}, cli::Description{"work against this version of the AirMap services"},
+                      params_.version));
   flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
                       params_.api_key));
   flag(cli::make_flag(cli::Name{"host"}, cli::Description{"telemetry host address"}, params_.host));
@@ -66,12 +68,7 @@ cmd::SimulateScenario::SimulateScenario()
       return 1;
     }
 
-    if (!params_.host) {
-      log_.errorf(component, "missing parameter 'host'");
-      return 1;
-    }
-
-    if (!params_.host.get().validate()) {
+    if (params_.host && !params_.host.get().validate()) {
       log_.errorf(component, "parameter 'host' must not be empty");
       return 1;
     }
@@ -97,82 +94,93 @@ cmd::SimulateScenario::SimulateScenario()
       return 1;
     }
 
-    ::setenv("AIRMAP_TELEMETRY_HOST", params_.host.get().string().c_str(), 1);
-    ::setenv("AIRMAP_TELEMETRY_PORT", boost::lexical_cast<std::string>(params_.port).c_str(), 1);
+    context_    = result.value();
+    auto config = Client::default_configuration(params_.version, Client::Credentials{params_.api_key.get()});
 
-    context_ = result.value();
+    if (params_.host)
+      config.telemetry.host = params_.host.get();
+    if (params_.port)
+      config.telemetry.port = params_.port.get();
 
-    context_->create_client_with_credentials(
-        Client::Credentials{params_.api_key.get()}, [this, &ctxt](const auto& result) {
-          if (not result) {
-            log_.errorf(component, "could not create client for accessing AirMap services");
-            context_->stop();
-            return;
-          }
-          log_.infof(component, "successfully created client for AirMap services");
+    log_.infof(component,
+               "client configuration:\n"
+               "  host:                %s\n"
+               "  version:             %s\n"
+               "  telemetry.host:      %s\n"
+               "  telemetry.port:      %d\n"
+               "  credentials.api_key: %s\n",
+               config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key);
 
-          client_ = result.value();
+    context_->create_client_with_configuration(config, [this, &ctxt](const auto& result) {
+      if (not result) {
+        log_.errorf(component, "could not create client for accessing AirMap services");
+        context_->stop();
+        return;
+      }
+      log_.infof(component, "successfully created client for AirMap services");
 
-          for (std::size_t i = 0; i < collector_->scenario().participants.size(); i++) {
-            std::this_thread::sleep_for(std::chrono::seconds{1});
-            client_->authenticator().authenticate_anonymously(
-                {collector_->scenario().participants.at(i).pilot.id}, [this, &ctxt, i](const auto& result) {
-                  if (not result) {
-                    log_.errorf(component, "could not authenticate with the Airmap services");
-                    context_->stop();
-                    return;
+      client_ = result.value();
+
+      for (std::size_t i = 0; i < collector_->scenario().participants.size(); i++) {
+        std::this_thread::sleep_for(std::chrono::seconds{1});
+        client_->authenticator().authenticate_anonymously(
+            {collector_->scenario().participants.at(i).pilot.id}, [this, &ctxt, i](const auto& result) {
+              if (not result) {
+                log_.errorf(component, "could not authenticate with the Airmap services");
+                context_->stop();
+                return;
+              }
+              log_.infof(component, "successfully authenticated with the AirMap services");
+
+              Flights::CreateFlight::Parameters params;
+              params.authorization = result.value().id;
+              params.start_time    = Clock::universal_time();
+              params.end_time      = Clock::universal_time() + Minutes{2};
+
+              collector_->collect_authentication_for_index(i, result.value().id);
+              const auto& participant = collector_->scenario().participants.at(i);
+              const auto& polygon     = participant.geometry.details_for_polygon();
+
+              params.aircraft_id = participant.aircraft.id;
+              params.latitude    = polygon[0].coordinates[0].latitude;
+              params.longitude   = polygon[0].coordinates[0].longitude;
+              params.geometry    = participant.geometry;
+              client_->flights().create_flight_by_polygon(params, [this, &ctxt, i](const auto& result) {
+                if (!result) {
+                  try {
+                    std::rethrow_exception(result.error());
+                  } catch (const std::exception& e) {
+                    log_.errorf(component, "could not create flight for polygon: %s", e.what());
+                  } catch (...) {
+                    log_.errorf(component, "could not create flight for polygon");
                   }
-                  log_.infof(component, "successfully authenticated with the AirMap services");
+                  context_->stop();
+                  return;
+                }
+                log_.infof(component, "successfully created flight for polygon");
 
-                  Flights::CreateFlight::Parameters params;
-                  params.authorization = result.value().id;
-                  params.start_time    = Clock::universal_time();
-                  params.end_time      = Clock::universal_time() + Minutes{2};
-
-                  collector_->collect_authentication_for_index(i, result.value().id);
-                  const auto& participant = collector_->scenario().participants.at(i);
-                  const auto& polygon     = participant.geometry.details_for_polygon();
-
-                  params.aircraft_id = participant.aircraft.id;
-                  params.latitude    = polygon[0].coordinates[0].latitude;
-                  params.longitude   = polygon[0].coordinates[0].longitude;
-                  params.geometry    = participant.geometry;
-                  client_->flights().create_flight_by_polygon(params, [this, &ctxt, i](const auto& result) {
-                    if (!result) {
-                      try {
-                        std::rethrow_exception(result.error());
-                      } catch (const std::exception& e) {
-                        log_.errorf(component, "could not create flight for polygon: %s", e.what());
-                      } catch (...) {
-                        log_.errorf(component, "could not create flight for polygon");
+                collector_->collect_flight_id_for_index(i, result.value());
+                const auto& participant = collector_->scenario().participants.at(i);
+                client_->flights().start_flight_communications(
+                    {participant.authentication.get(), participant.flight.get().id},
+                    [this, &ctxt, i](const auto& result) {
+                      if (!result) {
+                        log_.errorf(component, "could not start flight comms");
+                        context_->stop();
+                        return;
                       }
-                      context_->stop();
-                      return;
-                    }
-                    log_.infof(component, "successfully created flight for polygon");
+                      log_.infof(component, "successfully started flight comms");
 
-                    collector_->collect_flight_id_for_index(i, result.value());
-                    const auto& participant = collector_->scenario().participants.at(i);
-                    client_->flights().start_flight_communications(
-                        {participant.authentication.get(), participant.flight.get().id},
-                        [this, &ctxt, i](const auto& result) {
-                          if (!result) {
-                            log_.errorf(component, "could not start flight comms");
-                            context_->stop();
-                            return;
-                          }
-                          log_.infof(component, "successfully started flight comms");
-
-                          if (collector_->collect_key_for_index(i, result.value().key)) {
-                            auto simulator =
-                                std::make_shared<util::ScenarioSimulator>(collector_->scenario(), log_.logger());
-                            runner_->start(simulator, client_);
-                          }
-                        });
-                  });
-                });
-          }
-        });
+                      if (collector_->collect_key_for_index(i, result.value().key)) {
+                        auto simulator =
+                            std::make_shared<util::ScenarioSimulator>(collector_->scenario(), log_.logger());
+                        runner_->start(simulator, client_);
+                      }
+                    });
+              });
+            });
+      }
+    });
 
     context_->run();
     return 0;

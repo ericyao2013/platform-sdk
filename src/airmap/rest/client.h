@@ -17,7 +17,7 @@ namespace rest {
 
 class Client : public airmap::Client, public airmap::rest::Communicator {
  public:
-  explicit Client(const Credentials& credentials, const std::shared_ptr<Communicator>& communicator);
+  explicit Client(const Configuration& configuration, const std::shared_ptr<Communicator>& communicator);
 
   // From airmap::Client
   airmap::Aircrafts& aircrafts() override;
@@ -35,7 +35,7 @@ class Client : public airmap::Client, public airmap::rest::Communicator {
   void dispatch(const std::function<void()>& task) override;
 
  private:
-  Credentials credentials_;
+  Configuration configuration_;
   std::shared_ptr<rest::Communicator> communicator_;
 
   rest::Aircrafts aircrafts_;
