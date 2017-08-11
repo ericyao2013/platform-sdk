@@ -25,7 +25,7 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
                       params_.refresh_token));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger{create_default_logger()};
+    log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
 
     if (!params_.api_key) {
       log_.errorf(component, "missing parameter 'api-key'");
@@ -60,7 +60,7 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
     auto result = ::airmap::Context::create(log_.logger());
 
     if (!result) {
-      ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
+      log_.errorf(component, "Could not acquire resources for accessing AirMap services");
       return 1;
     }
 
@@ -73,7 +73,7 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
                "  version:             %s\n"
                "  telemetry.host:      %s\n"
                "  telemetry.port:      %d\n"
-               "  credentials.api_key: %s\n",
+               "  credentials.api_key: %s",
                config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key);
 
     context->create_client_with_configuration(config, [this, &ctxt,
@@ -85,11 +85,20 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
 
       auto handler = [this, &ctxt, context, client](const Authenticator::RenewAuthentication::Result& result) {
         if (result) {
-          ctxt.cout << "Refreshed token successfully and received id: "
-                    << "  id:         " << result.value().id << std::endl
-                    << "  expires in: " << result.value().expires_in.count() << std::endl;
-        } else
-          ctxt.cout << "Failed to renew with " << params_.refresh_token.get() << std::endl;
+          log_.infof(component,
+                     "successfully refreshed token and received id:\n"
+                     "  id:         %s\n"
+                     "  expires in: %d",
+                    result.value().id, result.value().expires_in.count());
+        } else {
+          try {
+            std::rethrow_exception(result.error());
+          } catch (const std::exception& e) {
+            log_.errorf(component, "failed to renew %s: %s\n", params_.refresh_token.get(), e.what());
+          } catch (...) {
+            log_.errorf(component, "failed to renew %s\n", params_.refresh_token.get());
+          }
+        }
 
         context->stop();
       };
@@ -99,8 +108,7 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
 
     });
 
-    if (result)
-      result.value()->run();
+    context->run();
 
     return 0;
   });

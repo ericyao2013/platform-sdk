@@ -32,7 +32,7 @@ cmd::StartFlightComms::StartFlightComms()
                       params_.flight_id));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger{create_default_logger()};
+    log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
 
     if (!params_.api_key) {
       log_.errorf(component, "missing parameter 'api-key'");
@@ -67,7 +67,7 @@ cmd::StartFlightComms::StartFlightComms()
     auto result = ::airmap::Context::create(log_.logger());
 
     if (!result) {
-      ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
+      log_.errorf(component, "Could not acquire resources for accessing AirMap services");
       return 1;
     }
 
@@ -80,7 +80,7 @@ cmd::StartFlightComms::StartFlightComms()
                "  version:             %s\n"
                "  telemetry.host:      %s\n"
                "  telemetry.port:      %d\n"
-               "  credentials.api_key: %s\n",
+               "  credentials.api_key: %s",
                config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key);
 
     context->create_client_with_configuration(
@@ -94,12 +94,19 @@ cmd::StartFlightComms::StartFlightComms()
               Flights::StartFlightCommunications::Parameters{params_.authorization.get(), params_.flight_id.get()},
               [this, &ctxt, context, client](const Flights::StartFlightCommunications::Result& result) {
                 if (!result) {
-                  ctxt.cout << "Failed to start flight communications" << std::endl;
+                  try {
+                    std::rethrow_exception(result.error());
+                  } catch (const std::exception& e) {
+                    log_.errorf(component, "failed to start flight communications: %s\n", e.what());
+                  } catch (...) {
+                    log_.errorf(component, "failed to start flight communications");
+                  }
+                  
                   context->stop();
                   return;
                 }
 
-                ctxt.cout << "Started flight communications: " << result.value().key << std::endl;
+                log_.infof(component, "Started flight communications: %s", result.value().key);
                 context->stop();
               });
         });

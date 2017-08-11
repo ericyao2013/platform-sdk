@@ -27,7 +27,7 @@ cmd::AuthorizePassword::AuthorizePassword()
                       params_.device));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger{create_default_logger()};
+    log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
 
     if (!params_.api_key) {
       log_.errorf(component, "missing parameter 'api-key'");
@@ -82,7 +82,7 @@ cmd::AuthorizePassword::AuthorizePassword()
     auto result = ::airmap::Context::create(log_.logger());
 
     if (!result) {
-      ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
+      log_.errorf(component, "Could not acquire resources for accessing AirMap services");
       return 1;
     }
 
@@ -107,9 +107,16 @@ cmd::AuthorizePassword::AuthorizePassword()
 
           auto handler = [this, &ctxt, context, client](const Authenticator::AuthenticateWithPassword::Result& result) {
             if (result) {
-              ctxt.cout << "Authenticated successfully and received id: " << result.value().id << std::endl;
-            } else
-              ctxt.cout << "Failed to authorize " << params_.username.get() << std::endl;
+              log_.infof(component, "successfully authenticated and received id: %s\n", result.value().id);
+            } else {
+              try {
+                std::rethrow_exception(result.error());
+              } catch (const std::exception& e) {
+                log_.errorf(component, "failed to authorize %s: %s\n", params_.username.get(), e.what());
+              } catch (...) {
+                log_.errorf(component, "failed to authorize %s\n", params_.username.get());
+              }
+            }
 
             context->stop();
           };
@@ -120,8 +127,7 @@ cmd::AuthorizePassword::AuthorizePassword()
               handler);
         });
 
-    if (result)
-      result.value()->run();
+    context->run();
 
     return 0;
   });

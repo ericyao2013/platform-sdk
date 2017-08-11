@@ -52,7 +52,7 @@ cmd::SimulateTelemetry::SimulateTelemetry()
                       params_.geometry_file));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger{create_default_logger()};
+    log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
 
     if (!params_.api_key) {
       log_.errorf(component, "missing parameter 'api-key'");
@@ -92,7 +92,7 @@ cmd::SimulateTelemetry::SimulateTelemetry()
     auto result = ::airmap::Context::create(log_.logger());
 
     if (!result) {
-      ctxt.cout << "Could not acquire resources for accessing AirMap services" << std::endl;
+      log_.errorf(component, "Could not acquire resources for accessing AirMap services");
       return 1;
     }
 
@@ -102,7 +102,7 @@ cmd::SimulateTelemetry::SimulateTelemetry()
     if (params_.host)
       config.telemetry.host = params_.host.get();
     if (params_.port)
-      config.telemetry.port = params_.port;
+      config.telemetry.port = params_.port.get();
 
     log_.infof(component,
                "client configuration:\n"
