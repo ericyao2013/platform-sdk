@@ -89,7 +89,7 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
                      "successfully refreshed token and received id:\n"
                      "  id:         %s\n"
                      "  expires in: %d",
-                    result.value().id, result.value().expires_in.count());
+                     result.value().id, result.value().expires_in.count());
         } else {
           try {
             std::rethrow_exception(result.error());

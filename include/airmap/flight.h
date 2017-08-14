@@ -1,7 +1,6 @@
 #ifndef AIRMAP_FLIGHT_H_
 #define AIRMAP_FLIGHT_H_
 
-#include <airmap/aircraft.h>
 #include <airmap/date_time.h>
 #include <airmap/geometry.h>
 #include <airmap/pilot.h>
@@ -15,7 +14,7 @@ struct Flight {
 
   Id id;
   Pilot pilot;
-  Aircraft aircraft;
+  Pilot::Aircraft aircraft;
   float latitude;
   float longitude;
   float max_altitude;

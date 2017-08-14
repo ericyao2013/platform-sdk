@@ -44,22 +44,36 @@ class Communicator : public airmap::rest::Communicator,
   void stop() override;
 
   // From airmap::rest::Communicator
+  void delete_(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& query,
+               std::unordered_map<std::string, std::string>&& headers, DoCallback cb) override;
   void get(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& query,
            std::unordered_map<std::string, std::string>&& headers, DoCallback cb) override;
   void post(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& headers,
             const std::string& body, DoCallback cb) override;
+  void patch(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& headers,
+             const std::string& body, DoCallback cb) override;
   void send_udp(const std::string& host, std::uint16_t port, const std::string& body) override;
   void dispatch(const std::function<void()>& task) override;
 
  private:
   struct HttpSession : public std::enable_shared_from_this<HttpSession> {
+    struct Delete {};
     struct Get {};
+    struct Patch {};
     struct Post {};
+    explicit HttpSession(const Delete&, const std::shared_ptr<Logger>& logger,
+                         const std::shared_ptr<::boost::asio::io_service>& io_service, const std::string& host,
+                         const std::string& path, std::unordered_map<std::string, std::string>&& query,
+                         std::unordered_map<std::string, std::string>&& headers, DoCallback cb);
     explicit HttpSession(const Get&, const std::shared_ptr<Logger>& logger,
                          const std::shared_ptr<::boost::asio::io_service>& io_service, const std::string& host,
                          const std::string& path, std::unordered_map<std::string, std::string>&& query,
                          std::unordered_map<std::string, std::string>&& headers, DoCallback cb);
     explicit HttpSession(const Post&, const std::shared_ptr<Logger>& logger,
+                         const std::shared_ptr<::boost::asio::io_service>& io_service, const std::string& host,
+                         const std::string& path, const std::string& body,
+                         std::unordered_map<std::string, std::string>&& headers, DoCallback cb);
+    explicit HttpSession(const Patch&, const std::shared_ptr<Logger>& logger,
                          const std::shared_ptr<::boost::asio::io_service>& io_service, const std::string& host,
                          const std::string& path, const std::string& body,
                          std::unordered_map<std::string, std::string>&& headers, DoCallback cb);

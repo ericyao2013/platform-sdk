@@ -56,6 +56,14 @@ void airmap::rest::boost::Communicator::stop() {
 }
 
 // From airmap::rest::Communicator
+void airmap::rest::boost::Communicator::delete_(const std::string& host, const std::string& path,
+                                                std::unordered_map<std::string, std::string>&& query,
+                                                std::unordered_map<std::string, std::string>&& headers, DoCallback cb) {
+  std::make_shared<HttpSession>(HttpSession::Delete{}, log_.logger(), io_service_, host, path, std::move(query),
+                                std::move(headers), std::move(cb))
+      ->start();
+}
+
 void airmap::rest::boost::Communicator::get(const std::string& host, const std::string& path,
                                             std::unordered_map<std::string, std::string>&& query,
                                             std::unordered_map<std::string, std::string>&& headers, DoCallback cb) {
@@ -63,6 +71,15 @@ void airmap::rest::boost::Communicator::get(const std::string& host, const std::
                                 std::move(headers), std::move(cb))
       ->start();
 }
+
+void airmap::rest::boost::Communicator::patch(const std::string& host, const std::string& path,
+                                              std::unordered_map<std::string, std::string>&& headers,
+                                              const std::string& body, DoCallback cb) {
+  std::make_shared<HttpSession>(HttpSession::Patch{}, log_.logger(), io_service_, host, path, body, std::move(headers),
+                                std::move(cb))
+      ->start();
+}
+
 void airmap::rest::boost::Communicator::post(const std::string& host, const std::string& path,
                                              std::unordered_map<std::string, std::string>&& headers,
                                              const std::string& body, DoCallback cb) {
@@ -78,6 +95,36 @@ void airmap::rest::boost::Communicator::send_udp(const std::string& host, std::u
 
 void airmap::rest::boost::Communicator::dispatch(const std::function<void()>& task) {
   io_service_->dispatch(task);
+}
+
+airmap::rest::boost::Communicator::HttpSession::HttpSession(const Delete&, const std::shared_ptr<Logger>& logger,
+                                                            const std::shared_ptr<asio::io_service>& io_service,
+                                                            const std::string& host, const std::string& path,
+                                                            std::unordered_map<std::string, std::string>&& query,
+                                                            std::unordered_map<std::string, std::string>&& headers,
+                                                            DoCallback cb)
+    : log{logger},
+      io_service{io_service},
+      resolver{*io_service},
+      ssl_context{ssl::context::sslv23},
+      socket{*io_service, ssl_context},
+      cb{cb} {
+  ssl_context.set_default_verify_paths();
+  ssl_context.set_verify_mode(ssl::verify_peer);
+
+  network::uri_builder uri_builder;
+  uri_builder.scheme("https").host(host).path(path);
+  for (const auto& pair : query)
+    uri_builder.append_query_key_value_pair(pair.first, pair.second);
+  uri = uri_builder.uri();
+
+  request.method(http::verb::delete_);
+  request.target(fmt::sprintf("%s?%s", uri.path(), uri.query()));
+  request.set(http::to_string(http::field::accept), "application/json");
+  request.set(http::to_string(http::field::host), uri.host());
+  for (const auto& pair : headers)
+    request.set(pair.first, pair.second);
+  request.prepare_payload();
 }
 
 airmap::rest::boost::Communicator::HttpSession::HttpSession(const Get&, const std::shared_ptr<Logger>& logger,
@@ -102,7 +149,7 @@ airmap::rest::boost::Communicator::HttpSession::HttpSession(const Get&, const st
   uri = uri_builder.uri();
 
   request.method(http::verb::get);
-  request.target(fmt::sprintf("%s/%s", uri.path(), uri.query()));
+  request.target(fmt::sprintf("%s?%s", uri.path(), uri.query()));
   request.set(http::to_string(http::field::accept), "application/json");
   request.set(http::to_string(http::field::host), uri.host());
   for (const auto& pair : headers)
@@ -129,6 +176,35 @@ airmap::rest::boost::Communicator::HttpSession::HttpSession(const Post&, const s
   uri = uri_builder.scheme("https").host(host).path(path).uri();
 
   request.method(http::verb::post);
+  request.target(fmt::sprintf("%s%s", uri.path(), uri.query()));
+  request.set(http::to_string(http::field::accept), "application/json");
+  request.set(http::to_string(http::field::content_type), "application/json");
+  request.set(http::to_string(http::field::host), uri.host());
+  for (const auto& pair : headers)
+    request.set(pair.first, pair.second);
+  request.body = std::move(body);
+  request.prepare_payload();
+}
+
+airmap::rest::boost::Communicator::HttpSession::HttpSession(const Patch&, const std::shared_ptr<Logger>& logger,
+                                                            const std::shared_ptr<asio::io_service>& io_service,
+                                                            const std::string& host, const std::string& path,
+                                                            const std::string& body,
+                                                            std::unordered_map<std::string, std::string>&& headers,
+                                                            DoCallback cb)
+    : log{logger},
+      io_service{io_service},
+      resolver{*io_service},
+      ssl_context{ssl::context::sslv23},
+      socket{*io_service, ssl_context},
+      cb{cb} {
+  ssl_context.set_default_verify_paths();
+  ssl_context.set_verify_mode(ssl::verify_peer);
+
+  network::uri_builder uri_builder;
+  uri = uri_builder.scheme("https").host(host).path(path).uri();
+
+  request.method(http::verb::patch);
   request.target(fmt::sprintf("%s%s", uri.path(), uri.query()));
   request.set(http::to_string(http::field::accept), "application/json");
   request.set(http::to_string(http::field::content_type), "application/json");

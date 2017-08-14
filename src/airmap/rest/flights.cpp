@@ -9,6 +9,8 @@
 
 using json = nlohmann::json;
 
+namespace {
+
 template <typename... Args>
 std::string version_to_path(airmap::Client::Version version, const char* pattern, Args&&... args) {
   switch (version) {
@@ -20,6 +22,8 @@ std::string version_to_path(airmap::Client::Version version, const char* pattern
 
   throw std::logic_error{"should not reach here"};
 }
+
+}  // namespace
 
 airmap::rest::Flights::Flights(const std::string& host, Client::Version version, Communicator& communicator)
     : host_{host}, version_{version}, communicator_{communicator} {

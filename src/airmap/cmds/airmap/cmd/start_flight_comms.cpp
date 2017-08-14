@@ -101,7 +101,7 @@ cmd::StartFlightComms::StartFlightComms()
                   } catch (...) {
                     log_.errorf(component, "failed to start flight communications");
                   }
-                  
+
                   context->stop();
                   return;
                 }

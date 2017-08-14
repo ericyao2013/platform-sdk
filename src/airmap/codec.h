@@ -4,6 +4,7 @@
 #include <airmap/codec/http/query/aircrafts.h>
 #include <airmap/codec/http/query/airspaces.h>
 #include <airmap/codec/http/query/flights.h>
+#include <airmap/codec/http/query/pilots.h>
 
 #include <airmap/codec/json/aircraft.h>
 #include <airmap/codec/json/airspace.h>
@@ -16,6 +17,7 @@
 #include <airmap/codec/json/get.h>
 #include <airmap/codec/json/optional.h>
 #include <airmap/codec/json/pilot.h>
+#include <airmap/codec/json/pilots.h>
 #include <airmap/codec/json/rule.h>
 
 namespace airmap {

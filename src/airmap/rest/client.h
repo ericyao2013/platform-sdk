@@ -8,6 +8,7 @@
 #include <airmap/rest/authenticator.h>
 #include <airmap/rest/communicator.h>
 #include <airmap/rest/flights.h>
+#include <airmap/rest/pilots.h>
 #include <airmap/rest/telemetry.h>
 
 #include <memory>
@@ -24,13 +25,18 @@ class Client : public airmap::Client, public airmap::rest::Communicator {
   airmap::Airspaces& airspaces() override;
   airmap::Authenticator& authenticator() override;
   airmap::Flights& flights() override;
+  airmap::Pilots& pilots() override;
   airmap::Telemetry& telemetry() override;
 
   // From airmap::rest::Communicator
+  void delete_(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& query,
+               std::unordered_map<std::string, std::string>&& headers, DoCallback cb) override;
   void get(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& query,
            std::unordered_map<std::string, std::string>&& headers, DoCallback cb) override;
   void post(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& headers,
             const std::string& body, DoCallback cb) override;
+  void patch(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& headers,
+             const std::string& body, DoCallback cb) override;
   void send_udp(const std::string& host, std::uint16_t port, const std::string& body) override;
   void dispatch(const std::function<void()>& task) override;
 
@@ -42,6 +48,7 @@ class Client : public airmap::Client, public airmap::rest::Communicator {
   rest::Airspaces airspaces_;
   rest::Authenticator authenticator_;
   rest::Flights flights_;
+  rest::Pilots pilots_;
   rest::Telemetry telemetry_;
 };
 

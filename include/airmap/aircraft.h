@@ -6,13 +6,17 @@
 namespace airmap {
 
 struct Aircraft {
+  struct Model {
+    std::string id;
+    std::string name;
+  };
+
   struct Manufacturer {
     std::string id;
     std::string name;
   };
 
-  std::string id;
-  std::string name;
+  Model model;
   Manufacturer manufacturer;
 };
 

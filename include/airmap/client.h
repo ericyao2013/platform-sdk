@@ -17,6 +17,7 @@ class Aircrafts;
 class Airspaces;
 class Authenticator;
 class Flights;
+class Pilots;
 class Telemetry;
 
 /// Client enables applications to use the AirMap services and APIs.
@@ -66,6 +67,9 @@ class Client : DoNotCopyOrMove {
 
   /// flights returns the Flights implementation provided by the client.
   virtual Flights& flights() = 0;
+
+  /// pilots returns the Pilots implementation provided by the client.
+  virtual Pilots& pilots() = 0;
 
   /// telemetry returns the Telemetry implementation provided by the client.
   virtual Telemetry& telemetry() = 0;

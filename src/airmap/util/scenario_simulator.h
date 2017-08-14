@@ -25,7 +25,7 @@ namespace util {
 
 struct Scenario {
   struct Participant {
-    Aircraft aircraft;
+    Pilot::Aircraft aircraft;
     Pilot pilot;
     Geometry geometry;
     double velocity;

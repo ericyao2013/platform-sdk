@@ -13,8 +13,8 @@ namespace codec {
 namespace json {
 
 inline void decode(const nlohmann::json& j, Aircraft& aircraft) {
-  get(aircraft.id, j, "id");
-  get(aircraft.name, j, "name");
+  get(aircraft.model.id, j, "id");
+  get(aircraft.model.name, j, "name");
   get(aircraft.manufacturer, j, "manufacturer");
 }
 

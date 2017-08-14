@@ -39,6 +39,42 @@ void airmap::rest::glib::Communicator::stop() {
   g_main_loop_quit(main_loop_.get());
 }
 
+void airmap::rest::glib::Communicator::delete_(const std::string& host, const std::string& path,
+                                               std::unordered_map<std::string, std::string>&& query,
+                                               std::unordered_map<std::string, std::string>&& headers, DoCallback cb) {
+  auto sp = shared_from_this();
+  std::weak_ptr<Communicator> wp{sp};
+
+  auto uri = soup_uri_new(("https://" + host).c_str());
+  soup_uri_set_path(uri, path.c_str());
+
+  GHashTable* query_table = g_hash_table_new(g_str_hash, g_str_equal);
+  for (const auto& pair : query) {
+    std::string key   = pair.first;
+    std::string value = pair.second;
+    g_hash_table_insert(query_table, reinterpret_cast<gpointer>(g_strdup(&key.front())),
+                        reinterpret_cast<gpointer>(g_strdup(&value.front())));
+  }
+
+  soup_uri_set_query_from_form(uri, query_table);
+  auto msg = soup_message_new("DELETE", soup_uri_to_string(uri, FALSE));
+
+  for (const auto& pair : headers)
+    soup_message_headers_append(msg->request_headers, pair.first.c_str(), pair.second.c_str());
+
+  g_hash_table_unref(query_table);
+  soup_uri_free(uri);
+
+  dispatch([this, wp, cb, msg]() {
+    if (auto sp = wp.lock()) {
+      auto uri = soup_message_get_uri(msg);
+      log_.infof(component, "enqueuing DELETE request for %s%s", soup_uri_get_host(uri), soup_uri_get_path(uri));
+      soup_session_queue_message(session_.get(), msg, Communicator::soup_session_callback,
+                                 new SoupSessionCallbackContext{cb, wp});
+    }
+  });
+}
+
 void airmap::rest::glib::Communicator::get(const std::string& host, const std::string& path,
                                            std::unordered_map<std::string, std::string>&& query,
                                            std::unordered_map<std::string, std::string>&& headers, DoCallback cb) {
@@ -95,6 +131,32 @@ void airmap::rest::glib::Communicator::post(const std::string& host, const std::
     if (auto sp = wp.lock()) {
       auto uri = soup_message_get_uri(msg);
       log_.infof(component, "enqueuing POST request for %s%s", soup_uri_get_host(uri), soup_uri_get_path(uri));
+      soup_session_queue_message(session_.get(), msg, Communicator::soup_session_callback,
+                                 new SoupSessionCallbackContext{cb, wp});
+    }
+  });
+}
+
+void airmap::rest::glib::Communicator::patch(const std::string& host, const std::string& path,
+                                             std::unordered_map<std::string, std::string>&& headers,
+                                             const std::string& body, DoCallback cb) {
+  auto sp = shared_from_this();
+  std::weak_ptr<Communicator> wp{sp};
+
+  auto uri = soup_uri_new(("https://" + host).c_str());
+  soup_uri_set_path(uri, path.c_str());
+
+  auto msg = soup_message_new("PATCH", soup_uri_to_string(uri, FALSE));
+  for (const auto& pair : headers)
+    soup_message_headers_append(msg->request_headers, pair.first.c_str(), pair.second.c_str());
+  soup_message_set_request(msg, "application/json", SOUP_MEMORY_COPY, body.c_str(), body.size());
+
+  soup_uri_free(uri);
+
+  dispatch([this, wp, cb, msg]() {
+    if (auto sp = wp.lock()) {
+      auto uri = soup_message_get_uri(msg);
+      log_.infof(component, "enqueuing PATCH request for %s%s", soup_uri_get_host(uri), soup_uri_get_path(uri));
       soup_session_queue_message(session_.get(), msg, Communicator::soup_session_callback,
                                  new SoupSessionCallbackContext{cb, wp});
     }

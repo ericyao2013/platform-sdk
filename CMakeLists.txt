@@ -77,6 +77,7 @@ add_library(
   src/airmap/jsend.h
   src/airmap/jsend.cpp
   src/airmap/logger.cpp
+  src/airmap/pilots.cpp
   src/airmap/rule.cpp
   src/airmap/telemetry.cpp
 
@@ -99,6 +100,8 @@ add_library(
   src/airmap/rest/authenticator.cpp
   src/airmap/rest/flights.h
   src/airmap/rest/flights.cpp
+  src/airmap/rest/pilots.h
+  src/airmap/rest/pilots.cpp
   src/airmap/rest/telemetry.h
   src/airmap/rest/telemetry.cpp
 
@@ -152,6 +155,8 @@ add_executable(
   src/airmap/cmds/airmap/cmd/create_flight.cpp
   src/airmap/cmds/airmap/cmd/daemon.h
   src/airmap/cmds/airmap/cmd/daemon.cpp
+  src/airmap/cmds/airmap/cmd/pilot.h
+  src/airmap/cmds/airmap/cmd/pilot.cpp
   src/airmap/cmds/airmap/cmd/simulate_scenario.h
   src/airmap/cmds/airmap/cmd/simulate_scenario.cpp
   src/airmap/cmds/airmap/cmd/simulate_telemetry.h
