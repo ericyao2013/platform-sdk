@@ -10,6 +10,7 @@
 #include <boost/asio/ssl.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
+#include <mqtt/client.hpp>
 #include <network/uri.hpp>
 
 #include <array>
@@ -23,6 +24,54 @@
 #include <vector>
 
 namespace airmap {
+namespace mqtt {
+namespace boost {
+
+class Client : public mqtt::Client, public std::enable_shared_from_this<Client> {
+ public:
+  using TlsClient =
+      ::mqtt::client<::boost::asio::ssl::stream<::boost::asio::ip::tcp::socket>, ::boost::asio::io_service::strand>;
+  using Unsubscriber = std::function<void()>;
+
+  class Subscription : public mqtt::Client::Subscription {
+   public:
+    explicit Subscription(Unsubscriber unsubscriber);
+    ~Subscription();
+
+   private:
+    Unsubscriber unsubscriber_;
+  };
+
+  static std::shared_ptr<Client> create(const std::shared_ptr<Logger>& logger,
+                                        const std::shared_ptr<TlsClient>& mqtt_client);
+
+  // From airmap::mqtt::Client
+  std::unique_ptr<airmap::mqtt::Client::Subscription> subscribe(const std::string& topic, QualityOfService qos,
+                                                                PublishCallback cb) override;
+
+ private:
+  using Topic            = std::string;
+  using TopicMap         = std::unordered_multimap<Topic, PublishCallback>;
+  using TopicMapIterator = typename TopicMap::iterator;
+  using SubscriptionId   = std::uint8_t;
+  using SubscriptionMap  = std::unordered_map<SubscriptionId, TopicMapIterator>;
+
+  /// Initializes the Client instance with mqtt_client
+  explicit Client(const std::shared_ptr<Logger>& logger, const std::shared_ptr<TlsClient>& mqtt_client);
+  std::shared_ptr<Client> finalize();
+
+  void handle_publish(std::uint8_t, ::boost::optional<std::uint16_t>, std::string topic, std::string contents);
+  void unsubscribe(SubscriptionId subscription_id);
+
+  util::FormattingLogger log_;
+  std::shared_ptr<TlsClient> mqtt_client_;
+  SubscriptionMap subscription_map_;
+  TopicMap topic_map_;
+};
+
+}  // namespace boost
+}  // namespace mqtt
+
 namespace rest {
 namespace boost {
 
@@ -44,6 +93,8 @@ class Communicator : public airmap::rest::Communicator,
   void stop() override;
 
   // From airmap::rest::Communicator
+  void connect_to_mqtt_broker(const std::string& host, std::uint16_t port, const std::string& username,
+                              const std::string& password, const ConnectCallback& cb) override;
   void delete_(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& query,
                std::unordered_map<std::string, std::string>&& headers, DoCallback cb) override;
   void get(const std::string& host, const std::string& path, std::unordered_map<std::string, std::string>&& query,

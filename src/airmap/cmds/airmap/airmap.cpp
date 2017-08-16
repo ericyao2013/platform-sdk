@@ -3,6 +3,7 @@
 #include <airmap/cmds/airmap/cmd/authorize_refresh.h>
 #include <airmap/cmds/airmap/cmd/create_flight.h>
 #include <airmap/cmds/airmap/cmd/daemon.h>
+#include <airmap/cmds/airmap/cmd/monitor_traffic.h>
 #include <airmap/cmds/airmap/cmd/pilot.h>
 #include <airmap/cmds/airmap/cmd/simulate_scenario.h>
 #include <airmap/cmds/airmap/cmd/simulate_telemetry.h>
@@ -26,6 +27,7 @@ class Airmap : airmap::DoNotCopyOrMove {
     cmd_.command(std::make_shared<cmd::AuthorizeRefresh>());
     cmd_.command(std::make_shared<cmd::CreateFlight>());
     cmd_.command(std::make_shared<cmd::Daemon>());
+    cmd_.command(std::make_shared<cmd::MonitorTraffic>());
     cmd_.command(std::make_shared<cmd::Pilot>());
     cmd_.command(std::make_shared<cmd::StartFlightComms>());
     cmd_.command(std::make_shared<cmd::SimulateScenario>());

@@ -3,14 +3,19 @@
 #include <airmap/rest/client.h>
 
 #include <boost/beast/http.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <mqtt/str_connect_return_code.hpp>
 
 #include <iostream>
 
-namespace asio = boost::asio;
-namespace http = boost::beast::http;
-namespace ssl  = boost::asio::ssl;
-using tcp      = boost::asio::ip::tcp;
-using udp      = boost::asio::ip::udp;
+namespace asio  = boost::asio;
+namespace http  = boost::beast::http;
+namespace ssl   = boost::asio::ssl;
+namespace uuids = boost::uuids;
+using tcp       = boost::asio::ip::tcp;
+using udp       = boost::asio::ip::udp;
 
 namespace {
 std::exception_ptr wrap_error_code(const boost::system::error_code& ec) {
@@ -19,6 +24,130 @@ std::exception_ptr wrap_error_code(const boost::system::error_code& ec) {
 
 constexpr const char* component{"rest::boost::Communicator"};
 }  // namespace
+
+airmap::mqtt::boost::Client::Subscription::Subscription(Unsubscriber unsubscriber) : unsubscriber_{unsubscriber} {
+}
+
+airmap::mqtt::boost::Client::Subscription::~Subscription() {
+  unsubscriber_();
+}
+
+std::shared_ptr<airmap::mqtt::boost::Client> airmap::mqtt::boost::Client::create(
+    const std::shared_ptr<Logger>& logger, const std::shared_ptr<TlsClient>& mqtt_client) {
+  return std::shared_ptr<Client>(new Client{logger, mqtt_client})->finalize();
+}
+
+airmap::mqtt::boost::Client::Client(const std::shared_ptr<Logger>& logger,
+                                    const std::shared_ptr<TlsClient>& mqtt_client)
+    : log_{logger}, mqtt_client_{mqtt_client} {
+}
+
+std::shared_ptr<airmap::mqtt::boost::Client> airmap::mqtt::boost::Client::finalize() {
+  auto sp = shared_from_this();
+  std::weak_ptr<Client> wp{sp};
+
+  mqtt_client_->set_close_handler([wp]() {
+    if (auto sp = wp.lock())
+      sp->log_.infof(component, "connection to mqtt broker was closed");
+  });
+
+  mqtt_client_->set_error_handler([wp](const ::boost::system::error_code& ec) {
+    if (auto sp = wp.lock())
+      sp->log_.errorf(component, "failed to communicate with mqtt broker: %s", ec.message());
+  });
+
+  mqtt_client_->set_suback_handler([wp](std::uint16_t packet_id, std::vector<::boost::optional<std::uint8_t>> results) {
+    if (auto sp = wp.lock()) {
+      sp->log_.infof(component, "received suback from mqtt broker: %d", packet_id);
+      return true;
+    }
+    return false;
+  });
+
+  mqtt_client_->set_puback_handler([wp](std::uint16_t packet_id) {
+    if (auto sp = wp.lock()) {
+      sp->log_.infof(component, "received puback from mqtt broker: %d", packet_id);
+      return true;
+    }
+    return false;
+  });
+
+  mqtt_client_->set_pubrec_handler([wp](std::uint16_t packet_id) {
+    if (auto sp = wp.lock()) {
+      sp->log_.infof(component, "received pubrec from mqtt broker: %d", packet_id);
+      return true;
+    }
+    return false;
+  });
+
+  mqtt_client_->set_pubcomp_handler([wp](std::uint16_t packet_id) {
+    if (auto sp = wp.lock()) {
+      sp->log_.infof(component, "received pubcomp from mqtt broker: %d", packet_id);
+      return true;
+    }
+    return false;
+  });
+
+  mqtt_client_->set_publish_handler(
+      [wp](std::uint8_t header, ::boost::optional<std::uint16_t> packet_id, std::string topic, std::string contents) {
+        if (auto sp = wp.lock()) {
+          sp->handle_publish(header, packet_id, topic, contents);
+          return true;
+        }
+        return false;
+      });
+
+  return sp;
+}
+
+std::unique_ptr<airmap::mqtt::Client::Subscription> airmap::mqtt::boost::Client::subscribe(const std::string& topic,
+                                                                                           QualityOfService qos,
+                                                                                           PublishCallback cb) {
+  auto translated = ::mqtt::qos::exactly_once;
+
+  switch (qos) {
+    case QualityOfService::at_least_once:
+      translated = ::mqtt::qos::at_least_once;
+      break;
+    case QualityOfService::at_most_once:
+      translated = ::mqtt::qos::at_most_once;
+      break;
+    case QualityOfService::exactly_once:
+      translated = ::mqtt::qos::exactly_once;
+      break;
+  }
+
+  auto id  = mqtt_client_->async_subscribe(topic, translated);
+  auto itt = topic_map_.emplace(topic, cb);
+  subscription_map_.emplace(id, itt);
+
+  std::weak_ptr<Client> wp{shared_from_this()};
+  std::unique_ptr<airmap::mqtt::Client::Subscription> result{new Subscription{[wp, id]() {
+    if (auto sp = wp.lock()) {
+      sp->unsubscribe(id);
+    }
+  }}};
+  return result;
+}
+
+void airmap::mqtt::boost::Client::handle_publish(std::uint8_t, ::boost::optional<std::uint16_t>, std::string topic,
+                                                 std::string contents) {
+  log_.infof(component, "received publish from mqtt broker for topic %s", topic);
+  auto range = topic_map_.equal_range(topic);
+  for (auto it = range.first; it != range.second; ++it) {
+    it->second(topic, contents);
+  }
+}
+
+void airmap::mqtt::boost::Client::unsubscribe(SubscriptionId subscription_id) {
+  auto it = subscription_map_.find(subscription_id);
+
+  if (it != subscription_map_.end()) {
+    mqtt_client_->async_unsubscribe(it->second->first);
+    topic_map_.erase(it->second);
+    subscription_map_.erase(it);
+  }
+}
 
 airmap::rest::boost::Communicator::Communicator(const std::shared_ptr<Logger>& logger)
     : log_{logger},
@@ -36,7 +165,7 @@ const std::shared_ptr<::boost::asio::io_service>& airmap::rest::boost::Communica
 // From airmap::Context
 void airmap::rest::boost::Communicator::create_client_with_configuration(const Client::Configuration& configuration,
                                                                          const ClientCreateCallback& cb) {
-  cb(ClientCreateResult{std::make_shared<rest::Client>(configuration, shared_from_this())});
+  cb(ClientCreateResult{std::make_shared<rest::Client>(configuration, log_.logger(), shared_from_this())});
 }
 
 void airmap::rest::boost::Communicator::run() {
@@ -56,6 +185,32 @@ void airmap::rest::boost::Communicator::stop() {
 }
 
 // From airmap::rest::Communicator
+void airmap::rest::boost::Communicator::connect_to_mqtt_broker(const std::string& host, std::uint16_t port,
+                                                               const std::string& username, const std::string& password,
+                                                               const ConnectCallback& cb) {
+  auto client = ::mqtt::make_tls_client(*io_service_, host, std::to_string(port));
+  client->set_clean_session(true);
+  client->set_default_verify_paths();
+  client->set_client_id(uuids::to_string(uuids::random_generator()()));
+  client->set_user_name(username);
+  client->set_password(password);
+
+  client->set_connack_handler([ logger = log_.logger(), host, port, cb, client ](auto, auto rc) {
+    if (::mqtt::connect_return_code::accepted == rc) {
+      cb(ConnectResult(mqtt::boost::Client::create(logger, client)));
+    } else {
+      cb(ConnectResult(std::make_exception_ptr(std::runtime_error{fmt::sprintf(
+          "failed to connect to mqtt broker %s:%d: %s", host, port, ::mqtt::connect_return_code_to_str(rc))})));
+    }
+    return ::mqtt::connect_return_code::accepted == rc;
+  });
+
+  client->connect([cb](const auto& ec) {
+    if (ec) {
+      cb(ConnectResult(std::make_exception_ptr(std::runtime_error{ec.message()})));
+    }
+  });
+}
 void airmap::rest::boost::Communicator::delete_(const std::string& host, const std::string& path,
                                                 std::unordered_map<std::string, std::string>&& query,
                                                 std::unordered_map<std::string, std::string>&& headers, DoCallback cb) {
@@ -306,10 +461,9 @@ void airmap::rest::boost::Communicator::UdpSession::handle_resolve(const ::boost
 }
 
 void airmap::rest::boost::Communicator::UdpSession::handle_write(const ::boost::system::error_code& error,
-                                                                 std::size_t transferred) {
+                                                                 std::size_t) {
   if (error) {
     log.errorf(component, "failed to send udp data to %s:%d: %s", uri.host().to_string(), uri.port<std::uint16_t>(),
                error.message());
   }
-  log.infof(component, "sent %d bytes to %s:%d", transferred, uri.host().to_string(), uri.port());
 }
