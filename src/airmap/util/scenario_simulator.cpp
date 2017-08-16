@@ -20,7 +20,6 @@ airmap::util::ScenarioSimulator::Runner::~Runner() {
 
 void airmap::util::ScenarioSimulator::Runner::start(const std::shared_ptr<ScenarioSimulator>& simulator,
                                                     const std::shared_ptr<Client>& client) {
-  std::cout << simulator << std::endl;
   if (!running_.exchange(true)) {
     worker_ = std::thread{[this, simulator, client]() {
       simulator->start();
