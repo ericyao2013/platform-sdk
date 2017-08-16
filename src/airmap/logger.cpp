@@ -61,8 +61,6 @@ class BunyanFormatter : public spdlog::formatter {
 
 class DefaultLogger : public airmap::Logger {
  public:
-  constexpr static std::size_t buffer_size_in_bytes{(1 << 9) * 1024};
-
   explicit DefaultLogger(std::ostream& out) : logger_{"airmap", std::make_shared<spdlog::sinks::ostream_sink_mt>(out)} {
     logger_.set_formatter(std::make_shared<BunyanFormatter>());
   }

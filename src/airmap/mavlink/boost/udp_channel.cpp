@@ -1,13 +1,7 @@
 #include <airmap/mavlink/boost/udp_channel.h>
 
 namespace {
-
-std::exception_ptr wrap_error_code(const ::boost::system::error_code& ec) {
-  return std::make_exception_ptr(std::runtime_error{ec.message()});
-}
-
 constexpr const char* component{"airmap::mavlink::UdpChannel"};
-
 }  // namespace
 
 airmap::mavlink::boost::UdpChannel::UdpChannel(const std::shared_ptr<Logger>& logger,
