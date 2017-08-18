@@ -1,6 +1,8 @@
 #ifndef AIRMAP_CMDS_AIRMAP_CMD_PILOT_H_
 #define AIRMAP_CMDS_AIRMAP_CMD_PILOT_H_
 
+#include <airmap/cmds/airmap/cmd/flags.h>
+
 #include <airmap/client.h>
 #include <airmap/context.h>
 #include <airmap/logger.h>
@@ -20,9 +22,7 @@ class Pilot : public util::cli::CommandWithFlagsAndAction {
   Pilot();
 
  private:
-  using ApiKey        = util::TaggedString<util::tags::MustNotBeEmpty>;
-  using Authorization = util::TaggedString<util::tags::MustNotBeEmpty>;
-  using PilotId       = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using PilotId = util::TaggedString<util::tags::MustNotBeEmpty>;
 
   void handle_authenticated_pilot_result(const Pilots::Authenticated::Result& result);
   void handle_for_id_pilot_result(const Pilots::ForId::Result& result);

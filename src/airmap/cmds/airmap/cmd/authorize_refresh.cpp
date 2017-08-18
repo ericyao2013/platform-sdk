@@ -11,17 +11,12 @@ constexpr const char* component{"authorize-refresh"};
 }
 
 cmd::AuthorizeRefresh::AuthorizeRefresh()
-    : cli::CommandWithFlagsAndAction{cli::Name{"authorize-refresh"},
-                                     cli::Usage{"renew authorization with the AirMap services"},
-                                     cli::Description{"renew authorization with the AirMap services"}} {
-  flag(cli::make_flag(cli::Name{"version"}, cli::Description{"work against this version of the AirMap services"},
-                      params_.version));
-  flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
-                      params_.api_key));
-  flag(cli::make_flag(cli::Name{"client-id"},
-                      cli::Description{"client-id used for authorizing with the AirMap services"}, params_.client_id));
-  flag(cli::make_flag(cli::Name{"refresh-token"},
-                      cli::Description{"refresh-token used for authorizing with the AirMap services"},
+    : cli::CommandWithFlagsAndAction{"authorize-refresh", "renew authorization with the AirMap services",
+                                     "renew authorization with the AirMap services"} {
+  flag(flags::version(params_.version));
+  flag(flags::api_key(params_.api_key));
+  flag(flags::client_id(params_.client_id));
+  flag(cli::make_flag("refresh-token", "refresh-token used for authorizing with the AirMap services",
                       params_.refresh_token));
 
   action([this](const cli::Command::Context& ctxt) {

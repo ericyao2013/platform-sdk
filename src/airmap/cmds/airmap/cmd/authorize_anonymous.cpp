@@ -11,16 +11,11 @@ constexpr const char* component{"authorize-anonymously"};
 }
 
 cmd::AuthorizeAnonymous::AuthorizeAnonymous()
-    : cli::CommandWithFlagsAndAction{cli::Name{"authorize-anonymously"},
-                                     cli::Usage{"anonymously authorize with the AirMap services"},
-                                     cli::Description{"anonymously authorize with the AirMap services"}} {
-  flag(cli::make_flag(cli::Name{"version"}, cli::Description{"work against this version of the AirMap services"},
-                      params_.version));
-  flag(cli::make_flag(cli::Name{"api-key"}, cli::Description{"api-key for authenticating with the AirMap services"},
-                      params_.api_key));
-  flag(cli::make_flag(cli::Name{"user-id"},
-                      cli::Description{"user-id used for authorizing anonymously with the AirMap services"},
-                      params_.user_id));
+    : cli::CommandWithFlagsAndAction{"authorize-anonymously", "anonymously authorize with the AirMap services",
+                                     "anonymously authorize with the AirMap services"} {
+  flag(flags::version(params_.version));
+  flag(flags::api_key(params_.api_key));
+  flag(flags::user_id(params_.user_id));
 
   action([this](const cli::Command::Context& ctxt) {
     log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
