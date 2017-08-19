@@ -24,6 +24,7 @@ class StartFlightComms : public util::cli::CommandWithFlagsAndAction {
   util::FormattingLogger log_{create_null_logger()};
   struct {
     Client::Version version{Client::Version::production};
+    Logger::Severity log_level{Logger::Severity::info};
     Optional<ApiKey> api_key;
     Optional<Authorization> authorization;
     Optional<FlightId> flight_id;

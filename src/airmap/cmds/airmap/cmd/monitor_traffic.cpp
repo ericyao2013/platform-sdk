@@ -14,11 +14,12 @@ cmd::MonitorTraffic::MonitorTraffic()
     : cli::CommandWithFlagsAndAction{"monitor-traffic", "Traffic Alerts and Situational Awareness",
                                      "receive traffic alerts for a flight with AirMap services"} {
   flag(flags::api_key(params_.api_key));
+  flag(flags::log_level(params_.log_level));
   flag(flags::authorization(params_.authorization));
   flag(flags::flight_id(params_.flight_id));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
+    log_ = util::FormattingLogger{create_filtering_logger(params_.log_level, create_default_logger(ctxt.cout))};
 
     if (!params_.api_key) {
       log_.errorf(component, "missing parameter 'api-key'");

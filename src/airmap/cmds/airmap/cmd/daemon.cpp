@@ -14,6 +14,7 @@ constexpr const char* component{"daemon"};
 
 cmd::Daemon::Daemon() : cli::CommandWithFlagsAndAction{"daemon", "runs the airmap daemon", "runs the airmap daemon"} {
   flag(flags::version(version_));
+  flag(flags::log_level(log_level_));
   flag(flags::api_key(api_key_));
   flag(flags::user_id(user_id_));
   flag(flags::telemetry_host(telemetry_host_));
@@ -25,7 +26,7 @@ cmd::Daemon::Daemon() : cli::CommandWithFlagsAndAction{"daemon", "runs the airma
                       tcp_endpoint_port_));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
+    log_ = util::FormattingLogger{create_filtering_logger(log_level_, create_default_logger(ctxt.cout))};
 
     if (!api_key_) {
       log_.errorf(component, "missing parameter 'api-key'");

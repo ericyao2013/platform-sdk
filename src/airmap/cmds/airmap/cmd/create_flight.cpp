@@ -34,6 +34,7 @@ cmd::CreateFlight::CreateFlight()
   params_.end_time   = params_.start_time + Minutes(5);
 
   flag(flags::version(version_));
+  flag(flags::log_level(log_level_));
   flag(flags::api_key(api_key_));
   flag(flags::authorization(authorization_));
   flag(cli::make_flag("latitude", "latitude of take-off point", params_.latitude));
@@ -48,7 +49,7 @@ cmd::CreateFlight::CreateFlight()
   flag(cli::make_flag("geometry-file", "use the polygon defined in this geojson file", geometry_file_));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger(create_default_logger(ctxt.cout));
+    log_ = util::FormattingLogger(create_filtering_logger(log_level_, create_default_logger(ctxt.cout)));
 
     if (!api_key_) {
       log_.errorf(component, "missing parameter 'api-key'");

@@ -25,8 +25,8 @@ class Daemon : public util::cli::CommandWithFlagsAndAction {
   using TcpEndpointIp = util::TaggedString<util::tags::MustNotBeEmpty>;
 
   util::FormattingLogger log_{create_null_logger()};
-  Client::Version version_;
-
+  Client::Version version_{Client::Version::production};
+  Logger::Severity log_level_{Logger::Severity::info};
   Optional<ApiKey> api_key_;
   Optional<UserId> user_id_;
   Optional<AircraftId> aircraft_id_;

@@ -2,6 +2,7 @@
 #define AIRMAP_CMDS_AIRMAP_CMD_FLAGS_H_
 
 #include <airmap/client.h>
+#include <airmap/logger.h>
 
 #include <airmap/util/cli.h>
 #include <airmap/util/tagged_string.h>
@@ -27,6 +28,7 @@ std::shared_ptr<util::cli::Flag> authorization(Optional<Authorization>& authoriz
 std::shared_ptr<util::cli::Flag> client_id(Optional<ClientId>& client_id);
 std::shared_ptr<util::cli::Flag> encryption_key(Optional<EncryptionKey>& key);
 std::shared_ptr<util::cli::Flag> flight_id(Optional<FlightId>& flight_id);
+std::shared_ptr<util::cli::Flag> log_level(Logger::Severity& severity);
 std::shared_ptr<util::cli::Flag> telemetry_host(Optional<TelemetryHost>& host);
 std::shared_ptr<util::cli::Flag> telemetry_port(Optional<std::uint16_t>& port);
 std::shared_ptr<util::cli::Flag> user_id(Optional<UserId>& user_id);

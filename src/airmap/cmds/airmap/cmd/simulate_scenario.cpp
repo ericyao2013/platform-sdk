@@ -51,13 +51,14 @@ cmd::SimulateScenario::SimulateScenario()
                                      "simulate multiple vehicles carrying out missions and submitting telemetry",
                                      "simulate multiple vehicles carrying out missions and submitting telemetry"} {
   flag(flags::version(params_.version));
+  flag(flags::log_level(params_.log_level));
   flag(flags::api_key(params_.api_key));
   flag(flags::telemetry_host(params_.host));
   flag(flags::telemetry_port(params_.port));
   flag(cli::make_flag("scenario-file", "use the scenario defined in this json file", params_.scenario_file));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
+    log_ = util::FormattingLogger{create_filtering_logger(params_.log_level, create_default_logger(ctxt.cout))};
 
     if (!params_.api_key) {
       log_.errorf(component, "missing parameter 'api-key'");

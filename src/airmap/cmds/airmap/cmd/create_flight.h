@@ -25,6 +25,7 @@ class CreateFlight : public util::cli::CommandWithFlagsAndAction {
 
   util::FormattingLogger log_{create_null_logger()};
   Client::Version version_{Client::Version::production};
+  Logger::Severity log_level_{Logger::Severity::info};
   Optional<ApiKey> api_key_;
   Optional<Authorization> authorization_;
   Optional<GeometryFile> geometry_file_;

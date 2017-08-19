@@ -14,11 +14,12 @@ cmd::AuthorizeAnonymous::AuthorizeAnonymous()
     : cli::CommandWithFlagsAndAction{"authorize-anonymously", "anonymously authorize with the AirMap services",
                                      "anonymously authorize with the AirMap services"} {
   flag(flags::version(params_.version));
+  flag(flags::log_level(params_.log_level));
   flag(flags::api_key(params_.api_key));
   flag(flags::user_id(params_.user_id));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
+    log_ = util::FormattingLogger{create_filtering_logger(params_.log_level, create_default_logger(ctxt.cout))};
 
     if (!params_.api_key) {
       log_.errorf(component, "missing parameter 'api-key'");

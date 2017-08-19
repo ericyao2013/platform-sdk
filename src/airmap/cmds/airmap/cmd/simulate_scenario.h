@@ -47,6 +47,7 @@ class SimulateScenario : public util::cli::CommandWithFlagsAndAction {
 
   struct {
     Client::Version version{Client::Version::production};
+    Logger::Severity log_level{Logger::Severity::info};
     Optional<ApiKey> api_key;
     Optional<TelemetryHost> host;
     Optional<std::uint16_t> port;

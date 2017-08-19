@@ -65,12 +65,13 @@ cmd::Pilot::Pilot()
     : cli::CommandWithFlagsAndAction{"pilot", "queries information about a pilot",
                                      "queries information about a pilot"} {
   flag(flags::version(version_));
+  flag(flags::log_level(log_level_));
   flag(flags::api_key(api_key_));
   flag(flags::authorization(authorization_));
   flag(cli::make_flag("pilot-id", "id of pilot", pilot_id_));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger(create_default_logger(ctxt.cout));
+    log_ = util::FormattingLogger(create_filtering_logger(log_level_, create_default_logger(ctxt.cout)));
 
     if (!api_key_) {
       log_.errorf(component, "missing parameter 'api-key'");

@@ -25,6 +25,7 @@ class MonitorTraffic : public util::cli::CommandWithFlagsAndAction {
   std::shared_ptr<::airmap::Client> client_;
   std::shared_ptr<::airmap::Traffic::Monitor> monitor_;
   struct {
+    Logger::Severity log_level{Logger::Severity::info};
     Optional<ApiKey> api_key;
     Optional<Authorization> authorization;
     Optional<FlightId> flight_id;

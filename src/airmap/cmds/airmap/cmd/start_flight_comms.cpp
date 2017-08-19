@@ -22,12 +22,13 @@ cmd::StartFlightComms::StartFlightComms()
     : cli::CommandWithFlagsAndAction{"start-flight-comms", "prepare flight for injection of telemetry data",
                                      "prepare flight for injection of telemetry data"} {
   flag(flags::version(params_.version));
+  flag(flags::log_level(params_.log_level));
   flag(flags::api_key(params_.api_key));
   flag(flags::authorization(params_.authorization));
   flag(flags::flight_id(params_.flight_id));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
+    log_ = util::FormattingLogger{create_filtering_logger(params_.log_level, create_default_logger(ctxt.cout))};
 
     if (!params_.api_key) {
       log_.errorf(component, "missing parameter 'api-key'");

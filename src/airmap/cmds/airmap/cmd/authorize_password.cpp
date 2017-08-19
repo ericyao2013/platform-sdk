@@ -14,6 +14,7 @@ cmd::AuthorizePassword::AuthorizePassword()
     : cli::CommandWithFlagsAndAction{"authorize-password", "authorize with the AirMap services",
                                      "authorize with the AirMap services"} {
   flag(flags::version(params_.version));
+  flag(flags::log_level(params_.log_level));
   flag(flags::api_key(params_.api_key));
   flag(flags::client_id(params_.client_id));
 
@@ -22,7 +23,7 @@ cmd::AuthorizePassword::AuthorizePassword()
   flag(cli::make_flag("device", "device used for authorizing with the AirMap services", params_.device));
 
   action([this](const cli::Command::Context& ctxt) {
-    log_ = util::FormattingLogger{create_default_logger(ctxt.cout)};
+    log_ = util::FormattingLogger{create_filtering_logger(params_.log_level, create_default_logger(ctxt.cout))};
 
     if (!params_.api_key) {
       log_.errorf(component, "missing parameter 'api-key'");
