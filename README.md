@@ -70,3 +70,8 @@ Run `systemctl daemon-reload && systemctl enable airmapd` and reboot the vehicle
 ```
 journalctl -f -u airmapd
 ```
+
+### Missing `/etc/resolv.conf`
+
+Depending on your setup and signal coverage, the `airmapd` service might start before `NetworkManager` succeeds in creating
+a connection via the LTE modem. In this case, `/etc/resolv.conf` is missing and you might run into a known [docker issue](https://github.com/docker/libnetwork/pull/1847). Please wait for the LTE connection to be established and run `systemctl restart airmapd`.
