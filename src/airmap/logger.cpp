@@ -21,6 +21,9 @@ struct NullLogger : public airmap::Logger {
   NullLogger() = default;
   void log(Severity, const char*, const char*) override {
   }
+  bool should_log(Severity, const char*, const char*) override {
+    return false;
+  }
 };
 
 class BunyanFormatter : public spdlog::formatter {
@@ -82,6 +85,10 @@ class DefaultLogger : public airmap::Logger {
     logger_.flush();
   }
 
+  bool should_log(Severity, const char*, const char*) override {
+    return true;
+  }
+
  private:
   spdlog::logger logger_;
 };
@@ -93,9 +100,12 @@ class FilteringLogger : public airmap::Logger {
 
   // From airmap::Logger
   void log(Severity severity, const char* message, const char* component) override {
-    if (severity < severity_)
-      return;
-    next_->log(severity, message, component);
+    if (should_log(severity, message, component))
+      next_->log(severity, message, component);
+  }
+
+  bool should_log(Severity severity, const char*, const char*) override {
+    return severity >= severity_;
   }
 
  private:

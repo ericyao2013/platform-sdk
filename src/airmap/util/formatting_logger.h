@@ -15,17 +15,20 @@ class FormattingLogger {
 
   template <typename... Args>
   void debugf(const char* component, const char* format, Args... args) {
-    logger_->debug(fmt::sprintf(format, std::forward<Args>(args)...).c_str(), component);
+    if (logger_->should_log(Logger::Severity::debug, nullptr, component))
+      logger_->debug(fmt::sprintf(format, std::forward<Args>(args)...).c_str(), component);
   }
 
   template <typename... Args>
   void infof(const char* component, const char* format, Args... args) {
-    logger_->info(fmt::sprintf(format, std::forward<Args>(args)...).c_str(), component);
+    if (logger_->should_log(Logger::Severity::info, nullptr, component))
+      logger_->info(fmt::sprintf(format, std::forward<Args>(args)...).c_str(), component);
   }
 
   template <typename... Args>
   void errorf(const char* component, const char* format, Args... args) {
-    logger_->error(fmt::sprintf(format, std::forward<Args>(args)...).c_str(), component);
+    if (logger_->should_log(Logger::Severity::error, nullptr, component))
+      logger_->error(fmt::sprintf(format, std::forward<Args>(args)...).c_str(), component);
   }
 
   const std::shared_ptr<Logger>& logger() const {

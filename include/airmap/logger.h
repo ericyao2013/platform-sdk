@@ -29,6 +29,13 @@ class Logger : DoNotCopyOrMove {
   /// gracefully.
   virtual void log(Severity severity, const char* message, const char* component) = 0;
 
+  /// should_log should return true if 'message' with 'severity' originating from
+  /// 'component' should be logged.
+  ///
+  /// Implementations should handle the case of either message or component being nullptr
+  /// gracefully.
+  virtual bool should_log(Severity severity, const char* message, const char* component) = 0;
+
  protected:
   Logger() = default;
 };

@@ -105,7 +105,7 @@ typedef SizeConstrainedString<40> Name;
 typedef SizeConstrainedString<80> Usage;
 typedef SizeConstrainedString<100> Description;
 
-template<typename T>
+template <typename T>
 struct Codec {
   static void decode(const std::string& from, T& to) {
     std::stringstream ss{from};
@@ -113,7 +113,7 @@ struct Codec {
   }
 };
 
-template<>
+template <>
 struct Codec<bool> {
   static void decode(const std::string& from, bool& to) {
     std::stringstream ss{from};
