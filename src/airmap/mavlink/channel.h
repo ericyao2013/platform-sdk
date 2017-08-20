@@ -4,12 +4,16 @@
 #include <airmap/do_not_copy_or_move.h>
 #include <airmap/optional.h>
 
+#if defined (__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Waddress-of-packed-member"
 #pragma clang diagnostic ignored "-Wnested-anon-types"
 #pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+#endif
 #include <standard/mavlink.h>
+#if defined (__clang__)
 #pragma clang diagnostic pop
+#endif
 
 #include <functional>
 #include <list>
