@@ -105,6 +105,22 @@ typedef SizeConstrainedString<40> Name;
 typedef SizeConstrainedString<80> Usage;
 typedef SizeConstrainedString<100> Description;
 
+template<typename T>
+struct Codec {
+  static void decode(const std::string& from, T& to) {
+    std::stringstream ss{from};
+    ss >> to;
+  }
+};
+
+template<>
+struct Codec<bool> {
+  static void decode(const std::string& from, bool& to) {
+    std::stringstream ss{from};
+    ss >> std::boolalpha >> to >> std::noboolalpha;
+  }
+};
+
 /// @brief Flag models an input parameter to a command.
 class Flag {
  public:
@@ -154,9 +170,8 @@ class TypedFlag : public Flag {
 
   /// @brief notify tries to unwrap a value of type T from value.
   void notify(const std::string& s) override {
-    std::stringstream ss{s};
     T value;
-    ss >> value;
+    Codec<T>::decode(s, value);
     value_ = value;
   }
 
@@ -180,8 +195,9 @@ class TypedReferenceFlag : public Flag {
   /// @brief notify tries to unwrap a value of type T from value,
   /// relying on operator>> to read from given string s.
   void notify(const std::string& s) override {
-    std::stringstream ss{s};
-    ss >> value_.get();
+    T value;
+    Codec<T>::decode(s, value);
+    value_ = value;
   }
 
  private:
@@ -201,9 +217,8 @@ class OptionalTypedReferenceFlag : public Flag {
 
   /// @brief notify tries to unwrap a value of type T from value.
   void notify(const std::string& s) override {
-    std::stringstream ss{s};
     T value;
-    ss >> value;
+    Codec<T>::decode(s, value);
     value_.get() = value;
   }
 
