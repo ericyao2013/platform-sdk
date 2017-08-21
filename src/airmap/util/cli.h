@@ -197,7 +197,7 @@ class TypedReferenceFlag : public Flag {
   void notify(const std::string& s) override {
     T value;
     Codec<T>::decode(s, value);
-    value_ = value;
+    value_.get() = value;
   }
 
  private:
