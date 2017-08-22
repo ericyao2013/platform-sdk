@@ -20,10 +20,13 @@ void print_status(std::ostream& out, const airmap::Status::Report& report) {
   for (const auto& a : report.advisories) {
     out << "    Name:            " << a.airspace.name() << std::endl << "    Color:           " << a.color << std::endl;
   }
-  out << "  Weather:           " << std::endl
-      << "    condition:       " << report.weather.condition << std::endl
-      << "    temperature:     " << report.weather.temperature << std::endl
-      << "    wind-speed:      " << report.weather.wind.speed << std::endl;
+  if (report.weather.condition != ""){
+    out << "  Weather:           " << std::endl
+        << "    condition:       " << report.weather.condition << std::endl
+        << "    temperature:     " << report.weather.temperature << std::endl
+        << "    wind-speed:      " << report.weather.wind.speed << std::endl;
+  
+  }
 }
 
 constexpr const char* component{"get-status"};
