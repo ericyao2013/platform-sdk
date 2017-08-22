@@ -134,19 +134,57 @@ cmd::SimulateScenario::SimulateScenario()
               }
               log_.infof(component, "successfully authenticated with the AirMap services");
 
-              Flights::CreateFlight::Parameters params;
-              params.authorization = result.value().id;
-              params.start_time    = Clock::universal_time();
-              params.end_time      = Clock::universal_time() + Minutes{2};
-
               collector_->collect_authentication_for_index(i, result.value().id);
               const auto& participant = collector_->scenario().participants.at(i);
               const auto& polygon     = participant.geometry.details_for_polygon();
 
-              params.aircraft_id = participant.aircraft.id;
-              params.latitude    = polygon[0].coordinates[0].latitude;
-              params.longitude   = polygon[0].coordinates[0].longitude;
-              params.geometry    = participant.geometry;
+              Status::GetStatus::Parameters gs_params;
+              gs_params.latitude         = polygon[0].coordinates[0].latitude;
+              gs_params.longitude        = polygon[0].coordinates[0].longitude;
+              gs_params.geometry         = participant.geometry;
+              gs_params.flight_date_time = Clock::universal_time();
+              gs_params.weather          = true;
+
+              client_->status().get_status_by_polygon(gs_params, [this](const auto& result) {
+                if (result) {
+                  log_.infof(component,
+                             "successfully received status:\n"
+                             "  max-safe-distance: %d\n"
+                             "  advisory-color:    %s\n"
+                             "  weather:             \n"
+                             "    condition:       %s\n"
+                             "    temperature:     %s\n"
+                             "    humidity:        %s\n"
+                             "    visibility:      %d\n"
+                             "    precipitation:   %d\n"
+                             "    wind:\n"
+                             "      heading:       %d\n"
+                             "      speed:         %d\n"
+                             "      gusting:       %d\n",
+                             result.value().max_safe_distance, result.value().advisory_color,
+                             result.value().weather.condition, result.value().weather.temperature,
+                             result.value().weather.humidity, result.value().weather.visibility,
+                             result.value().weather.precipitation, result.value().weather.wind.heading,
+                             result.value().weather.wind.speed, result.value().weather.wind.gusting);
+                } else {
+                  try {
+                    std::rethrow_exception(result.error());
+                  } catch (const std::exception& e) {
+                    log_.errorf(component, "failed to get flight status: %s", e.what());
+                  } catch (...) {
+                    log_.errorf(component, "failed to get flight status");
+                  }
+                }
+              });
+
+              Flights::CreateFlight::Parameters params;
+              params.authorization = result.value().id;
+              params.start_time    = Clock::universal_time();
+              params.end_time      = Clock::universal_time() + Minutes{2};
+              params.aircraft_id   = participant.aircraft.id;
+              params.latitude      = polygon[0].coordinates[0].latitude;
+              params.longitude     = polygon[0].coordinates[0].longitude;
+              params.geometry      = participant.geometry;
               client_->flights().create_flight_by_polygon(params, [this, &ctxt, i](const auto& result) {
                 if (!result) {
                   try {

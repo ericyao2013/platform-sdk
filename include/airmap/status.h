@@ -35,10 +35,10 @@ class Status : DoNotCopyOrMove {
     std::string condition;
     std::string icon;
     Wind wind;
+    std::int32_t temperature    = 0;
     float humidity              = 0.0;
     std::uint32_t visibility    = 0;
     std::uint32_t precipitation = 0;
-    std::int32_t temperature    = 0;
   };
 
   struct Report {

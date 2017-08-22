@@ -1,14 +1,14 @@
 #ifndef AIRMAP_MAVLINK_HEARTBEAT_H_
 #define AIRMAP_MAVLINK_HEARTBEAT_H_
 
-#if defined (__clang__)
+#if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Waddress-of-packed-member"
 #pragma clang diagnostic ignored "-Wnested-anon-types"
 #pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
 #endif
 #include <standard/mavlink.h>
-#if defined (__clang__)
+#if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
 
