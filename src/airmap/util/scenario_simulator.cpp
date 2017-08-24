@@ -89,6 +89,12 @@ void airmap::util::from_json(const nlohmann::json& j, Scenario::Participant& p) 
   codec::json::get(p.velocity, j, "velocity");
 }
 
+void airmap::util::from_json(const nlohmann::json& j, Scenario::User& u) {
+  codec::json::get(u.username, j, "username");
+  codec::json::get(u.password, j, "password");
+  codec::json::get(u.client_id, j, "client_id");
+}
+
 void airmap::util::from_json(const nlohmann::json& j, std::vector<Scenario::Participant>& p) {
   for (const auto& element : j) {
     p.push_back(Scenario::Participant{});

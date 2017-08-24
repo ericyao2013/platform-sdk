@@ -25,9 +25,16 @@ namespace airmap {
 namespace util {
 
 struct Scenario {
+  struct User {
+    std::string username;
+    std::string password;
+    std::string client_id;
+  };
+
   struct Participant {
     Pilot::Aircraft aircraft;
     Pilot pilot;
+    Optional<User> user;
     Geometry geometry;
     double velocity;
 
@@ -37,9 +44,11 @@ struct Scenario {
     Optional<std::string> encryption_key;
   };
 
+  using Participants = std::vector<Participant>;
+
   std::string name;
   std::string description;
-  std::vector<Participant> participants;
+  Participants participants;
 };
 
 class ScenarioSimulator {
@@ -78,6 +87,7 @@ class ScenarioSimulator {
 
 void from_json(const nlohmann::json& j, Scenario& scenario);
 void from_json(const nlohmann::json& j, Scenario::Participant& participant);
+void from_json(const nlohmann::json& j, Scenario::User& user);
 void from_json(const nlohmann::json& j, std::vector<Scenario::Participant>& p);
 
 }  // namespace util

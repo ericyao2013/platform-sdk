@@ -3,12 +3,14 @@
 
 #include <airmap/cmds/airmap/cmd/flags.h>
 
+#include <airmap/authenticator.h>
 #include <airmap/client.h>
 #include <airmap/context.h>
 #include <airmap/flight.h>
 #include <airmap/flights.h>
 #include <airmap/logger.h>
 #include <airmap/optional.h>
+#include <airmap/status.h>
 #include <airmap/telemetry.h>
 #include <airmap/traffic.h>
 #include <airmap/util/cli.h>
@@ -34,16 +36,44 @@ class SimulateScenario : public util::cli::CommandWithFlagsAndAction {
   class Collector {
    public:
     explicit Collector(const util::Scenario& scenario);
+    void collect_authentication_for(util::Scenario::Participants::iterator it, const std::string& authentication);
     void collect_authentication_for_index(std::size_t index, const std::string& authentication);
+    void collect_flight_id_for(util::Scenario::Participants::iterator it, const Flight& flight);
     void collect_flight_id_for_index(std::size_t index, const Flight& flight);
+    void collect_traffic_monitor_for(util::Scenario::Participants::iterator it,
+                                     const std::shared_ptr<Traffic::Monitor>& monitor);
     void collect_traffic_monitor_for_index(std::size_t index, const std::shared_ptr<Traffic::Monitor>& monitor);
+    bool collect_key_for(util::Scenario::Participants::iterator it, const std::string& key);
     bool collect_key_for_index(std::size_t index, const std::string& key);
     const util::Scenario& scenario() const;
+    util::Scenario& scenario();
 
    private:
     uint key_counter_{0};
     util::Scenario scenario_;
   };
+
+  void request_authentication_for(util::Scenario::Participants::iterator participant);
+  void handle_authenticated_with_password_result_for(util::Scenario::Participants::iterator participant,
+                                                     const Authenticator::AuthenticateWithPassword::Result& result);
+  void handle_authenticated_anonymously_result_for(util::Scenario::Participants::iterator participant,
+                                                   const Authenticator::AuthenticateAnonymously::Result& result);
+
+  void request_flight_status_for(util::Scenario::Participants::iterator participant);
+  void handle_flight_status_result_for(util::Scenario::Participants::iterator participant,
+                                       const Status::GetStatus::Result& result);
+
+  void request_create_flight_for(util::Scenario::Participants::iterator participant);
+  void handle_create_flight_result_for(util::Scenario::Participants::iterator participant,
+                                       const Flights::CreateFlight::Result& result);
+
+  void request_traffic_monitoring_for(util::Scenario::Participants::iterator participant);
+  void handle_traffic_monitoring_result_for(util::Scenario::Participants::iterator participant,
+                                            const Traffic::Monitor::Result& result);
+
+  void request_start_flight_comms_for(util::Scenario::Participants::iterator participant);
+  void handle_start_flight_comms_result_for(util::Scenario::Participants::iterator participant,
+                                            const Flights::StartFlightCommunications::Result& result);
 
   struct {
     Client::Version version{Client::Version::production};

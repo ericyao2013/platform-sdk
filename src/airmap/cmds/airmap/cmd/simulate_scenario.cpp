@@ -13,6 +13,7 @@
 
 namespace cli = airmap::util::cli;
 namespace cmd = airmap::cmds::airmap::cmd;
+namespace ph  = std::placeholders;
 
 using json = nlohmann::json;
 
@@ -23,18 +24,39 @@ constexpr const char* component{"simulate-scenario-cli"};
 cmd::SimulateScenario::Collector::Collector(const util::Scenario& scenario) : scenario_{scenario} {
 }
 
+void cmd::SimulateScenario::Collector::collect_authentication_for(util::Scenario::Participants::iterator it,
+                                                                  const std::string& authentication) {
+  it->authentication = authentication;
+}
+
 void cmd::SimulateScenario::Collector::collect_authentication_for_index(std::size_t index,
                                                                         const std::string& authentication) {
   scenario_.participants.at(index).authentication = authentication;
+}
+
+void cmd::SimulateScenario::Collector::collect_flight_id_for(util::Scenario::Participants::iterator it,
+                                                             const Flight& flight) {
+  it->flight = flight;
 }
 
 void cmd::SimulateScenario::Collector::collect_flight_id_for_index(std::size_t index, const Flight& flight) {
   scenario_.participants.at(index).flight = flight;
 }
 
+void cmd::SimulateScenario::Collector::collect_traffic_monitor_for(util::Scenario::Participants::iterator it,
+                                                                   const std::shared_ptr<Traffic::Monitor>& monitor) {
+  it->monitor = monitor;
+}
+
 void cmd::SimulateScenario::Collector::collect_traffic_monitor_for_index(
     std::size_t index, const std::shared_ptr<Traffic::Monitor>& monitor) {
   scenario_.participants.at(index).monitor = monitor;
+}
+
+bool cmd::SimulateScenario::Collector::collect_key_for(util::Scenario::Participants::iterator it,
+                                                       const std::string& key) {
+  it->encryption_key = key;
+  return scenario_.participants.size() == ++key_counter_;
 }
 
 bool cmd::SimulateScenario::Collector::collect_key_for_index(std::size_t index, const std::string& key) {
@@ -43,6 +65,10 @@ bool cmd::SimulateScenario::Collector::collect_key_for_index(std::size_t index, 
 }
 
 const airmap::util::Scenario& cmd::SimulateScenario::Collector::scenario() const {
+  return scenario_;
+}
+
+airmap::util::Scenario& cmd::SimulateScenario::Collector::scenario() {
   return scenario_;
 }
 
@@ -113,7 +139,7 @@ cmd::SimulateScenario::SimulateScenario()
                "  credentials.api_key: %s\n",
                config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key);
 
-    context_->create_client_with_configuration(config, [this, &ctxt](const auto& result) {
+    context_->create_client_with_configuration(config, [this](const auto& result) mutable {
       if (not result) {
         log_.errorf(component, "could not create client for accessing AirMap services");
         context_->stop();
@@ -121,129 +147,192 @@ cmd::SimulateScenario::SimulateScenario()
       }
       log_.infof(component, "successfully created client for AirMap services");
 
-      client_ = result.value();
+      client_                                    = result.value();
+      auto it  = collector_->scenario().participants.begin();
+      auto itE = collector_->scenario().participants.end();
 
-      for (std::size_t i = 0; i < collector_->scenario().participants.size(); i++) {
-        std::this_thread::sleep_for(std::chrono::seconds{1});
-        client_->authenticator().authenticate_anonymously(
-            {collector_->scenario().participants.at(i).pilot.id}, [this, &ctxt, i](const auto& result) {
-              if (not result) {
-                log_.errorf(component, "could not authenticate with the Airmap services");
-                context_->stop();
-                return;
-              }
-              log_.infof(component, "successfully authenticated with the AirMap services");
-
-              collector_->collect_authentication_for_index(i, result.value().id);
-              const auto& participant = collector_->scenario().participants.at(i);
-              const auto& polygon     = participant.geometry.details_for_polygon();
-
-              Status::GetStatus::Parameters gs_params;
-              gs_params.latitude         = polygon[0].coordinates[0].latitude;
-              gs_params.longitude        = polygon[0].coordinates[0].longitude;
-              gs_params.geometry         = participant.geometry;
-              gs_params.flight_date_time = Clock::universal_time();
-              gs_params.weather          = true;
-
-              client_->status().get_status_by_polygon(gs_params, [this](const auto& result) {
-                if (result) {
-                  log_.infof(component,
-                             "successfully received status:\n"
-                             "  max-safe-distance: %d\n"
-                             "  advisory-color:    %s\n"
-                             "  weather:             \n"
-                             "    condition:       %s\n"
-                             "    temperature:     %s\n"
-                             "    humidity:        %s\n"
-                             "    visibility:      %d\n"
-                             "    precipitation:   %d\n"
-                             "    wind:\n"
-                             "      heading:       %d\n"
-                             "      speed:         %d\n"
-                             "      gusting:       %d\n",
-                             result.value().max_safe_distance, result.value().advisory_color,
-                             result.value().weather.condition, result.value().weather.temperature,
-                             result.value().weather.humidity, result.value().weather.visibility,
-                             result.value().weather.precipitation, result.value().weather.wind.heading,
-                             result.value().weather.wind.speed, result.value().weather.wind.gusting);
-                } else {
-                  try {
-                    std::rethrow_exception(result.error());
-                  } catch (const std::exception& e) {
-                    log_.errorf(component, "failed to get flight status: %s", e.what());
-                  } catch (...) {
-                    log_.errorf(component, "failed to get flight status");
-                  }
-                }
-              });
-
-              Flights::CreateFlight::Parameters params;
-              params.authorization = result.value().id;
-              params.start_time    = Clock::universal_time();
-              params.end_time      = Clock::universal_time() + Minutes{2};
-              params.aircraft_id   = participant.aircraft.id;
-              params.latitude      = polygon[0].coordinates[0].latitude;
-              params.longitude     = polygon[0].coordinates[0].longitude;
-              params.geometry      = participant.geometry;
-              client_->flights().create_flight_by_polygon(params, [this, &ctxt, i](const auto& result) {
-                if (!result) {
-                  try {
-                    std::rethrow_exception(result.error());
-                  } catch (const std::exception& e) {
-                    log_.errorf(component, "could not create flight for polygon: %s", e.what());
-                  } catch (...) {
-                    log_.errorf(component, "could not create flight for polygon");
-                  }
-                  context_->stop();
-                  return;
-                }
-                log_.infof(component, "successfully created flight for polygon");
-
-                collector_->collect_flight_id_for_index(i, result.value());
-                const auto& participant = collector_->scenario().participants.at(i);
-
-                client_->traffic().monitor({participant.flight.get().id, participant.authentication.get()}, [
-                  this, i, id = participant.flight.get().id
-                ](const auto& result) {
-                  if (result) {
-                    log_.infof(component, "successfully started monitoring traffic for flight: %s", id);
-                    auto monitor = result.value();
-                    monitor->subscribe(std::make_shared<Traffic::Monitor::LoggingSubscriber>(component, log_.logger()));
-                    collector_->collect_traffic_monitor_for_index(i, monitor);
-                  } else {
-                    try {
-                      std::rethrow_exception(result.error());
-                    } catch (const std::exception& e) {
-                      log_.errorf(component, "could not start monitoring traffic for flight %s: %s", id, e.what());
-                    } catch (...) {
-                      log_.errorf(component, "could not start monitoring traffic for flight %s", id);
-                    }
-                    context_->stop();
-                  }
-                });
-
-                client_->flights().start_flight_communications(
-                    {participant.authentication.get(), participant.flight.get().id},
-                    [this, &ctxt, i](const auto& result) {
-                      if (!result) {
-                        log_.errorf(component, "could not start flight comms");
-                        context_->stop();
-                        return;
-                      }
-                      log_.infof(component, "successfully started flight comms");
-
-                      if (collector_->collect_key_for_index(i, result.value().key)) {
-                        auto simulator =
-                            std::make_shared<util::ScenarioSimulator>(collector_->scenario(), log_.logger());
-                        runner_->start(simulator, client_);
-                      }
-                    });
-              });
-            });
+      while (it != itE) {
+        request_authentication_for(it);
+        ++it;
       }
     });
 
     context_->run();
     return 0;
   });
+}
+
+void cmd::SimulateScenario::request_authentication_for(util::Scenario::Participants::iterator participant) {
+  client_->authenticator().authenticate_anonymously(
+      {participant->pilot.id},
+      std::bind(&SimulateScenario::handle_authenticated_anonymously_result_for, this, participant, ph::_1));
+}
+
+void cmd::SimulateScenario::handle_authenticated_with_password_result_for(
+    util::Scenario::Participants::iterator participant, const Authenticator::AuthenticateWithPassword::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully authenticated with the AirMap services");
+    collector_->collect_authentication_for(participant, result.value().id);
+    request_flight_status_for(participant);
+    request_create_flight_for(participant);
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "could not authenticate with the Airmap services: %s", e.what());
+    } catch (...) {
+      log_.errorf(component, "could not authenticate with the Airmap services");
+    }
+    context_->stop();
+  }
+}
+void cmd::SimulateScenario::handle_authenticated_anonymously_result_for(
+    util::Scenario::Participants::iterator participant, const Authenticator::AuthenticateAnonymously::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully authenticated with the AirMap services");
+    collector_->collect_authentication_for(participant, result.value().id);
+    request_flight_status_for(participant);
+    request_create_flight_for(participant);
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "could not authenticate with the Airmap services: %s", e.what());
+    } catch (...) {
+      log_.errorf(component, "could not authenticate with the Airmap services");
+    }
+    context_->stop();
+  }
+}
+
+void cmd::SimulateScenario::request_flight_status_for(util::Scenario::Participants::iterator participant) {
+  Status::GetStatus::Parameters params;
+  const auto& polygon     = participant->geometry.details_for_polygon();
+  params.latitude         = polygon[0].coordinates[0].latitude;
+  params.longitude        = polygon[0].coordinates[0].longitude;
+  params.geometry         = participant->geometry;
+  params.flight_date_time = Clock::universal_time();
+  params.weather          = true;
+
+  client_->status().get_status_by_polygon(
+      params, std::bind(&SimulateScenario::handle_flight_status_result_for, this, participant, ph::_1));
+}
+
+void cmd::SimulateScenario::handle_flight_status_result_for(util::Scenario::Participants::iterator,
+                                                            const Status::GetStatus::Result& result) {
+  if (result) {
+    log_.infof(component,
+               "successfully received status:\n"
+               "  max-safe-distance: %d\n"
+               "  advisory-color:    %s\n"
+               "  weather:             \n"
+               "    condition:       %s\n"
+               "    temperature:     %s\n"
+               "    humidity:        %s\n"
+               "    visibility:      %d\n"
+               "    precipitation:   %d\n"
+               "    wind:\n"
+               "      heading:       %d\n"
+               "      speed:         %d\n"
+               "      gusting:       %d\n",
+               result.value().max_safe_distance, result.value().advisory_color, result.value().weather.condition,
+               result.value().weather.temperature, result.value().weather.humidity, result.value().weather.visibility,
+               result.value().weather.precipitation, result.value().weather.wind.heading,
+               result.value().weather.wind.speed, result.value().weather.wind.gusting);
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "failed to get flight status: %s", e.what());
+    } catch (...) {
+      log_.errorf(component, "failed to get flight status");
+    }
+  }
+}
+
+void cmd::SimulateScenario::request_create_flight_for(util::Scenario::Participants::iterator participant) {
+  Flights::CreateFlight::Parameters params;
+  const auto& polygon  = participant->geometry.details_for_polygon();
+  params.authorization = participant->authentication.get();
+  params.start_time    = Clock::universal_time();
+  params.end_time      = Clock::universal_time() + Minutes{2};
+  params.aircraft_id   = participant->aircraft.id;
+  params.latitude      = polygon[0].coordinates[0].latitude;
+  params.longitude     = polygon[0].coordinates[0].longitude;
+  params.geometry      = participant->geometry;
+
+  client_->flights().create_flight_by_polygon(
+      params, std::bind(&SimulateScenario::handle_create_flight_result_for, this, participant, ph::_1));
+}
+
+void cmd::SimulateScenario::handle_create_flight_result_for(util::Scenario::Participants::iterator participant,
+                                                            const Flights::CreateFlight::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully created flight for polygon");
+    collector_->collect_flight_id_for(participant, result.value());
+    request_traffic_monitoring_for(participant);
+    request_start_flight_comms_for(participant);
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "could not create flight for polygon: %s", e.what());
+    } catch (...) {
+      log_.errorf(component, "could not create flight for polygon");
+    }
+    context_->stop();
+  }
+}
+
+void cmd::SimulateScenario::request_traffic_monitoring_for(util::Scenario::Participants::iterator participant) {
+  client_->traffic().monitor(
+      {participant->flight.get().id, participant->authentication.get()},
+      std::bind(&SimulateScenario::handle_traffic_monitoring_result_for, this, participant, ph::_1));
+}
+
+void cmd::SimulateScenario::handle_traffic_monitoring_result_for(util::Scenario::Participants::iterator participant,
+                                                                 const Traffic::Monitor::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully started monitoring traffic for flight: %s", participant->flight.get().id);
+    auto monitor = result.value();
+    monitor->subscribe(std::make_shared<Traffic::Monitor::LoggingSubscriber>(component, log_.logger()));
+    collector_->collect_traffic_monitor_for(participant, monitor);
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "could not start monitoring traffic for flight %s: %s", participant->flight.get().id,
+                  e.what());
+    } catch (...) {
+      log_.errorf(component, "could not start monitoring traffic for flight %s", participant->flight.get().id);
+    }
+    context_->stop();
+  }
+}
+
+void cmd::SimulateScenario::request_start_flight_comms_for(util::Scenario::Participants::iterator participant) {
+  client_->flights().start_flight_communications(
+      {participant->authentication.get(), participant->flight.get().id},
+      std::bind(&SimulateScenario::handle_start_flight_comms_result_for, this, participant, ph::_1));
+}
+
+void cmd::SimulateScenario::handle_start_flight_comms_result_for(
+    util::Scenario::Participants::iterator participant, const Flights::StartFlightCommunications::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully started flight comms");
+
+    if (collector_->collect_key_for(participant, result.value().key)) {
+      auto simulator = std::make_shared<util::ScenarioSimulator>(collector_->scenario(), log_.logger());
+      runner_->start(simulator, client_);
+    }
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "could not start flight comms for flight %s: %s", participant->flight.get().id, e.what());
+    } catch (...) {
+      log_.errorf(component, "could not start flight comms for flight %s", participant->flight.get().id);
+    }
+    context_->stop();
+  }
 }
