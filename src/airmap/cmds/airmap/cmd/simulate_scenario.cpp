@@ -7,6 +7,8 @@
 #include <airmap/util/scenario_simulator.h>
 #include <airmap/util/telemetry_simulator.h>
 
+#include <boost/asio.hpp>
+
 #include <fstream>
 #include <iterator>
 #include <thread>
@@ -18,6 +20,7 @@ namespace ph  = std::placeholders;
 using json = nlohmann::json;
 
 namespace {
+const std::string device_name = boost::asio::ip::host_name();
 constexpr const char* component{"simulate-scenario-cli"};
 }  // namespace
 
@@ -147,7 +150,7 @@ cmd::SimulateScenario::SimulateScenario()
       }
       log_.infof(component, "successfully created client for AirMap services");
 
-      client_                                    = result.value();
+      client_  = result.value();
       auto it  = collector_->scenario().participants.begin();
       auto itE = collector_->scenario().participants.end();
 
@@ -163,9 +166,19 @@ cmd::SimulateScenario::SimulateScenario()
 }
 
 void cmd::SimulateScenario::request_authentication_for(util::Scenario::Participants::iterator participant) {
-  client_->authenticator().authenticate_anonymously(
-      {participant->pilot.id},
-      std::bind(&SimulateScenario::handle_authenticated_anonymously_result_for, this, participant, ph::_1));
+  if (participant->user) {
+    Authenticator::AuthenticateWithPassword::Params params;
+    params.client_id = participant->user.get().client_id;
+    params.username  = participant->user.get().username;
+    params.password  = participant->user.get().password;
+    params.device    = device_name;
+    client_->authenticator().authenticate_with_password(
+        params, std::bind(&SimulateScenario::handle_authenticated_with_password_result_for, this, participant, ph::_1));
+  } else {
+    client_->authenticator().authenticate_anonymously(
+        {participant->pilot.id},
+        std::bind(&SimulateScenario::handle_authenticated_anonymously_result_for, this, participant, ph::_1));
+  }
 }
 
 void cmd::SimulateScenario::handle_authenticated_with_password_result_for(
