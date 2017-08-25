@@ -1,15 +1,5 @@
 # airmapd
 
-## Modem Hardware
-#### Antennas:
-https://www.digikey.com/products/en?keywords=FXP14.24.0100B
-
-#### Modems:
-http://www.semiconductorstore.com/cart/pc/viewPrd.asp?idproduct=49217&utm_source=InvoiceEmail&utm_medium=InvoiceLine&utm_campaign=InvoiceEmail
-
-##### Nuts:
-https://www.amazon.com/Silver-Tone-Metal-Screw-Fastener/dp/B00BG8TFR4/ref=sr_1_3?s=industrial&ie=UTF8&qid=1503587365&sr=1-3&keywords=m2+nut
-
 ## Development Workflow
 
 `airmapd` uses CMake for building and testing. We envision the following development workflow:
@@ -33,6 +23,8 @@ tools/setup-ubuntu.sh
 ```
 
 ## Running `airmapd` on Intel Aero
+
+Please refer to https://airmap.atlassian.net/wiki/spaces/AIRMAP/pages/69992501/Intel+Aero for Intel Aero setup instructions.
 
 Please note that these instructions only apply to Intel Aero images featuring `systemd`.
 This is the case if you are using the latest Intel Aero image (1.5.1 at the time of this writing).
