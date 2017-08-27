@@ -17,16 +17,13 @@ namespace query {
 
 inline void encode(std::unordered_map<std::string, std::string>& query,
                    const Airspaces::Search::Parameters& parameters) {
-  if (parameters.types != Airspace::Type::invalid) {
-    std::ostringstream oss;
-    oss << ((parameters.types & ~Airspace::Type::emergency) & ~Airspace::Type::fire);
-    query["types"] = oss.str();
+  if (parameters.types && parameters.types.get() != Airspace::Type::invalid) {
+    query["types"] =
+        boost::lexical_cast<std::string>((parameters.types.get() & ~Airspace::Type::emergency) & ~Airspace::Type::fire);
   }
-
   if (parameters.ignored_types && parameters.ignored_types.get() != Airspace::Type::invalid) {
-    std::ostringstream oss;
-    oss << ((parameters.ignored_types.get() & ~Airspace::Type::emergency) & ~Airspace::Type::fire);
-    query["ignored_types"] = oss.str();
+    query["ignored_types"] = boost::lexical_cast<std::string>(
+        (parameters.ignored_types.get() & ~Airspace::Type::emergency) & ~Airspace::Type::fire);
   }
 
   query["full"] = parameters.full ? "true" : "false";

@@ -24,7 +24,7 @@ class Airspaces : DoNotCopyOrMove {
 
   struct Search {
     struct Parameters {
-      Airspace::Type types = Airspace::Type::all;
+      Optional<Airspace::Type> types;
       Optional<Airspace::Type> ignored_types;
       Optional<bool> full;
       Geometry geometry;

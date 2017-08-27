@@ -39,8 +39,8 @@ inline void encode(std::unordered_map<std::string, std::string>& query,
   }
   if (parameters.buffer)
     query["buffer"] = boost::lexical_cast<std::string>(parameters.buffer.get());
-  // TBD - fix handling of CLI param as bool
-  query["weather"] = parameters.weather.get() ? "true" : "false";
+  if (parameters.weather)
+    query["weather"] = parameters.weather.get() ? "true" : "false";
 }
 
 }  // namespace query
