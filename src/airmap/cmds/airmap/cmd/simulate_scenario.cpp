@@ -155,7 +155,7 @@ cmd::SimulateScenario::SimulateScenario()
       auto itE = collector_->scenario().participants.end();
 
       while (it != itE) {
-        request_authentication_for(it);
+        this->request_authentication_for(it);
         ++it;
       }
     });
