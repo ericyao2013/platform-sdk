@@ -82,7 +82,7 @@ cmd::MonitorTraffic::MonitorTraffic()
         } catch (...) {
           log_.errorf(component, "failed to create client");
         }
-        context_->stop();
+        context_->stop(::airmap::Context::ReturnCode::error);
         return;
       }
 
@@ -102,7 +102,7 @@ cmd::MonitorTraffic::MonitorTraffic()
           } catch (...) {
             log_.errorf(component, "failed to create traffic monitor");
           }
-          context_->stop();
+          context_->stop(::airmap::Context::ReturnCode::error);
           return;
         }
       };

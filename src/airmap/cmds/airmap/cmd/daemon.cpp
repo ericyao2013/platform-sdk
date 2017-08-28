@@ -108,8 +108,10 @@ cmd::Daemon::Daemon() : cli::CommandWithFlagsAndAction{"daemon", "runs the airma
 
     communicator->create_client_with_configuration(
         config, [this, communicator, channel](const ::airmap::Context::ClientCreateResult& result) {
-          if (not result)
+          if (not result) {
+            communicator->stop(::airmap::Context::ReturnCode::error);
             return;
+          }
 
           ::airmap::Daemon::Configuration configuration{api_key_.get(), user_id_.get(), aircraft_id_.get(),
                                                         log_.logger(),  channel,        result.value()};

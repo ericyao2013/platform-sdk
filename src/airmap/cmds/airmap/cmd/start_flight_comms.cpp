@@ -83,8 +83,10 @@ cmd::StartFlightComms::StartFlightComms()
 
     context->create_client_with_configuration(
         config, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
-          if (not result)
+          if (not result) {
+            context->stop(::airmap::Context::ReturnCode::error);
             return;
+          }
 
           auto client = result.value();
 
@@ -100,7 +102,7 @@ cmd::StartFlightComms::StartFlightComms()
                     log_.errorf(component, "failed to start flight communications");
                   }
 
-                  context->stop();
+                  context->stop(::airmap::Context::ReturnCode::error);
                   return;
                 }
 

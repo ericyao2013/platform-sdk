@@ -90,8 +90,10 @@ cmd::GetStatus::GetStatus()
 
     context->create_client_with_configuration(
         config, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
-          if (not result)
+          if (not result) {
+            context->stop(::airmap::Context::ReturnCode::error);
             return;
+          }
 
           auto client = result.value();
 
@@ -100,6 +102,7 @@ cmd::GetStatus::GetStatus()
               log_.infof(component, "successfully received status with max-safe-distance: %d and advisory-color: %s\n",
                          result.value().max_safe_distance, result.value().advisory_color);
               print_status(ctxt.cout, result.value());
+              context->stop();
             } else {
               try {
                 std::rethrow_exception(result.error());
@@ -108,10 +111,9 @@ cmd::GetStatus::GetStatus()
               } catch (...) {
                 log_.errorf(component, "failed to get flight status");
               }
-              context->stop();
+              context->stop(::airmap::Context::ReturnCode::error);
               return;
             }
-            context->stop();
           };
 
           if (!params_.geometry)

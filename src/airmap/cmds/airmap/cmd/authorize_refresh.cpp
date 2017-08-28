@@ -76,8 +76,10 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
 
     context->create_client_with_configuration(config, [this, &ctxt,
                                                        context](const ::airmap::Context::ClientCreateResult& result) {
-      if (not result)
+      if (not result) {
+        context->stop(::airmap::Context::ReturnCode::error);
         return;
+      }
 
       auto client = result.value();
 
@@ -88,6 +90,7 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
                      "  id:         %s\n"
                      "  expires in: %d",
                      result.value().id, result.value().expires_in.count());
+          context->stop();
         } else {
           try {
             std::rethrow_exception(result.error());
@@ -96,9 +99,8 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
           } catch (...) {
             log_.errorf(component, "failed to renew %s\n", params_.refresh_token.get());
           }
+          context->stop(::airmap::Context::ReturnCode::error);
         }
-
-        context->stop();
       };
 
       client->authenticator().renew_authentication(

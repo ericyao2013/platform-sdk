@@ -64,14 +64,17 @@ cmd::AuthorizeAnonymous::AuthorizeAnonymous()
 
     context->create_client_with_configuration(
         config, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
-          if (not result)
+          if (not result) {
+            context->stop(::airmap::Context::ReturnCode::error);
             return;
+          }
 
           auto client = result.value();
 
           auto handler = [this, &ctxt, context, client](const Authenticator::AuthenticateAnonymously::Result& result) {
             if (result) {
               log_.infof(component, "Authenticated successfully and received id: %s\n", result.value().id);
+              context->stop();
             } else {
               try {
                 std::rethrow_exception(result.error());
@@ -80,9 +83,8 @@ cmd::AuthorizeAnonymous::AuthorizeAnonymous()
               } catch (...) {
                 log_.errorf(component, "failed to authorize %s\n", params_.user_id.get());
               }
+              context->stop(::airmap::Context::ReturnCode::error);
             }
-
-            context->stop();
           };
 
           client->authenticator().authenticate_anonymously(

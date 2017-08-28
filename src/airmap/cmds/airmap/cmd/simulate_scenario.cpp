@@ -147,7 +147,7 @@ cmd::SimulateScenario::SimulateScenario()
     context_->create_client_with_configuration(config, [this](const auto& result) mutable {
       if (not result) {
         log_.errorf(component, "could not create client for accessing AirMap services");
-        context_->stop();
+        context_->stop(::airmap::Context::ReturnCode::error);
         return;
       }
       log_.infof(component, "successfully created client for AirMap services");
@@ -203,7 +203,7 @@ void cmd::SimulateScenario::handle_authenticated_with_password_result_for(
     } catch (...) {
       log_.errorf(component, "could not authenticate with the Airmap services");
     }
-    context_->stop();
+    context_->stop(::airmap::Context::ReturnCode::error);
   }
 }
 void cmd::SimulateScenario::handle_authenticated_anonymously_result_for(
@@ -221,7 +221,7 @@ void cmd::SimulateScenario::handle_authenticated_anonymously_result_for(
     } catch (...) {
       log_.errorf(component, "could not authenticate with the Airmap services");
     }
-    context_->stop();
+    context_->stop(::airmap::Context::ReturnCode::error);
   }
 }
 
@@ -300,7 +300,7 @@ void cmd::SimulateScenario::handle_create_flight_result_for(util::Scenario::Part
     } catch (...) {
       log_.errorf(component, "could not create flight for polygon");
     }
-    context_->stop();
+    context_->stop(::airmap::Context::ReturnCode::error);
   }
 }
 
@@ -326,7 +326,7 @@ void cmd::SimulateScenario::handle_traffic_monitoring_result_for(util::Scenario:
     } catch (...) {
       log_.errorf(component, "could not start monitoring traffic for flight %s", participant->flight.get().id);
     }
-    context_->stop();
+    context_->stop(::airmap::Context::ReturnCode::error);
   }
 }
 
@@ -353,6 +353,6 @@ void cmd::SimulateScenario::handle_start_flight_comms_result_for(
     } catch (...) {
       log_.errorf(component, "could not start flight comms for flight %s", participant->flight.get().id);
     }
-    context_->stop();
+    context_->stop(::airmap::Context::ReturnCode::error);
   }
 }
