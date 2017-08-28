@@ -6,6 +6,8 @@
 #include <airmap/util/formatting_logger.h>
 #include <airmap/util/telemetry_simulator.h>
 
+#include <signal.h>
+
 #include <fstream>
 #include <iterator>
 #include <thread>
@@ -159,7 +161,12 @@ cmd::SimulateTelemetry::SimulateTelemetry()
           submitter.detach();
         });
 
-    context->run();
-    return 0;
+    return context->exec({SIGINT, SIGQUIT},
+                         [this, context](int sig) {
+                           log_.infof(component, "received [%s], shutting down", ::strsignal(sig));
+                           context->stop();
+                         }) == ::airmap::Context::ReturnCode::success
+               ? 0
+               : 1;
   });
 }

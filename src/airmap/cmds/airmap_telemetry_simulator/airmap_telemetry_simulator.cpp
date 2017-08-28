@@ -136,8 +136,7 @@ int main(int argc, char** argv) {
           submitter.detach();
         });
 
-    context->run();
-    return 0;
+    return context->run() == airmap::Context::ReturnCode::success ? 0 : 1;
   });
 
   return cmd.run(cli::Command::Context{std::cin, std::cout, cli::args(argc, argv)});

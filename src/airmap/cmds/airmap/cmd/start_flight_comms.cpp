@@ -5,6 +5,8 @@
 #include <airmap/context.h>
 #include <airmap/util/telemetry_simulator.h>
 
+#include <signal.h>
+
 #include <fstream>
 #include <iterator>
 #include <thread>
@@ -107,7 +109,12 @@ cmd::StartFlightComms::StartFlightComms()
               });
         });
 
-    context->run();
-    return 0;
+    return context->exec({SIGINT, SIGQUIT},
+                         [this, context](int sig) {
+                           log_.infof(component, "received [%s], shutting down", ::strsignal(sig));
+                           context->stop();
+                         }) == ::airmap::Context::ReturnCode::success
+               ? 0
+               : 1;
   });
 }

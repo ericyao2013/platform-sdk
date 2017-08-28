@@ -5,6 +5,8 @@
 #include <airmap/mavlink/boost/tcp_channel.h>
 #include <airmap/rest/boost/communicator.h>
 
+#include <signal.h>
+
 namespace cli = airmap::util::cli;
 namespace cmd = airmap::cmds::airmap::cmd;
 
@@ -115,8 +117,12 @@ cmd::Daemon::Daemon() : cli::CommandWithFlagsAndAction{"daemon", "runs the airma
           ::airmap::Daemon::create(configuration)->start();
         });
 
-    communicator->run();
-
-    return 0;
+    return communicator->exec({SIGINT, SIGQUIT},
+                              [this, communicator](int sig) {
+                                log_.infof(component, "received [%s], shutting down", ::strsignal(sig));
+                                communicator->stop(::airmap::Context::ReturnCode::success);
+                              }) == ::airmap::Context::ReturnCode::success
+               ? 0
+               : 1;
   });
 }

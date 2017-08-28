@@ -5,6 +5,8 @@
 #include <airmap/context.h>
 #include <airmap/date_time.h>
 
+#include <signal.h>
+
 namespace cli = airmap::util::cli;
 namespace cmd = airmap::cmds::airmap::cmd;
 
@@ -145,8 +147,13 @@ cmd::Pilot::Pilot()
       }
     });
 
-    context_->run();
-    return 0;
+    return context_->exec({SIGINT, SIGQUIT},
+                          [this](int sig) {
+                            log_.infof(component, "received [%s], shutting down", ::strsignal(sig));
+                            context_->stop();
+                          }) == ::airmap::Context::ReturnCode::success
+               ? 0
+               : 1;
   });
 }
 

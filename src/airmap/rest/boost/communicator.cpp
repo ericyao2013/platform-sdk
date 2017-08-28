@@ -168,7 +168,26 @@ void airmap::rest::boost::Communicator::create_client_with_configuration(const C
   cb(ClientCreateResult{std::make_shared<rest::Client>(configuration, log_.logger(), shared_from_this())});
 }
 
-void airmap::rest::boost::Communicator::run() {
+airmap::Context::ReturnCode airmap::rest::boost::Communicator::exec(const SignalSet& signal_set,
+                                                                    const SignalHandler& signal_handler) {
+  asio::signal_set ss{*io_service_};
+
+  for (auto signal : signal_set) {
+    ss.add(signal);
+  }
+
+  ss.async_wait([this, signal_handler](const auto& ec, int signal) {
+    if (!ec) {
+      signal_handler(signal);
+    } else {
+      log_.errorf(component, "failed to wait for posix signals: %s", ec.message());
+    }
+  });
+
+  return run();
+}
+
+airmap::Context::ReturnCode airmap::rest::boost::Communicator::run() {
   while (!io_service_->stopped()) {
     try {
       io_service_->run();
@@ -178,9 +197,11 @@ void airmap::rest::boost::Communicator::run() {
       log_.errorf(component, "error while running the context");
     }
   }
+
+  return airmap::Context::ReturnCode::success;
 }
 
-void airmap::rest::boost::Communicator::stop() {
+void airmap::rest::boost::Communicator::stop(ReturnCode) {
   io_service_->stop();
 }
 

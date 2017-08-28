@@ -45,11 +45,12 @@ class SimulateScenario : public util::cli::CommandWithFlagsAndAction {
     void collect_traffic_monitor_for_index(std::size_t index, const std::shared_ptr<Traffic::Monitor>& monitor);
     bool collect_key_for(util::Scenario::Participants::iterator it, const std::string& key);
     bool collect_key_for_index(std::size_t index, const std::string& key);
+
     const util::Scenario& scenario() const;
     util::Scenario& scenario();
 
    private:
-    uint key_counter_{0};
+    unsigned int key_counter_{0};
     util::Scenario scenario_;
   };
 

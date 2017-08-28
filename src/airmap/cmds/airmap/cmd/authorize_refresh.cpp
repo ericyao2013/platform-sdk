@@ -3,6 +3,8 @@
 #include <airmap/client.h>
 #include <airmap/context.h>
 
+#include <signal.h>
+
 namespace cli = airmap::util::cli;
 namespace cmd = airmap::cmds::airmap::cmd;
 
@@ -104,8 +106,12 @@ cmd::AuthorizeRefresh::AuthorizeRefresh()
 
     });
 
-    context->run();
-
-    return 0;
+    return context->exec({SIGINT, SIGQUIT},
+                         [this, context](int sig) {
+                           log_.infof(component, "received [%s], shutting down", ::strsignal(sig));
+                           context->stop();
+                         }) == ::airmap::Context::ReturnCode::success
+               ? 0
+               : 1;
   });
 }

@@ -13,4 +13,5 @@ apt install -y \
   libprotobuf-dev \
   libcrypto++-dev \
   libssl-dev \
+  pkg-config\
   protobuf-compiler

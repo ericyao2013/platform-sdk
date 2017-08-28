@@ -9,6 +9,8 @@
 
 #include <boost/asio.hpp>
 
+#include <signal.h>
+
 #include <fstream>
 #include <iterator>
 #include <thread>
@@ -160,8 +162,13 @@ cmd::SimulateScenario::SimulateScenario()
       }
     });
 
-    context_->run();
-    return 0;
+    return context_->exec({SIGINT, SIGQUIT},
+                          [this](int sig) {
+                            log_.infof(component, "received [%s], shutting down", ::strsignal(sig));
+                            context_->stop();
+                          }) == ::airmap::Context::ReturnCode::success
+               ? 0
+               : 1;
   });
 }
 

@@ -89,8 +89,10 @@ class Communicator : public airmap::rest::Communicator,
   // From airmap::Context
   void create_client_with_configuration(const Client::Configuration& configuration,
                                         const ClientCreateCallback& cb) override;
-  void run() override;
-  void stop() override;
+
+  ReturnCode exec(const SignalSet& signal_set, const SignalHandler& signal_handler) override;
+  ReturnCode run() override;
+  void stop(ReturnCode rc) override;
 
   // From airmap::rest::Communicator
   void connect_to_mqtt_broker(const std::string& host, std::uint16_t port, const std::string& username,
