@@ -152,7 +152,9 @@ void airmap::mqtt::boost::Client::unsubscribe(SubscriptionId subscription_id) {
 airmap::rest::boost::Communicator::Communicator(const std::shared_ptr<Logger>& logger)
     : log_{logger},
       io_service_{std::make_shared<asio::io_service>()},
-      keep_alive_{std::make_shared<asio::io_service::work>(*io_service_)} {
+      keep_alive_{std::make_shared<asio::io_service::work>(*io_service_)},
+      state_{State::stopped},
+      return_code_{Context::ReturnCode::success} {
 }
 
 airmap::rest::boost::Communicator::~Communicator() {
@@ -188,6 +190,13 @@ airmap::Context::ReturnCode airmap::rest::boost::Communicator::exec(const Signal
 }
 
 airmap::Context::ReturnCode airmap::rest::boost::Communicator::run() {
+  State expected{State::stopped};
+  if (!state_.compare_exchange_strong(expected, State::running)) {
+    return Context::ReturnCode::already_running;
+  }
+
+  return_code_.store(Context::ReturnCode::success);
+
   while (!io_service_->stopped()) {
     try {
       io_service_->run();
@@ -198,10 +207,17 @@ airmap::Context::ReturnCode airmap::rest::boost::Communicator::run() {
     }
   }
 
-  return airmap::Context::ReturnCode::success;
+  state_.store(State::stopped);
+  return return_code_.load();
 }
 
-void airmap::rest::boost::Communicator::stop(ReturnCode) {
+void airmap::rest::boost::Communicator::stop(ReturnCode rc) {
+  State expected{State::running};
+  if (!state_.compare_exchange_strong(expected, State::stopping)) {
+    return;
+  }
+
+  return_code_.store(rc);
   io_service_->stop();
 }
 

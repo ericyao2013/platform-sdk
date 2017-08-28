@@ -13,7 +13,7 @@ namespace airmap {
 
 class Context : DoNotCopyOrMove {
  public:
-  enum class ReturnCode { success = 0, error = 1 };
+  enum class ReturnCode { success = 0, error = 1, already_running = 2 };
 
   using ClientCreateResult   = Outcome<std::shared_ptr<Client>, std::exception_ptr>;
   using ClientCreateCallback = std::function<void(const ClientCreateResult&)>;

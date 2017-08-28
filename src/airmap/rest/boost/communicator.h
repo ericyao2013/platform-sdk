@@ -170,10 +170,14 @@ class Communicator : public airmap::rest::Communicator,
     std::string payload;
   };
 
+  enum class State { stopped, stopping, running };
+
   util::FormattingLogger log_;
 
   std::shared_ptr<::boost::asio::io_service> io_service_;
   std::shared_ptr<::boost::asio::io_service::work> keep_alive_;
+  std::atomic<State> state_;
+  std::atomic<ReturnCode> return_code_;
 };
 
 }  // namespace boost
