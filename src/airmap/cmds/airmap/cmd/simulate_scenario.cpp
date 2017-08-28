@@ -146,7 +146,13 @@ cmd::SimulateScenario::SimulateScenario()
 
     context_->create_client_with_configuration(config, [this](const auto& result) mutable {
       if (not result) {
-        log_.errorf(component, "could not create client for accessing AirMap services");
+        try {
+          std::rethrow_exception(result.error());
+        } catch (const std::exception& e) {
+          log_.errorf(component, "failed to create client: %s", e.what());
+        } catch (...) {
+          log_.errorf(component, "failed to create client");
+        }
         context_->stop(::airmap::Context::ReturnCode::error);
         return;
       }
