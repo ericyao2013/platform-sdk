@@ -12,7 +12,5 @@ apt install -y \
   libboost-system-dev \
   libprotobuf-dev \
   libcrypto++-dev \
-  libsoup2.4-dev \
-  libglib2.0-dev \
   libssl-dev \
   protobuf-compiler
