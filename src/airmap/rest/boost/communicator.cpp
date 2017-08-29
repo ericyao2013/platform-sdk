@@ -33,13 +33,14 @@ airmap::mqtt::boost::Client::Subscription::~Subscription() {
 }
 
 std::shared_ptr<airmap::mqtt::boost::Client> airmap::mqtt::boost::Client::create(
-    const std::shared_ptr<Logger>& logger, const std::shared_ptr<TlsClient>& mqtt_client) {
-  return std::shared_ptr<Client>(new Client{logger, mqtt_client})->finalize();
+    const std::shared_ptr<Logger>& logger, const std::shared_ptr<asio::io_service>& io_service, const std::shared_ptr<TlsClient>& mqtt_client) {
+  return std::shared_ptr<Client>(new Client{logger, io_service, mqtt_client})->finalize();
 }
 
 airmap::mqtt::boost::Client::Client(const std::shared_ptr<Logger>& logger,
+                                    const std::shared_ptr<asio::io_service>& io_service,
                                     const std::shared_ptr<TlsClient>& mqtt_client)
-    : log_{logger}, mqtt_client_{mqtt_client} {
+    : log_{logger}, io_service_{io_service}, mqtt_client_{mqtt_client} {
 }
 
 std::shared_ptr<airmap::mqtt::boost::Client> airmap::mqtt::boost::Client::finalize() {
@@ -172,13 +173,12 @@ void airmap::rest::boost::Communicator::create_client_with_configuration(const C
 
 airmap::Context::ReturnCode airmap::rest::boost::Communicator::exec(const SignalSet& signal_set,
                                                                     const SignalHandler& signal_handler) {
-  asio::signal_set ss{*io_service_};
+  auto ss = std::make_shared<asio::signal_set>(*io_service_);
 
-  for (auto signal : signal_set) {
-    ss.add(signal);
-  }
+  for (auto signal : signal_set)
+    ss->add(signal);
 
-  ss.async_wait([this, signal_handler](const auto& ec, int signal) {
+  ss->async_wait([this, signal_handler](const auto& ec, int signal) {
     if (!ec) {
       signal_handler(signal);
     } else {
@@ -232,9 +232,9 @@ void airmap::rest::boost::Communicator::connect_to_mqtt_broker(const std::string
   client->set_user_name(username);
   client->set_password(password);
 
-  client->set_connack_handler([ logger = log_.logger(), host, port, cb, client ](auto, auto rc) {
+  client->set_connack_handler([ logger = log_.logger(), io_service = io_service_, host, port, cb, client ](auto, auto rc) {
     if (::mqtt::connect_return_code::accepted == rc) {
-      cb(ConnectResult(mqtt::boost::Client::create(logger, client)));
+      cb(ConnectResult(mqtt::boost::Client::create(logger, io_service, client)));
     } else {
       cb(ConnectResult(std::make_exception_ptr(std::runtime_error{fmt::sprintf(
           "failed to connect to mqtt broker %s:%d: %s", host, port, ::mqtt::connect_return_code_to_str(rc))})));

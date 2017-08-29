@@ -43,6 +43,7 @@ class Client : public mqtt::Client, public std::enable_shared_from_this<Client> 
   };
 
   static std::shared_ptr<Client> create(const std::shared_ptr<Logger>& logger,
+                                        const std::shared_ptr<::boost::asio::io_service>& io_service,
                                         const std::shared_ptr<TlsClient>& mqtt_client);
 
   // From airmap::mqtt::Client
@@ -57,13 +58,14 @@ class Client : public mqtt::Client, public std::enable_shared_from_this<Client> 
   using SubscriptionMap  = std::unordered_map<SubscriptionId, TopicMapIterator>;
 
   /// Initializes the Client instance with mqtt_client
-  explicit Client(const std::shared_ptr<Logger>& logger, const std::shared_ptr<TlsClient>& mqtt_client);
+  explicit Client(const std::shared_ptr<Logger>& logger, const std::shared_ptr<::boost::asio::io_service>& io_service, const std::shared_ptr<TlsClient>& mqtt_client);
   std::shared_ptr<Client> finalize();
 
   void handle_publish(std::uint8_t, ::boost::optional<std::uint16_t>, std::string topic, std::string contents);
   void unsubscribe(SubscriptionId subscription_id);
 
   util::FormattingLogger log_;
+  std::shared_ptr<::boost::asio::io_service> io_service_;
   std::shared_ptr<TlsClient> mqtt_client_;
   SubscriptionMap subscription_map_;
   TopicMap topic_map_;
