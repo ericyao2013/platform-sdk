@@ -23,6 +23,7 @@
 
 #include <airmap/optional.h>
 
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <map>
