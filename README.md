@@ -15,11 +15,11 @@ make format
 
 ## Setup & Dependencies:
 
-Please refer to the `setup-*.sh` scripts in the `tools/` subfolder. For Ubuntu, and under the assumption of `docker` being available,
+Please refer to the platform-specific `setup*.sh` scripts in the `tools/${PLATFORM}` subfolder. For Ubuntu, and under the assumption of `docker` being available,
 you can bootstrap a development environment in a `docker` container with:
 ```
 docker run -v $(PWD):/airmapd -it ubuntu:17.04 bash
-tools/setup-ubuntu.sh
+tools/ubuntu/setup.dev.sh
 ```
 
 ## Running `airmapd` on Intel Aero
@@ -32,7 +32,7 @@ This is the case if you are using the latest Intel Aero image (1.5.1 at the time
 We rely on `docker` to deliver `airmapd` to the Intel Aero. For that, you first need to buid a docker container with the
 following command line:
 ```
-docker build -t airmapd:latest .
+tools/build-docker-image.sh
 ```
 Once the command finishes, you should save the container to a tarball by running:
 ```
