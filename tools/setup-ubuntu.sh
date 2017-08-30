@@ -7,9 +7,9 @@ apt update
 apt install -y \
   build-essential \
   cmake \
-  libboost-date-time-dev \
-  libboost-program-options-dev \
-  libboost-system-dev \
+  libboost-date-time1.63-dev \
+  libboost-program-options1.63-dev \
+  libboost-system1.63-dev \
   libprotobuf-dev \
   libcrypto++-dev \
   libssl-dev \

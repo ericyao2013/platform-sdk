@@ -14,9 +14,9 @@ pkg_check_modules(OPENSSL REQUIRED openssl)
 set(CRYPTOPP_LIBRARIES cryptopp)
 
 # All vendored dependencies should be listed here
-add_subdirectory(vendor/fmt)
-add_subdirectory(vendor/spdlog)
-add_subdirectory(vendor/uri)
+add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/uri EXCLUDE_FROM_ALL)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -Wextra -fPIC")
