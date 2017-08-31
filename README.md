@@ -1,5 +1,28 @@
 # airmapd
 
+`airmapd` is the representation of AirMap's services on the client side, ranging from desktop machines running a ground-control station to drones featuring a companion computer. From a high-level point of view, `airmapd`
+ - exposes the AirMap services to client applications
+ - constitutes a representation of AirMap on drones, taking on mission control and data acquisition tasks
+
+This project has two main deliverables:
+ - the executable `airmap` featuring a `git`-like layout of subcommands
+ - the shared library `libairmap` (with a platform-specific suffix)
+
+## Source Code Layout
+
+The public facing API of `airmapd` can be found in `${AIRMAPD_ROOT}/include/airmap`. At this point in time, the interface
+structure closely resembles the current ReST API exposed by AirMap. Going forward, the client-facing API will change, though,
+and expose higher-level concepts.
+
+The implementation is structured as followed:
+ - `src/airmap`: General implementation, most importantly:
+   - `${AIRMAPD_ROOT}/src/airmap/daemon.h` and `${AIRMAPD_ROOT}/src/airmap/daemon.cpp` implementing `airmapd`
+ - `src/airmap/cmds`: Command-line executables
+ - `src/airmap/codec`: Encoding and decoding of core data types and structures into different formats
+ - `src/airmap/mavlink`: MavLink-specific for reading and writing MavLink-messages over arbitrary transports
+ - `src/airmap/rest`: An implementation of the public-facing API, using the existing ReST-APIs exposed by AirMap
+ - `src/airmap/util`: Utility classes and helpers
+
 ## Development Workflow
 
 `airmapd` uses CMake for building and testing. We envision the following development workflow:
