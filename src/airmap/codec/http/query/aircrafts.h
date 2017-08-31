@@ -11,22 +11,9 @@ namespace codec {
 namespace http {
 namespace query {
 
-inline void encode(std::unordered_map<std::string, std::string>& query,
-                   const Aircrafts::Manufacturers::Parameters& parameters) {
-  if (parameters.manufacturer_name) {
-    query["q"] = parameters.manufacturer_name.get();
-  }
-}
-
-inline void encode(std::unordered_map<std::string, std::string>& query,
-                   const Aircrafts::Models::Parameters& parameters) {
-  if (parameters.manufacturer) {
-    query["manufacturer"] = parameters.manufacturer.get().id;
-  }
-  if (parameters.model_name) {
-    query["q"] = parameters.model_name.get();
-  }
-}
+void encode(std::unordered_map<std::string, std::string>& query,
+            const Aircrafts::Manufacturers::Parameters& parameters);
+void encode(std::unordered_map<std::string, std::string>& query, const Aircrafts::Models::Parameters& parameters);
 
 }  // namespace query
 }  // namespace http

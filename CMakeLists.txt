@@ -82,6 +82,17 @@ add_library(
   src/airmap/daemon.h
   src/airmap/daemon.cpp
 
+  src/airmap/codec/http/query/aircrafts.h
+  src/airmap/codec/http/query/aircrafts.cpp
+  src/airmap/codec/http/query/airspaces.h
+  src/airmap/codec/http/query/airspaces.cpp
+  src/airmap/codec/http/query/flights.h
+  src/airmap/codec/http/query/flights.cpp
+  src/airmap/codec/http/query/pilots.h
+  src/airmap/codec/http/query/pilots.cpp
+  src/airmap/codec/http/query/status.h
+  src/airmap/codec/http/query/status.cpp
+
   src/airmap/codec/json/aircraft.h
   src/airmap/codec/json/aircraft.cpp
   src/airmap/codec/json/airspace.h
@@ -108,7 +119,6 @@ add_library(
   src/airmap/codec/json/status.cpp
   src/airmap/codec/json/traffic.h
   src/airmap/codec/json/traffic.cpp
-
   src/airmap/rest/client.h
   src/airmap/rest/client.cpp
   src/airmap/rest/communicator.h
