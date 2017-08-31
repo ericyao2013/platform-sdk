@@ -4,7 +4,7 @@
 
 #include <airmap/rule.h>
 
-#include <airmap/codec/json/get.h>
+#include <nlohmann/json.hpp>
 
 #include <vector>
 
@@ -12,23 +12,9 @@ namespace airmap {
 namespace codec {
 namespace json {
 
-inline void decode(const nlohmann::json& j, Rule& rule) {
-  get(rule.type, j, "type");
-  get(rule.id, j, "id");
-  get(rule.name, j, "name");
-  get(rule.description, j, "description");
-  get(rule.jurisdiction, j, "jurisdiction");
-}
-
-inline void decode(const nlohmann::json& j, std::vector<Rule>& v) {
-  for (auto element : j) {
-    v.push_back(Rule{});
-    v.back() = element;
-  }
-}
-
-inline void decode(const nlohmann::json&, Rule::Type&) {
-}
+void decode(const nlohmann::json& j, Rule& rule);
+void decode(const nlohmann::json& j, std::vector<Rule>& v);
+void decode(const nlohmann::json&, Rule::Type&);
 
 }  // namespace json
 }  // namespace codec

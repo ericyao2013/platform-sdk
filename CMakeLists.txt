@@ -82,6 +82,33 @@ add_library(
   src/airmap/daemon.h
   src/airmap/daemon.cpp
 
+  src/airmap/codec/json/aircraft.h
+  src/airmap/codec/json/aircraft.cpp
+  src/airmap/codec/json/airspace.h
+  src/airmap/codec/json/airspace.cpp
+  src/airmap/codec/json/authenticator.h
+  src/airmap/codec/json/authenticator.cpp
+  src/airmap/codec/json/chrono.h
+  src/airmap/codec/json/chrono.cpp
+  src/airmap/codec/json/date_time.h
+  src/airmap/codec/json/date_time.cpp
+  src/airmap/codec/json/flight.h
+  src/airmap/codec/json/flight.cpp
+  src/airmap/codec/json/flights.h
+  src/airmap/codec/json/flights.cpp
+  src/airmap/codec/json/geometry.h
+  src/airmap/codec/json/geometry.cpp
+  src/airmap/codec/json/pilot.h
+  src/airmap/codec/json/pilot.cpp
+  src/airmap/codec/json/pilots.h
+  src/airmap/codec/json/pilots.cpp
+  src/airmap/codec/json/rule.h
+  src/airmap/codec/json/rule.cpp
+  src/airmap/codec/json/status.h
+  src/airmap/codec/json/status.cpp
+  src/airmap/codec/json/traffic.h
+  src/airmap/codec/json/traffic.cpp
+
   src/airmap/rest/client.h
   src/airmap/rest/client.cpp
   src/airmap/rest/communicator.h

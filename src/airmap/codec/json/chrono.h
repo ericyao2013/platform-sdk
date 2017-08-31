@@ -4,13 +4,13 @@
 
 #include <airmap/codec/json/get.h>
 
+#include <nlohmann/json.hpp>
+
 #include <chrono>
 
 namespace std {
 
-inline void from_json(const nlohmann::json& j, std::chrono::seconds& s) {
-  s = std::chrono::seconds{j.get<std::uint64_t>()};
-}
+void from_json(const nlohmann::json& j, std::chrono::seconds& s);
 
 }  // namespace std
 
