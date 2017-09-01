@@ -38,6 +38,8 @@ void airmap::rest::Airspaces::search(const Search::Parameters& parameters, const
                     [cb](const Communicator::DoResult& result) {
                       if (result) {
                         cb(jsend::to_outcome<std::vector<Airspace>>(json::parse(result.value())));
+                      } else {
+                        cb(Search::Result{result.error()});
                       }
                     });
 }
@@ -48,6 +50,8 @@ void airmap::rest::Airspaces::for_ids(const ForIds::Parameters& parameters, cons
                     std::move(headers), [cb](const Communicator::DoResult& result) {
                       if (result) {
                         cb(jsend::to_outcome<std::vector<Airspace>>(json::parse(result.value())));
+                      } else {
+                        cb(ForIds::Result{result.error()});
                       }
                     });
 }
