@@ -13,8 +13,8 @@ namespace detail {
 
 class AES256Encryptor : public DoNotCopyOrMove {
  public:
-  static const uint block_size_in_bytes;
-  static const uint key_size_in_bytes;
+  static const unsigned int block_size_in_bytes;
+  static const unsigned int key_size_in_bytes;
 
   virtual std::string create_shared_secret()                                                             = 0;
   virtual std::string encrypt(const std::string& message, const std::string& key, const std::string& iv) = 0;
