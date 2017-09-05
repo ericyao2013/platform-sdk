@@ -59,7 +59,7 @@ This is the case if you are using the latest Intel Aero image (1.5.1 at the time
 We rely on `docker` to deliver `airmapd` to the Intel Aero. For that, you first need to buid a docker container with the
 following command line:
 ```
-tools/build-docker-image.sh
+tools/alpine/build-docker-image.sh
 ```
 Once the command finishes, you should save the container to a tarball by running:
 ```
