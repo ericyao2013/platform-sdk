@@ -1,0 +1,17 @@
+machine:
+  services:
+    - docker
+
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init --recursive # use submodules
+
+compile:
+  override:
+    - sudo docker build --force-rm=true -t airmapd:latest -f Dockerfile.alpine .
+    - sudo docker build --force-rm=true -t airmapd:latest -f Dockerfile.ubuntu .
+
+test:
+  override:
+    - echo "not implemented"
