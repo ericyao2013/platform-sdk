@@ -6,11 +6,11 @@
 namespace airmap {
 
 struct Version {
-    static const Version& current();
+  static const Version& current();
 
-    std::uint32_t major;
-    std::uint32_t minor;
-    std::uint32_t patch;
+  std::uint32_t major;
+  std::uint32_t minor;
+  std::uint32_t patch;
 };
 
 }  // namespace airmap

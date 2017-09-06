@@ -1,7 +1,7 @@
 #include <airmap/net/http/boost/request.h>
 
-#include <airmap/net/http/user_agent.h>
 #include <airmap/net/http/boost/requester.h>
+#include <airmap/net/http/user_agent.h>
 
 #include <network/uri.hpp>
 

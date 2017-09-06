@@ -1,6 +1,10 @@
 #include <airmap/client.h>
 
+#include <airmap/codec.h>
+
 #include <iostream>
+
+using json = nlohmann::json;
 
 airmap::Client::Configuration airmap::Client::default_production_configuration(const Credentials& credentials) {
   return Configuration{"api.airmap.com",
@@ -29,6 +33,15 @@ airmap::Client::Configuration airmap::Client::default_configuration(Client::Vers
       return default_staging_configuration(credentials);
   }
   throw std::logic_error{"should not reach here"};
+}
+
+airmap::Client::Configuration airmap::Client::load_configuration_from_json(std::istream& in) {
+  if (!in) {
+    throw std::runtime_error{"failed to read from stream"};
+  }
+
+  Configuration configuration = json::parse(in);
+  return configuration;
 }
 
 std::istream& airmap::operator>>(std::istream& in, Client::Version& version) {

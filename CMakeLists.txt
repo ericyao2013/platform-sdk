@@ -106,6 +106,8 @@ add_library(
   src/airmap/codec/json/authenticator.cpp
   src/airmap/codec/json/chrono.h
   src/airmap/codec/json/chrono.cpp
+  src/airmap/codec/json/client.h
+  src/airmap/codec/json/client.cpp
   src/airmap/codec/json/date_time.h
   src/airmap/codec/json/date_time.cpp
   src/airmap/codec/json/flight.h

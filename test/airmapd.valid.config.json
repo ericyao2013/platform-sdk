@@ -1,0 +1,19 @@
+  {
+    "host": "api.airmap.com",
+    "version": "production",
+    "sso": {
+      "host": "sso.airmap.io",
+      "port": 443
+    },
+    "telemetry": {
+      "host": "api-udp-telemetry.airmap.com",
+      "port": 16060
+    },
+    "traffic": {
+      "host": "mqtt-prod.airmap.io",
+      "port": 8883
+    },
+    "credentials": {
+      "api-key": "lalelu"
+    }
+  }

@@ -66,6 +66,30 @@ class Client : DoNotCopyOrMove {
   /// the AirMap API and telemetry endpoints indicated by 'version'.
   static Configuration default_configuration(Version version, const Credentials& credentials);
 
+  /// load_configuration_from_json loads a configuration from 'in', assuming the following
+  /// JSON format:
+  ///
+  /// {
+  ///   "host": "api.airmap.com",
+  ///   "version": "production",
+  ///   "sso": {
+  ///     "host": "sso.airmap.io",
+  ///     "port": 443
+  ///   },
+  ///   "telemetry": {
+  ///     "host": "api-udp-telemetry.airmap.com",
+  ///     "port": 16060
+  ///   },
+  ///   "traffic": {
+  ///     "host": "mqtt-prod.airmap.io",
+  ///     "port": 8883
+  ///   },
+  ///   "credentials": {
+  ///     "api-key": ""
+  ///   }
+  /// }
+  static Configuration load_configuration_from_json(std::istream& in);
+
   /// authenticator returns the Authenticator implementation provided by the client.
   virtual Authenticator& authenticator() = 0;
 
