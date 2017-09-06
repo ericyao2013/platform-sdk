@@ -135,9 +135,9 @@ std::string airmap::rest::detail::OpenSSLAES256Encryptor::encrypt(const std::str
   return std::string{cipher.begin(), cipher.begin() + std::distance(cipher_data_begin, cipher_data)};
 }
 
-airmap::rest::Telemetry::Telemetry(const std::shared_ptr<detail::AES256Encryptor>& encryptor, const std::string& host,
-                                   std::uint16_t port, Communicator& communicator)
-    : host_{host}, port_{port}, communicator_{communicator}, encryptor_{encryptor} {
+airmap::rest::Telemetry::Telemetry(const std::shared_ptr<detail::AES256Encryptor>& encryptor,
+                                   const std::shared_ptr<net::udp::Sender>& sender)
+    : sender_{sender}, encryptor_{encryptor} {
 }
 
 void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::string& key,
@@ -203,12 +203,12 @@ void airmap::rest::Telemetry::submit_updates(const Flight& flight, const std::st
   auto msg = encryptor_->encrypt(payload.get(), key, iv);
 
   Buffer packet;
-  communicator_.send_udp(host_, port_,
-                         packet.add<std::uint32_t>(htonl(counter++))
-                             .add<std::uint8_t>(flight.id.size())
-                             .add(flight.id)
-                             .add<std::uint8_t>(::telemetry::encryption_type)
-                             .add(iv)
-                             .add(msg)
-                             .get());
+  sender_->send(packet.add<std::uint32_t>(htonl(counter++))
+                    .add<std::uint8_t>(flight.id.size())
+                    .add(flight.id)
+                    .add<std::uint8_t>(::telemetry::encryption_type)
+                    .add(iv)
+                    .add(msg)
+                    .get(),
+                [](const auto&) {});
 }

@@ -3,7 +3,7 @@
 
 #include <airmap/telemetry.h>
 
-#include <airmap/rest/communicator.h>
+#include <airmap/net/udp/sender.h>
 
 #include <memory>
 
@@ -16,7 +16,7 @@ class AES256Encryptor : public DoNotCopyOrMove {
   static const unsigned int block_size_in_bytes;
   static const unsigned int key_size_in_bytes;
 
-  virtual std::string create_shared_secret()                                                             = 0;
+  virtual std::string create_shared_secret() = 0;
   virtual std::string encrypt(const std::string& message, const std::string& key, const std::string& iv) = 0;
 
  protected:
@@ -36,16 +36,14 @@ class OpenSSLAES256Encryptor : public AES256Encryptor {
 
 class Telemetry : public airmap::Telemetry {
  public:
-  explicit Telemetry(const std::shared_ptr<detail::AES256Encryptor>& encryptor, const std::string& host,
-                     std::uint16_t port, Communicator& communicator);
+  explicit Telemetry(const std::shared_ptr<detail::AES256Encryptor>& encryptor,
+                     const std::shared_ptr<net::udp::Sender>& sender);
 
   void submit_updates(const Flight& flight, const std::string& key,
                       const std::initializer_list<Update>& updates) override;
 
  private:
-  std::string host_;
-  std::uint16_t port_;
-  Communicator& communicator_;
+  std::shared_ptr<net::udp::Sender> sender_;
   std::shared_ptr<detail::AES256Encryptor> encryptor_;
 };
 
