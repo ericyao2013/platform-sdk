@@ -14,6 +14,8 @@ find_package(Protobuf REQUIRED)
 pkg_check_modules(OPENSSL REQUIRED openssl)
 
 # All vendored dependencies should be listed here
+set(SPDLOG_BUILD_TESTING OFF CACHE BOOL "Build the spdlog tests")
+set(Uri_BUILD_TESTS OFF CACHE BOOL "Build the URI tests")
 add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/uri EXCLUDE_FROM_ALL)
