@@ -13,13 +13,10 @@
 #include <airmap/util/formatting_logger.h>
 #include <airmap/util/tagged_string.h>
 
-
-
 namespace airmap {
 namespace cmds {
 namespace airmap {
 namespace cmd {
-
 
 class SimulateTelemetry : public util::cli::CommandWithFlagsAndAction {
  public:
