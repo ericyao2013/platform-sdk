@@ -79,10 +79,10 @@ class SimulateScenario : public util::cli::CommandWithFlagsAndAction {
   struct {
     Client::Version version{Client::Version::production};
     Logger::Severity log_level{Logger::Severity::info};
-    Optional<ApiKey> api_key;
-    Optional<TelemetryHost> host;
-    Optional<std::uint16_t> port;
-    Optional<ScenarioFile> scenario_file;
+    Required<ApiKey> api_key;
+    Required<TelemetryHost> host;
+    Required<std::uint16_t> port;
+    Required<ScenarioFile> scenario_file;
   } params_;
   std::shared_ptr<util::ScenarioSimulator::Runner> runner_;
   util::FormattingLogger log_{create_null_logger()};

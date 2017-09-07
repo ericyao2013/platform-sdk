@@ -108,6 +108,9 @@ inline std::ostream& operator<<(std::ostream& out, const Optional<T>& value) {
   return out;
 }
 
+template <typename T>
+using Required = Optional<T>;
+
 }  // namespace airmap
 
 #endif  // AIRMAP_OPTIONAL_H_

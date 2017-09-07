@@ -25,9 +25,9 @@ class AuthorizeRefresh : public util::cli::CommandWithFlagsAndAction {
   struct {
     Client::Version version{Client::Version::production};
     Logger::Severity log_level{Logger::Severity::info};
-    Optional<ApiKey> api_key;
-    Optional<ClientId> client_id;
-    Optional<RefreshToken> refresh_token;
+    Required<ApiKey> api_key;
+    Required<ClientId> client_id;
+    Required<RefreshToken> refresh_token;
   } params_;
 };
 

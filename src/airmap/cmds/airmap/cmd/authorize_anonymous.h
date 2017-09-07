@@ -23,8 +23,8 @@ class AuthorizeAnonymous : public util::cli::CommandWithFlagsAndAction {
   struct {
     Client::Version version{Client::Version::production};
     Logger::Severity log_level{Logger::Severity::info};
-    Optional<ApiKey> api_key;
-    Optional<UserId> user_id;
+    Required<ApiKey> api_key;
+    Required<UserId> user_id;
   } params_;
 };
 

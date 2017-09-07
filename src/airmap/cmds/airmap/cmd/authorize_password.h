@@ -27,11 +27,11 @@ class AuthorizePassword : public util::cli::CommandWithFlagsAndAction {
   struct {
     Client::Version version{Client::Version::production};
     Logger::Severity log_level{Logger::Severity::info};
-    Optional<ApiKey> api_key;
-    Optional<ClientId> client_id;
-    Optional<Username> username;
-    Optional<Password> password;
-    Optional<Device> device;
+    Required<ApiKey> api_key;
+    Required<ClientId> client_id;
+    Required<Username> username;
+    Required<Password> password;
+    Required<Device> device;
   } params_;
 };
 

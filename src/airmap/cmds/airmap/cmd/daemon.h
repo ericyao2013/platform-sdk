@@ -27,14 +27,14 @@ class Daemon : public util::cli::CommandWithFlagsAndAction {
   util::FormattingLogger log_{create_null_logger()};
   Client::Version version_{Client::Version::production};
   Logger::Severity log_level_{Logger::Severity::info};
-  Optional<ApiKey> api_key_;
-  Optional<UserId> user_id_;
-  Optional<AircraftId> aircraft_id_;
-  Optional<SerialDevice> serial_device_;
-  Optional<TelemetryHost> telemetry_host_;
-  Optional<std::uint16_t> telemetry_port_;
-  Optional<TcpEndpointIp> tcp_endpoint_ip_;
-  Optional<std::uint16_t> tcp_endpoint_port_;
+  Required<ApiKey> api_key_;
+  Required<UserId> user_id_;
+  Required<AircraftId> aircraft_id_;
+  Required<SerialDevice> serial_device_;
+  Required<TelemetryHost> telemetry_host_;
+  Required<std::uint16_t> telemetry_port_;
+  Required<TcpEndpointIp> tcp_endpoint_ip_;
+  Required<std::uint16_t> tcp_endpoint_port_;
 };
 
 }  // namespace cmd

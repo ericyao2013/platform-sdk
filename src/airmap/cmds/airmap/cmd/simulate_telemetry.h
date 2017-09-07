@@ -13,10 +13,13 @@
 #include <airmap/util/formatting_logger.h>
 #include <airmap/util/tagged_string.h>
 
+
+
 namespace airmap {
 namespace cmds {
 namespace airmap {
 namespace cmd {
+
 
 class SimulateTelemetry : public util::cli::CommandWithFlagsAndAction {
  public:
@@ -29,13 +32,13 @@ class SimulateTelemetry : public util::cli::CommandWithFlagsAndAction {
   struct {
     Client::Version version{Client::Version::production};
     Logger::Severity log_level{Logger::Severity::info};
-    Optional<ApiKey> api_key;
-    Optional<Authorization> authorization;
-    Optional<TelemetryHost> host;
-    Optional<std::uint16_t> port;
+    Required<ApiKey> api_key;
+    Required<Authorization> authorization;
+    Required<TelemetryHost> host;
+    Required<std::uint16_t> port;
     std::uint16_t frequency{5};
-    Optional<FlightId> flight_id;
-    Optional<EncryptionKey> encryption_key;
+    Required<FlightId> flight_id;
+    Required<EncryptionKey> encryption_key;
     Optional<GeometryFile> geometry_file;
   } params_;
 };
