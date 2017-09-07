@@ -24,4 +24,34 @@ TEST_CASE("airmap::Client") {
       REQUIRE(config.credentials.api_key == "lalelu");
     }
   }
+
+  SECTION("Version") {
+    SECTION("is read correctly from input stream") {
+      airmap::Client::Version version{airmap::Client::Version::production};
+
+      {
+        std::stringstream ss{"staging"};
+        ss >> version;
+      }
+      REQUIRE(version == airmap::Client::Version::staging);
+
+      {
+        std::stringstream ss{"production"};
+        ss >> version;
+      }
+      REQUIRE(version == airmap::Client::Version::production);
+    }
+    SECTION("is written correctly to output stream") {
+      {
+        std::stringstream ss;
+        ss << airmap::Client::Version::production;
+        REQUIRE(ss.str() == "production");
+      }
+      {
+        std::stringstream ss;
+        ss << airmap::Client::Version::staging;
+        REQUIRE(ss.str() == "staging");
+      }
+    }
+  }
 }
