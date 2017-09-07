@@ -1,5 +1,7 @@
 #include <airmap/net/http/boost/request.h>
+
 #include <airmap/net/http/boost/requester.h>
+#include <airmap/net/http/user_agent.h>
 
 #include <network/uri.hpp>
 
@@ -39,6 +41,7 @@ void airmap::net::http::boost::Requester::delete_(const std::string& path,
   ::boost::beast::http::request<::boost::beast::http::string_body> request;
   request.method(::http::verb::delete_);
   request.target(fmt::sprintf("%s?%s", path, uri.query()));
+  request.set(::http::to_string(::http::field::user_agent), user_agent());
   request.set(::http::to_string(::http::field::accept), "application/json");
   request.set(::http::to_string(::http::field::host), host_);
   for (const auto& pair : headers)
@@ -66,6 +69,7 @@ void airmap::net::http::boost::Requester::get(const std::string& path,
   ::boost::beast::http::request<::boost::beast::http::string_body> request;
   request.method(::http::verb::get);
   request.target(fmt::sprintf("%s?%s", path, uri.query()));
+  request.set(::http::to_string(::http::field::user_agent), user_agent());
   request.set(::http::to_string(::http::field::accept), "application/json");
   request.set(::http::to_string(::http::field::host), host_);
   for (const auto& pair : headers)
@@ -89,6 +93,7 @@ void airmap::net::http::boost::Requester::patch(const std::string& path,
   ::boost::beast::http::request<::boost::beast::http::string_body> request;
   request.method(::http::verb::patch);
   request.target(path);
+  request.set(::http::to_string(::http::field::user_agent), user_agent());
   request.set(::http::to_string(::http::field::accept), "application/json");
   request.set(::http::to_string(::http::field::content_type), "application/json");
   request.set(::http::to_string(::http::field::host), host_);
@@ -114,6 +119,7 @@ void airmap::net::http::boost::Requester::post(const std::string& path,
   ::boost::beast::http::request<::boost::beast::http::string_body> request;
   request.method(::http::verb::post);
   request.target(path);
+  request.set(::http::to_string(::http::field::user_agent), user_agent());
   request.set(::http::to_string(::http::field::accept), "application/json");
   request.set(::http::to_string(::http::field::content_type), "application/json");
   request.set(::http::to_string(::http::field::host), host_);

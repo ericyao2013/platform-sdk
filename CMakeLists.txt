@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 project(airmap)
 
+set(AIRMAPD_VERSION_MAJOR 0)
+set(AIRMAPD_VERSION_MINOR 0)
+set(AIRMAPD_VERSION_PATCH 1)
+
 enable_testing()
 
 find_package(Boost REQUIRED date_time program_options system)
@@ -10,6 +14,8 @@ find_package(Protobuf REQUIRED)
 pkg_check_modules(OPENSSL REQUIRED openssl)
 
 # All vendored dependencies should be listed here
+set(SPDLOG_BUILD_TESTING OFF CACHE BOOL "Build the spdlog tests")
+set(Uri_BUILD_TESTS OFF CACHE BOOL "Build the URI tests")
 add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/uri EXCLUDE_FROM_ALL)
@@ -33,6 +39,8 @@ include_directories(
 
   ${OPENSSL_INCLUDE_DIRS}
   ${PROTOBUF_INCLUDE_DIRS})
+
+configure_file(src/airmap/version.cpp.in src/airmap/version.cpp)
 
 protobuf_generate_cpp(
   TELEMETRY_PROTOBUF_SOURCES
@@ -100,6 +108,8 @@ add_library(
   src/airmap/codec/json/authenticator.cpp
   src/airmap/codec/json/chrono.h
   src/airmap/codec/json/chrono.cpp
+  src/airmap/codec/json/client.h
+  src/airmap/codec/json/client.cpp
   src/airmap/codec/json/date_time.h
   src/airmap/codec/json/date_time.cpp
   src/airmap/codec/json/flight.h
@@ -122,11 +132,13 @@ add_library(
   src/airmap/net/http/requester.h
   src/airmap/net/http/requester_with_api_key.h
   src/airmap/net/http/requester_with_api_key.cpp
+  src/airmap/net/http/user_agent.h
+  src/airmap/net/http/user_agent.cpp
   src/airmap/net/http/boost/request.h
   src/airmap/net/http/boost/request.cpp
   src/airmap/net/http/boost/requester.h
   src/airmap/net/http/boost/requester.cpp
-  
+
   src/airmap/net/mqtt/client.h
   src/airmap/net/mqtt/boost/broker.h
   src/airmap/net/mqtt/boost/broker.cpp
@@ -182,6 +194,8 @@ add_library(
   src/airmap/util/scenario_simulator.cpp
   src/airmap/util/telemetry_simulator.h
   src/airmap/util/telemetry_simulator.cpp
+
+  ${CMAKE_CURRENT_BINARY_DIR}/src/airmap/version.cpp
 
   ${TELEMETRY_PROTOBUF_SOURCES}
   ${TELEMETRY_PROTOBUF_HEADERS}

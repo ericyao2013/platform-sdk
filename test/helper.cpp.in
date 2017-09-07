@@ -1,0 +1,5 @@
+#include <helper.h>
+
+std::string test::source_dir() {
+  return "@CMAKE_SOURCE_DIR@/test";
+}

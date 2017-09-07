@@ -1,0 +1,6 @@
+#include <airmap/version.h>
+
+const airmap::Version& airmap::Version::current() {
+    static Version version{@AIRMAPD_VERSION_MAJOR@, @AIRMAPD_VERSION_MINOR@, @AIRMAPD_VERSION_PATCH@};
+    return version;
+}
