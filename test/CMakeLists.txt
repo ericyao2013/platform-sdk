@@ -12,6 +12,11 @@ set_property(TARGET client_test PROPERTY CXX_STANDARD 14)
 target_link_libraries(client_test airmap-client)
 add_test(client_test client_test)
 
+add_executable(geometry_test ${CMAKE_CURRENT_BINARY_DIR}/helper.cpp geometry_test.cpp)
+set_property(TARGET geometry_test PROPERTY CXX_STANDARD 14)
+target_link_libraries(geometry_test airmap-client)
+add_test(geometry_test geometry_test)
+
 add_executable(platform_test ${CMAKE_CURRENT_BINARY_DIR}/helper.cpp platform_test.cpp)
 set_property(TARGET platform_test PROPERTY CXX_STANDARD 14)
 target_link_libraries(platform_test airmap-client ${Boost_LIBRARIES})
