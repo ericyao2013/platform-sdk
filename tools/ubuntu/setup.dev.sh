@@ -8,6 +8,7 @@ apt install -y \
   build-essential \
   cmake \
   libboost-date-time1.63-dev \
+  libboost-filesystem1.63-dev \
   libboost-program-options1.63-dev \
   libboost-system1.63-dev \
   libprotobuf-dev \

@@ -24,6 +24,7 @@ The implementation is structured as followed:
  - `src/airmap/cmds`: Command-line executables
  - `src/airmap/codec`: Encoding and decoding of core data types and structures into different formats
  - `src/airmap/mavlink`: MavLink-specific for reading and writing MavLink-messages over arbitrary transports
+ - `src/airmap/platform`: Platform-specific interfaces and implementations go here
  - `src/airmap/rest`: An implementation of the public-facing API, using the existing ReST-APIs exposed by AirMap
  - `src/airmap/util`: Utility classes and helpers
 

@@ -7,18 +7,56 @@ set(AIRMAPD_VERSION_PATCH 1)
 
 enable_testing()
 
-find_package(Boost REQUIRED date_time program_options system)
+find_package(Boost REQUIRED date_time filesystem program_options system)
 find_package(PkgConfig)
 find_package(Protobuf REQUIRED)
 
 pkg_check_modules(OPENSSL REQUIRED openssl)
 
+# Detecting the platform at build time and exposing
+# information on the platform to the platform
+set(AIRMAP_PLATFORM "null")
+
+if (UNIX)
+# We are treating OS X as a proper Linux-like operating system and store
+# configuration files according to the XDG directory standard.
+set(AIRMAP_PLATFORM "linux")
+endif()
+
+message(STATUS "Enabling platform ${AIRMAP_PLATFORM}")
+
+set(
+  AIRMAP_PLATFORM_SRCS
+  src/airmap/platform/null/interface.h
+  src/airmap/platform/null/interface.cpp
+  src/airmap/platform/null/standard_paths.h
+  src/airmap/platform/null/standard_paths.cpp
+)
+
+if (${AIRMAP_PLATFORM} STREQUAL "linux")
+  add_definitions(-DAIRMAP_PLATFORM_LINUX)
+  set(
+    AIRMAP_PLATFORM_SRCS
+    ${AIRMAP_PLATFORM_SRCS}
+    src/airmap/platform/linux/interface.h
+    src/airmap/platform/linux/interface.cpp
+    src/airmap/platform/linux/standard_paths.h
+    src/airmap/platform/linux/standard_paths.cpp
+  )
+  set(AIRMAP_PLATFORM_LIBRARIES ${AIRMAP_PLATFORM_LIBRARIES} xdg)
+else()
+  add_definitions(-DAIRMAP_PLATFORM_NULL)
+endif()
+
 # All vendored dependencies should be listed here
 set(SPDLOG_BUILD_TESTING OFF CACHE BOOL "Build the spdlog tests")
 set(Uri_BUILD_TESTS OFF CACHE BOOL "Build the URI tests")
+set(XDG_BUILD_TESTS OFF CACHE BOOL "Build the xdg tests")
+
 add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/uri EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/xdg EXCLUDE_FROM_ALL)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -Wextra -fPIC")
@@ -27,6 +65,7 @@ include_directories(
   include
   src
 
+  vendor/
   vendor/beast/include
   vendor/fmt
   vendor/mavlink
@@ -186,6 +225,11 @@ add_library(
   src/airmap/mavlink/boost/tcp_channel.h
   src/airmap/mavlink/boost/tcp_channel.cpp
 
+  src/airmap/platform/interface.h
+  src/airmap/platform/interface.cpp
+  src/airmap/platform/standard_paths.cpp
+  src/airmap/platform/standard_paths.h
+
   src/airmap/util/cheap_ruler.h
   src/airmap/util/cheap_ruler.cpp
   src/airmap/util/cli.h
@@ -196,6 +240,8 @@ add_library(
   src/airmap/util/telemetry_simulator.cpp
 
   ${CMAKE_CURRENT_BINARY_DIR}/src/airmap/version.cpp
+
+  ${AIRMAP_PLATFORM_SRCS}
 
   ${TELEMETRY_PROTOBUF_SOURCES}
   ${TELEMETRY_PROTOBUF_HEADERS}
@@ -247,7 +293,7 @@ set_property(TARGET airmap-server PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap-telemetry-simulator PROPERTY CXX_STANDARD 14)
 
-target_link_libraries(airmap-client fmt network-uri spdlog ${Boost_LIBRARIES} ${OPENSSL_LDFLAGS} ${PROTOBUF_LIBRARIES})
+target_link_libraries(airmap-client fmt network-uri spdlog ${AIRMAP_PLATFORM_LIBRARIES} ${Boost_LIBRARIES} ${OPENSSL_LDFLAGS} ${PROTOBUF_LIBRARIES})
 target_link_libraries(airmap airmap-client )
 target_link_libraries(airmap-server airmap-client)
 target_link_libraries(airmap-telemetry-simulator airmap-client)
