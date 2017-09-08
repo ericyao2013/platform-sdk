@@ -2,33 +2,24 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} 3rd_party)
 
 configure_file(helper.cpp.in helper.cpp)
 
-add_executable(airspace_test ${CMAKE_CURRENT_BINARY_DIR}/helper.cpp airspace_test.cpp)
-set_property(TARGET airspace_test PROPERTY CXX_STANDARD 14)
-target_link_libraries(airspace_test airmap-client)
-add_test(airspace_test airspace_test)
+add_library(
+    airmap-test-helper
 
-add_executable(client_test ${CMAKE_CURRENT_BINARY_DIR}/helper.cpp client_test.cpp)
-set_property(TARGET client_test PROPERTY CXX_STANDARD 14)
-target_link_libraries(client_test airmap-client)
-add_test(client_test client_test)
+    helper.h
+    ${CMAKE_CURRENT_BINARY_DIR}/helper.cpp
+)
 
-add_executable(geometry_test ${CMAKE_CURRENT_BINARY_DIR}/helper.cpp geometry_test.cpp)
-set_property(TARGET geometry_test PROPERTY CXX_STANDARD 14)
-target_link_libraries(geometry_test airmap-client)
-add_test(geometry_test geometry_test)
+function(airmap_add_test name source)
+  add_executable(${name} ${source})
+  target_compile_definitions(${name} PRIVATE -DCATCH_CONFIG_MAIN)
+  set_property(TARGET ${name} PROPERTY CXX_STANDARD 14)
+  target_link_libraries(${name} airmap-client airmap-test-helper ${Boost_LIBRARIES})
+  add_test(${name} ${name})
+endfunction (airmap_add_test)
 
-add_executable(platform_test ${CMAKE_CURRENT_BINARY_DIR}/helper.cpp platform_test.cpp)
-set_property(TARGET platform_test PROPERTY CXX_STANDARD 14)
-target_link_libraries(platform_test airmap-client ${Boost_LIBRARIES})
-add_test(platform_test platform_test)
-
-add_executable(rest_test ${CMAKE_CURRENT_BINARY_DIR}/helper.cpp rest_test.cpp)
-set_property(TARGET rest_test PROPERTY CXX_STANDARD 14)
-target_link_libraries(rest_test airmap-client)
-add_test(rest_test rest_test)
-
-add_executable(telemetry_test ${CMAKE_CURRENT_BINARY_DIR}/helper.cpp telemetry_test.cpp)
-set_property(TARGET telemetry_test PROPERTY CXX_STANDARD 14)
-target_link_libraries(telemetry_test airmap-client)
-# TODO(tvoss): Revisit test case
-# add_test(telemetry_test telemetry_test)
+airmap_add_test(airspace_test airspace_test.cpp)
+airmap_add_test(client_test client_test.cpp)
+airmap_add_test(geometry_test geometry_test.cpp)
+airmap_add_test(platform_test platform_test.cpp)
+airmap_add_test(rest_test rest_test.cpp)
+# airmap_add_test(telemetry_test telemetry_test.cpp)

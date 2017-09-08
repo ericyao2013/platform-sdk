@@ -1,5 +1,3 @@
-#define CATCH_CONFIG_MAIN
-
 #include <airmap/airspace.h>
 
 #include <catch/catch.hpp>

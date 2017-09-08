@@ -1,5 +1,3 @@
-#define CATCH_CONFIG_MAIN
-
 #include <airmap/net/http/requester.h>
 
 #include <airmap/rest/aircrafts.h>

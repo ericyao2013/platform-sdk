@@ -1,5 +1,3 @@
-#define CATCH_CONFIG_MAIN
-
 #include <airmap/platform/interface.h>
 #include <airmap/platform/standard_paths.h>
 

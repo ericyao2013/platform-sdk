@@ -1,5 +1,3 @@
-#define CATCH_CONFIG_MAIN
-
 #include <airmap/rest/telemetry.h>
 
 #include <boost/beast/core/detail/base64.hpp>

@@ -1,5 +1,3 @@
-#define CATCH_CONFIG_MAIN
-
 #include <helper.h>
 
 #include <airmap/client.h>
