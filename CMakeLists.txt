@@ -284,8 +284,8 @@ add_executable(
   src/airmap/cmds/airmap/cmd/simulate_telemetry.cpp
   src/airmap/cmds/airmap/cmd/start_flight_comms.h
   src/airmap/cmds/airmap/cmd/start_flight_comms.cpp
-  src/airmap/cmds/airmap/cmd/monitor_dashboard.h
-  src/airmap/cmds/airmap/cmd/monitor_dashboard.cpp
+  src/airmap/cmds/airmap/cmd/monitor_mids.h
+  src/airmap/cmds/airmap/cmd/monitor_mids.cpp
   src/airmap/cmds/airmap/cmd/monitor_traffic.h
   src/airmap/cmds/airmap/cmd/monitor_traffic.cpp
 

@@ -1,4 +1,4 @@
-#include <airmap/cmds/airmap/cmd/monitor_dashboard.h>
+#include <airmap/cmds/airmap/cmd/monitor_mids.h>
 
 #include <airmap/client.h>
 #include <airmap/context.h>
@@ -17,12 +17,12 @@ namespace cli = airmap::util::cli;
 namespace cmd = airmap::cmds::airmap::cmd;
 
 namespace {
-constexpr const char* component{"monitor-traffic"};
+constexpr const char* component{"monitor-mids"};
 }
 
-cmd::MonitorDashboard::MonitorDashboard()
-    : cli::CommandWithFlagsAndAction{"monitor-dashboard", "monitor traffic visible to dashboards",
-                                     "monitor traffic visible to dashboards"} {
+cmd::MonitorMids::MonitorMids()
+    : cli::CommandWithFlagsAndAction{"monitor-mids", "monitor traffic visible to mids",
+                                     "monitor traffic visible to mids"} {
   flag(flags::log_level(params_.log_level));
   flag(cli::make_flag("mids", "comma-separated list of mids", params_.mids));
   flag(cli::make_flag("mqtt-host", "host address of the mqtt broker", params_.mqtt.host));
