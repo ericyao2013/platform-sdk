@@ -86,6 +86,11 @@ protobuf_generate_cpp(
   TELEMETRY_PROTOBUF_HEADERS
   src/airmap/rest/telemetry.proto)
 
+protobuf_generate_cpp(
+  AIRMAP_TELEMETRY_AMD_UAV_FLIGHT_UPDATE_PROTOBUF_SOURCES
+  AIRMAP_TELEMETRY_AMD_UAV_FLIGHT_UPDATE_PROTOBUF_HEADERS
+  vendor/airmap/am-protos/protos/telemetry/amd_uav_flight_update.proto)
+
 add_library(
   airmap-client
 
@@ -279,8 +284,14 @@ add_executable(
   src/airmap/cmds/airmap/cmd/simulate_telemetry.cpp
   src/airmap/cmds/airmap/cmd/start_flight_comms.h
   src/airmap/cmds/airmap/cmd/start_flight_comms.cpp
+  src/airmap/cmds/airmap/cmd/monitor_dashboard.h
+  src/airmap/cmds/airmap/cmd/monitor_dashboard.cpp
   src/airmap/cmds/airmap/cmd/monitor_traffic.h
-  src/airmap/cmds/airmap/cmd/monitor_traffic.cpp)
+  src/airmap/cmds/airmap/cmd/monitor_traffic.cpp
+
+  ${AIRMAP_TELEMETRY_AMD_UAV_FLIGHT_UPDATE_PROTOBUF_SOURCES}
+  ${AIRMAP_TELEMETRY_AMD_UAV_FLIGHT_UPDATE_PROTOBUF_HEADERS}
+)
 
 
 add_executable(

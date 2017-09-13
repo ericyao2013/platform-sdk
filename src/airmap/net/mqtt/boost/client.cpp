@@ -118,7 +118,7 @@ std::unique_ptr<airmap::net::mqtt::Client::Subscription> airmap::net::mqtt::boos
 
 void airmap::net::mqtt::boost::Client::handle_publish(std::uint8_t, ::boost::optional<std::uint16_t>, std::string topic,
                                                       std::string contents) {
-  log_.debugf(component, "received publish from mqtt broker for topic %s: %s", topic, contents);
+  log_.debugf(component, "received publish from mqtt broker for topic %s: size of contents %d", topic, contents.size());
   auto range = topic_map_.equal_range(topic);
   for (auto it = range.first; it != range.second; ++it) {
     it->second(topic, contents);

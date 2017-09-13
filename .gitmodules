@@ -21,3 +21,6 @@
 [submodule "vendor/xdg"]
 	path = vendor/xdg
 	url = https://github.com/vosst/xdg.git
+[submodule "vendor/airmap/am-protos"]
+	path = vendor/airmap/am-protos
+	url = https://github.com/airmap/am-protos.git
