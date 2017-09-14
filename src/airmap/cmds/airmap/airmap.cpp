@@ -4,6 +4,10 @@
 #include <airmap/cmds/airmap/cmd/create_flight.h>
 #include <airmap/cmds/airmap/cmd/daemon.h>
 #include <airmap/cmds/airmap/cmd/get_status.h>
+<<<<<<< HEAD
+=======
+#include <airmap/cmds/airmap/cmd/login.h>
+>>>>>>> e12087d070e3f1cccea68182a9bb9d08ec19c625
 #include <airmap/cmds/airmap/cmd/monitor_mids.h>
 #include <airmap/cmds/airmap/cmd/monitor_traffic.h>
 #include <airmap/cmds/airmap/cmd/pilot.h>
@@ -30,6 +34,10 @@ class Airmap : airmap::DoNotCopyOrMove {
     cmd_.command(std::make_shared<cmd::CreateFlight>());
     cmd_.command(std::make_shared<cmd::Daemon>());
     cmd_.command(std::make_shared<cmd::GetStatus>());
+<<<<<<< HEAD
+=======
+    cmd_.command(std::make_shared<cmd::Login>());
+>>>>>>> e12087d070e3f1cccea68182a9bb9d08ec19c625
     cmd_.command(std::make_shared<cmd::MonitorMids>());
     cmd_.command(std::make_shared<cmd::MonitorTraffic>());
     cmd_.command(std::make_shared<cmd::Pilot>());
