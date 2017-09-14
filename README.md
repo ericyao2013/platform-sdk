@@ -108,7 +108,10 @@ Users should replace `${AIRMAP_SERVICE_VERSION}` with `production` or `staging`.
 
 ## Running `airmapd` on Intel Aero
 
-Please refer to https://airmap.atlassian.net/wiki/spaces/AIRMAP/pages/69992501/Intel+Aero for Intel Aero setup instructions.
+Please refer to
+
+ * https://airmap.atlassian.net/wiki/spaces/AIRMAP/pages/69992501/Intel+Aero for Intel Aero setup instructions.
+ * https://github.com/airmap/intel-aero for scripts and identities that help in provisioning Intel.
 
 Please note that these instructions only apply to Intel Aero images featuring `systemd`.
 This is the case if you are using the latest Intel Aero image (1.5.1 at the time of this writing).
