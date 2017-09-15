@@ -268,12 +268,6 @@ add_executable(
   airmap
 
   src/airmap/cmds/airmap/airmap.cpp
-  src/airmap/cmds/airmap/cmd/authorize_refresh.h
-  src/airmap/cmds/airmap/cmd/authorize_refresh.cpp
-  src/airmap/cmds/airmap/cmd/authorize_anonymous.h
-  src/airmap/cmds/airmap/cmd/authorize_anonymous.cpp
-  src/airmap/cmds/airmap/cmd/authorize_password.h
-  src/airmap/cmds/airmap/cmd/authorize_password.cpp
   src/airmap/cmds/airmap/cmd/create_flight.h
   src/airmap/cmds/airmap/cmd/create_flight.cpp
   src/airmap/cmds/airmap/cmd/daemon.h

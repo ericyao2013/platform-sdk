@@ -1,6 +1,3 @@
-#include <airmap/cmds/airmap/cmd/authorize_anonymous.h>
-#include <airmap/cmds/airmap/cmd/authorize_password.h>
-#include <airmap/cmds/airmap/cmd/authorize_refresh.h>
 #include <airmap/cmds/airmap/cmd/create_flight.h>
 #include <airmap/cmds/airmap/cmd/daemon.h>
 #include <airmap/cmds/airmap/cmd/get_status.h>
@@ -26,9 +23,6 @@ class Airmap : airmap::DoNotCopyOrMove {
   Airmap()
       : cmd_{cli::Name{"airmap"}, cli::Usage{"interacts with AirMap services"},
              cli::Description{"interacts with AirMap services"}} {
-    cmd_.command(std::make_shared<cmd::AuthorizePassword>());
-    cmd_.command(std::make_shared<cmd::AuthorizeAnonymous>());
-    cmd_.command(std::make_shared<cmd::AuthorizeRefresh>());
     cmd_.command(std::make_shared<cmd::CreateFlight>());
     cmd_.command(std::make_shared<cmd::Daemon>());
     cmd_.command(std::make_shared<cmd::GetStatus>());
