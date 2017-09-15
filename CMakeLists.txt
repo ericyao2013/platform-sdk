@@ -296,6 +296,8 @@ add_executable(
   src/airmap/cmds/airmap/cmd/monitor_mids.cpp
   src/airmap/cmds/airmap/cmd/monitor_traffic.h
   src/airmap/cmds/airmap/cmd/monitor_traffic.cpp
+  src/airmap/cmds/airmap/cmd/version.h
+  src/airmap/cmds/airmap/cmd/version.cpp
 
   ${AIRMAP_TELEMETRY_AMD_UAV_FLIGHT_UPDATE_PROTOBUF_SOURCES}
   ${AIRMAP_TELEMETRY_AMD_UAV_FLIGHT_UPDATE_PROTOBUF_HEADERS}
