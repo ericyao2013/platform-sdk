@@ -10,6 +10,7 @@
 #include <airmap/logger.h>
 #include <airmap/optional.h>
 #include <airmap/status.h>
+#include <airmap/token.h>
 #include <airmap/util/cli.h>
 #include <airmap/util/formatting_logger.h>
 
@@ -23,14 +24,18 @@ class Login : public util::cli::CommandWithFlagsAndAction {
   Login();
 
  private:
+  void renew_authentication(const Credentials& credentials, const Token& token);
   void request_authentication(const Credentials& credentials);
   void handle_result_for_authentication_with_password(const Authenticator::AuthenticateWithPassword::Result& result);
   void handle_result_for_anonymous_authentication(const Authenticator::AuthenticateAnonymously::Result& result);
+  void handle_result_for_renewed_authentication(const Authenticator::RenewAuthentication::Result& result);
 
   util::FormattingLogger log_{create_null_logger()};
   Client::Version version_{Client::Version::production};
   Logger::Severity log_level_{Logger::Severity::info};
   Optional<ConfigFile> config_file_;
+  Optional<TokenFile> token_file_;
+  bool renew_{false};
   std::shared_ptr<::airmap::Context> context_;
   std::shared_ptr<Client> client_;
 };
