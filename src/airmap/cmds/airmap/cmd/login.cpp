@@ -81,7 +81,7 @@ cmd::Login::Login()
             if (token_file_) {
               auto token = Token::load_from_json(token_file);
               if (token.type() != Token::Type::oauth || token.oauth().refresh.empty()) {
-                log_.errorf(component, "failed to open token file %s for reading", token_file_.get());
+                log_.errorf(component, "token file %s does not hold renewable token", token_file_.get());
                 context_->stop(::airmap::Context::ReturnCode::error);
               } else {
                 renew_authentication(config.credentials, token);
