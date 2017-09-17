@@ -57,7 +57,8 @@ void airmap::codec::json::decode(const nlohmann::json& j, Token::Refreshed& toke
 
 void airmap::codec::json::decode(const nlohmann::json& j, Token::Refreshed::Type& type) {
   auto t = j.get<std::string>();
-  if (t == "bearer")
+
+  if (t == "Bearer")
     type = Token::Refreshed::Type::bearer;
 }
 
@@ -107,5 +108,5 @@ void airmap::codec::json::encode(nlohmann::json& j, const Token::Refreshed& toke
 
 void airmap::codec::json::encode(nlohmann::json& j, const Token::Refreshed::Type& type) {
   if (type == Token::Refreshed::Type::bearer)
-    j = "bearer";
+    j = "Bearer";
 }
