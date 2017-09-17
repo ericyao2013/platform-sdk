@@ -86,7 +86,7 @@ TEST_CASE("airmap::Token") {
   }
   SECTION("Token::Type::refreshed is correctly parsed from JSON") {
     auto json =
-        R"_({"type": "refreshed", "refreshed": {"id_token": "id_token","expires_in": 42,"token_type": "bearer"}})_";
+        R"_({"type": "refreshed", "refreshed": {"id_token": "id_token","expires_in": 42,"token_type": "Bearer"}})_";
     std::stringstream ss{json};
     auto token = airmap::Token::load_from_json(ss);
     REQUIRE(token.type() == airmap::Token::Type::refreshed);
