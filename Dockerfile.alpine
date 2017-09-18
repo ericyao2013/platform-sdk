@@ -7,10 +7,10 @@ COPY . /usr/src/app
 RUN tools/alpine/setup.dev.sh
 RUN mkdir build
 WORKDIR build
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr ..
-RUN make
-RUN make test
-RUN make install
+RUN cmake -DCMAKE_INSTALL_PREFIX=/usr -G Ninja ..
+RUN ninja
+RUN ninja test
+RUN ninja install
 WORKDIR /usr/src/app
 RUN tools/alpine/cleanup.dev.sh
 WORKDIR /tmp
