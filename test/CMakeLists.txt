@@ -1,3 +1,5 @@
+set(AIRMAP_TEST_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE PATH "place test logs in this directory")
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} 3rd_party)
 
 configure_file(helper.cpp.in helper.cpp)
@@ -14,7 +16,7 @@ function(airmap_add_test name source)
   target_compile_definitions(${name} PRIVATE -DCATCH_CONFIG_MAIN)
   set_property(TARGET ${name} PROPERTY CXX_STANDARD 14)
   target_link_libraries(${name} airmap-client airmap-test-helper ${Boost_LIBRARIES})
-  add_test(${name} ${name})
+  add_test(${name} ${name} -x --logger=XML,all,${AIRMAP_TEST_OUTPUT_DIRECTORY}/${name}.xml)
 endfunction (airmap_add_test)
 
 airmap_add_test(airspace_test airspace_test.cpp)

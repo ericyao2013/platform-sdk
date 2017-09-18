@@ -1,3 +1,5 @@
+#define BOOST_TEST_MODULE rest
+
 #include <airmap/net/http/requester.h>
 
 #include <airmap/rest/aircrafts.h>
@@ -7,7 +9,7 @@
 
 #include <airmap/codec.h>
 
-#include <catch/catch.hpp>
+#include <boost/test/included/unit_test.hpp>
 #include <trompeloeil/trompeloeil.hpp>
 
 namespace mock = trompeloeil;
@@ -28,139 +30,132 @@ constexpr airmap::Client::Version version{airmap::Client::Version::production};
 
 }  // namespace
 
-TEST_CASE("rest") {
-  using mock::_;
+using mock::_;
 
-  SECTION("aircrafts") {
-    SECTION("search for manufactureres issues get request with correct parameters") {
-      airmap::Aircrafts::Manufacturers::Parameters parameters;
-      StringMap query;
-      airmap::codec::http::query::encode(query, parameters);
+BOOST_AUTO_TEST_CASE(api_aircraft_search_for_manufactureres_issues_get_request_with_correct_parameters) {
+  airmap::Aircrafts::Manufacturers::Parameters parameters;
+  StringMap query;
+  airmap::codec::http::query::encode(query, parameters);
 
-      auto requester = std::make_shared<MockHttpRequester>();
-      REQUIRE_CALL(*requester, get(mock::eq<std::string>("/aircraft/v2/manufacturer"), mock::eq<StringMap>(query),
-                                   ANY(StringMap), ANY(airmap::net::http::Requester::Callback)));
+  auto requester = std::make_shared<MockHttpRequester>();
+  REQUIRE_CALL(*requester, get(mock::eq<std::string>("/aircraft/v2/manufacturer"), mock::eq<StringMap>(query),
+                               ANY(StringMap), ANY(airmap::net::http::Requester::Callback)));
 
-      airmap::rest::Aircrafts aircrafts{version, requester};
-      aircrafts.manufacturers(parameters, [](const airmap::Aircrafts::Manufacturers::Result&) {});
-    }
+  airmap::rest::Aircrafts aircrafts{version, requester};
+  aircrafts.manufacturers(parameters, [](const airmap::Aircrafts::Manufacturers::Result&) {});
+}
 
-    SECTION("search for models issues get request with correct parameters") {
-      airmap::Aircrafts::Models::Parameters parameters;
-      StringMap query;
-      airmap::codec::http::query::encode(query, parameters);
+BOOST_AUTO_TEST_CASE(api_aircraft_search_for_models_issues_get_request_with_correct_parameters) {
+  airmap::Aircrafts::Models::Parameters parameters;
+  StringMap query;
+  airmap::codec::http::query::encode(query, parameters);
 
-      auto requester = std::make_shared<MockHttpRequester>();
-      REQUIRE_CALL(*requester, get(mock::eq<std::string>("/aircraft/v2/model"), mock::eq<StringMap>(query),
-                                   ANY(StringMap), ANY(airmap::net::http::Requester::Callback)));
+  auto requester = std::make_shared<MockHttpRequester>();
+  REQUIRE_CALL(*requester, get(mock::eq<std::string>("/aircraft/v2/model"), mock::eq<StringMap>(query), ANY(StringMap),
+                               ANY(airmap::net::http::Requester::Callback)));
 
-      airmap::rest::Aircrafts aircrafts{version, requester};
-      aircrafts.models(parameters, [](const airmap::Aircrafts::Models::Result&) {});
-    }
+  airmap::rest::Aircrafts aircrafts{version, requester};
+  aircrafts.models(parameters, [](const airmap::Aircrafts::Models::Result&) {});
+}
 
-    SECTION("search for model by id issues get request with correct parameters") {
-      airmap::Aircrafts::ModelForId::Parameters parameters;
-      parameters.id = "42";
+BOOST_AUTO_TEST_CASE(api_aircraft_search_for_model_by_id_issues_get_request_with_correct_parameters) {
+  airmap::Aircrafts::ModelForId::Parameters parameters;
+  parameters.id = "42";
 
-      auto requester = std::make_shared<MockHttpRequester>();
-      REQUIRE_CALL(*requester, get(mock::eq<std::string>("/aircraft/v2/model/" + parameters.id), ANY(StringMap),
-                                   ANY(StringMap), ANY(airmap::net::http::Requester::Callback)));
+  auto requester = std::make_shared<MockHttpRequester>();
+  REQUIRE_CALL(*requester, get(mock::eq<std::string>("/aircraft/v2/model/" + parameters.id), ANY(StringMap),
+                               ANY(StringMap), ANY(airmap::net::http::Requester::Callback)));
 
-      airmap::rest::Aircrafts aircrafts{version, requester};
-      aircrafts.model_for_id(parameters, [](const airmap::Aircrafts::ModelForId::Result&) {});
-    }
-  }
+  airmap::rest::Aircrafts aircrafts{version, requester};
+  aircrafts.model_for_id(parameters, [](const airmap::Aircrafts::ModelForId::Result&) {});
+}
 
-  SECTION("airspaces") {
-    SECTION("search issues get request with correct parameters") {
-      airmap::Airspaces::Search::Parameters parameters;
-      StringMap query;
-      airmap::codec::http::query::encode(query, parameters);
+BOOST_AUTO_TEST_CASE(api_airspace_search_issues_get_request_with_correct_parameters) {
+  airmap::Airspaces::Search::Parameters parameters;
+  StringMap query;
+  airmap::codec::http::query::encode(query, parameters);
 
-      auto requester = std::make_shared<MockHttpRequester>();
-      REQUIRE_CALL(*requester, get(mock::eq<std::string>("/airspace/v2/search"), mock::eq<StringMap>(query),
-                                   ANY(StringMap), ANY(airmap::net::http::Requester::Callback)));
+  auto requester = std::make_shared<MockHttpRequester>();
+  REQUIRE_CALL(*requester, get(mock::eq<std::string>("/airspace/v2/search"), mock::eq<StringMap>(query), ANY(StringMap),
+                               ANY(airmap::net::http::Requester::Callback)));
 
-      airmap::rest::Airspaces airspaces{version, requester};
-      airspaces.search(parameters, [](const airmap::Airspaces::Search::Result&) {});
-    }
-    SECTION("for id issues get request with correct parameters") {
-      airmap::Airspaces::ForIds::Parameters parameters;
-      parameters.id = "42";
+  airmap::rest::Airspaces airspaces{version, requester};
+  airspaces.search(parameters, [](const airmap::Airspaces::Search::Result&) {});
+}
+BOOST_AUTO_TEST_CASE(api_airspace_for_id_issues_get_request_with_correct_parameters) {
+  airmap::Airspaces::ForIds::Parameters parameters;
+  parameters.id = "42";
 
-      auto requester = std::make_shared<MockHttpRequester>();
-      REQUIRE_CALL(*requester, get(mock::eq<std::string>("/airspace/v2/" + parameters.id), ANY(StringMap),
-                                   ANY(StringMap), ANY(airmap::net::http::Requester::Callback)));
+  auto requester = std::make_shared<MockHttpRequester>();
+  REQUIRE_CALL(*requester, get(mock::eq<std::string>("/airspace/v2/" + parameters.id), ANY(StringMap), ANY(StringMap),
+                               ANY(airmap::net::http::Requester::Callback)));
 
-      airmap::rest::Airspaces airspaces{version, requester};
-      airspaces.for_ids(parameters, [](const airmap::Airspaces::ForIds::Result&) {});
-    }
-  }
+  airmap::rest::Airspaces airspaces{version, requester};
+  airspaces.for_ids(parameters, [](const airmap::Airspaces::ForIds::Result&) {});
+}
 
-  SECTION("flights") {
-    SECTION("search issues get request with correct parameters") {
-      airmap::Flights::Search::Parameters parameters;
-      StringMap query;
-      airmap::codec::http::query::encode(query, parameters);
+BOOST_AUTO_TEST_CASE(api_flights_search_issues_get_request_with_correct_parameters) {
+  airmap::Flights::Search::Parameters parameters;
+  StringMap query;
+  airmap::codec::http::query::encode(query, parameters);
 
-      auto requester = std::make_shared<MockHttpRequester>();
-      REQUIRE_CALL(*requester, get(mock::eq<std::string>("/flight/v2"), mock::eq<StringMap>(query), ANY(StringMap),
-                                   ANY(airmap::net::http::Requester::Callback)));
+  auto requester = std::make_shared<MockHttpRequester>();
+  REQUIRE_CALL(*requester, get(mock::eq<std::string>("/flight/v2"), mock::eq<StringMap>(query), ANY(StringMap),
+                               ANY(airmap::net::http::Requester::Callback)));
 
-      airmap::rest::Flights flights{version, requester};
-      flights.search(parameters, [](const airmap::Flights::Search::Result&) {});
-    }
-    SECTION("for id issues get request with correct parameters") {
-      airmap::Flights::ForId::Parameters parameters;
-      parameters.id = "flight|abc";
+  airmap::rest::Flights flights{version, requester};
+  flights.search(parameters, [](const airmap::Flights::Search::Result&) {});
+}
 
-      auto requester = std::make_shared<MockHttpRequester>();
-      REQUIRE_CALL(*requester, get(mock::eq<std::string>("/flight/v2/" + parameters.id), ANY(StringMap), ANY(StringMap),
-                                   ANY(airmap::net::http::Requester::Callback)));
+BOOST_AUTO_TEST_CASE(api_flights_for_id_issues_get_request_with_correct_parameters) {
+  airmap::Flights::ForId::Parameters parameters;
+  parameters.id = "flight|abc";
 
-      airmap::rest::Flights flights{version, requester};
-      flights.for_id(parameters, [](const airmap::Flights::ForId::Result&) {});
-    }
-  }
+  auto requester = std::make_shared<MockHttpRequester>();
+  REQUIRE_CALL(*requester, get(mock::eq<std::string>("/flight/v2/" + parameters.id), ANY(StringMap), ANY(StringMap),
+                               ANY(airmap::net::http::Requester::Callback)));
 
-  SECTION("pilots") {
-    SECTION("authenticated issues get request with correct parameters") {
-      airmap::Pilots::Authenticated::Parameters parameters;
+  airmap::rest::Flights flights{version, requester};
+  flights.for_id(parameters, [](const airmap::Flights::ForId::Result&) {});
+}
 
-      StringMap query;
-      airmap::codec::http::query::encode(query, parameters);
+BOOST_AUTO_TEST_CASE(api_pilots_authenticated_issues_get_request_with_correct_parameters) {
+  airmap::Pilots::Authenticated::Parameters parameters;
 
-      auto requester = std::make_shared<MockHttpRequester>();
-      REQUIRE_CALL(*requester, get(mock::eq<std::string>("/pilot/v2/profile"), mock::eq<StringMap>(query),
-                                   ANY(StringMap), ANY(airmap::net::http::Requester::Callback)));
+  StringMap query;
+  airmap::codec::http::query::encode(query, parameters);
 
-      airmap::rest::Pilots pilots{version, requester};
-      pilots.authenticated(parameters, [](const auto&) {});
-    }
-    SECTION("for_id issues get request with correct parameters") {
-      airmap::Pilots::ForId::Parameters parameters;
-      parameters.id = "test";
-      StringMap query;
-      airmap::codec::http::query::encode(query, parameters);
+  auto requester = std::make_shared<MockHttpRequester>();
+  REQUIRE_CALL(*requester, get(mock::eq<std::string>("/pilot/v2/profile"), mock::eq<StringMap>(query), ANY(StringMap),
+                               ANY(airmap::net::http::Requester::Callback)));
 
-      auto requester = std::make_shared<MockHttpRequester>();
-      REQUIRE_CALL(*requester, get(mock::eq<std::string>("/pilot/v2/test"), mock::eq<StringMap>(query), ANY(StringMap),
-                                   ANY(airmap::net::http::Requester::Callback)));
+  airmap::rest::Pilots pilots{version, requester};
+  pilots.authenticated(parameters, [](const auto&) {});
+}
 
-      airmap::rest::Pilots pilots{version, requester};
-      pilots.for_id(parameters, [](const auto&) {});
-    }
-    SECTION("aircrafts issues get request with correct parameters") {
-      airmap::Pilots::Aircrafts::Parameters parameters;
-      parameters.id = "test";
-      StringMap query;
+BOOST_AUTO_TEST_CASE(api_pilots_for_id_issues_get_request_with_correct_parameters) {
+  airmap::Pilots::ForId::Parameters parameters;
+  parameters.id = "test";
+  StringMap query;
+  airmap::codec::http::query::encode(query, parameters);
 
-      auto requester = std::make_shared<MockHttpRequester>();
-      REQUIRE_CALL(*requester, get(mock::eq<std::string>("/pilot/v2/test/aircraft"), mock::eq<StringMap>(query),
-                                   ANY(StringMap), ANY(airmap::net::http::Requester::Callback)));
+  auto requester = std::make_shared<MockHttpRequester>();
+  REQUIRE_CALL(*requester, get(mock::eq<std::string>("/pilot/v2/test"), mock::eq<StringMap>(query), ANY(StringMap),
+                               ANY(airmap::net::http::Requester::Callback)));
 
-      airmap::rest::Pilots pilots{version, requester};
-      pilots.aircrafts(parameters, [](const auto&) {});
-    }
-  }
+  airmap::rest::Pilots pilots{version, requester};
+  pilots.for_id(parameters, [](const auto&) {});
+}
+
+BOOST_AUTO_TEST_CASE(api_pilot_aircrafts_issues_get_request_with_correct_parameters) {
+  airmap::Pilots::Aircrafts::Parameters parameters;
+  parameters.id = "test";
+  StringMap query;
+
+  auto requester = std::make_shared<MockHttpRequester>();
+  REQUIRE_CALL(*requester, get(mock::eq<std::string>("/pilot/v2/test/aircraft"), mock::eq<StringMap>(query),
+                               ANY(StringMap), ANY(airmap::net::http::Requester::Callback)));
+
+  airmap::rest::Pilots pilots{version, requester};
+  pilots.aircrafts(parameters, [](const auto&) {});
 }

@@ -1,73 +1,66 @@
+#define BOOST_TEST_MODULE platform
+
 #include <airmap/platform/interface.h>
 #include <airmap/platform/standard_paths.h>
 
 #include <airmap/platform/null/interface.h>
 
-#include <catch/catch.hpp>
+#include <boost/test/included/unit_test.hpp>
 
-TEST_CASE("platform") {
-  SECTION("enum platform::StandardPaths::Scope") {
-    SECTION("is inserted correctly into output stream") {
-      {
-        std::stringstream ss;
-        ss << airmap::platform::StandardPaths::Scope::system;
-        REQUIRE(ss.str() == "system");
-      }
-      {
-        std::stringstream ss;
-        ss << airmap::platform::StandardPaths::Scope::user;
-        REQUIRE(ss.str() == "user");
-      }
-    }
+BOOST_AUTO_TEST_CASE(scope_is_inserted_correctly_into_output_stream) {
+  {
+    std::stringstream ss;
+    ss << airmap::platform::StandardPaths::Scope::system;
+    BOOST_TEST(ss.str() == "system");
   }
-  SECTION("enum platform::StandardPaths::Location") {
-    SECTION("is inserted correctly into output stream") {
-      {
-        std::stringstream ss;
-        ss << airmap::platform::StandardPaths::Location::cache;
-        REQUIRE(ss.str() == "cache");
-      }
-      {
-        std::stringstream ss;
-        ss << airmap::platform::StandardPaths::Location::config;
-        REQUIRE(ss.str() == "config");
-      }
-      {
-        std::stringstream ss;
-        ss << airmap::platform::StandardPaths::Location::data;
-        REQUIRE(ss.str() == "data");
-      }
-      {
-        std::stringstream ss;
-        ss << airmap::platform::StandardPaths::Location::runtime;
-        REQUIRE(ss.str() == "runtime");
-      }
-    }
+  {
+    std::stringstream ss;
+    ss << airmap::platform::StandardPaths::Scope::user;
+    BOOST_TEST(ss.str() == "user");
   }
 }
 
-TEST_CASE("null platform") {
-  SECTION("always returns initial path") {
-    airmap::platform::null::Interface itf;
-    for (auto scope : {airmap::platform::StandardPaths::Scope::user, airmap::platform::StandardPaths::Scope::system})
-      for (auto location :
-           {airmap::platform::StandardPaths::Location::cache, airmap::platform::StandardPaths::Location::config,
-            airmap::platform::StandardPaths::Location::data, airmap::platform::StandardPaths::Location::runtime})
-        REQUIRE(itf.standard_paths().path(scope, location) == airmap::platform::initial_path());
+BOOST_AUTO_TEST_CASE(location_is_inserted_correctly_into_output_stream) {
+  {
+    std::stringstream ss;
+    ss << airmap::platform::StandardPaths::Location::cache;
+    BOOST_TEST(ss.str() == "cache");
   }
+  {
+    std::stringstream ss;
+    ss << airmap::platform::StandardPaths::Location::config;
+    BOOST_TEST(ss.str() == "config");
+  }
+  {
+    std::stringstream ss;
+    ss << airmap::platform::StandardPaths::Location::data;
+    BOOST_TEST(ss.str() == "data");
+  }
+  {
+    std::stringstream ss;
+    ss << airmap::platform::StandardPaths::Location::runtime;
+    BOOST_TEST(ss.str() == "runtime");
+  }
+}
+
+BOOST_AUTO_TEST_CASE(null_platform_always_returns_initial_path) {
+  airmap::platform::null::Interface itf;
+  for (auto scope : {airmap::platform::StandardPaths::Scope::user, airmap::platform::StandardPaths::Scope::system})
+    for (auto location :
+         {airmap::platform::StandardPaths::Location::cache, airmap::platform::StandardPaths::Location::config,
+          airmap::platform::StandardPaths::Location::data, airmap::platform::StandardPaths::Location::runtime})
+      BOOST_TEST(itf.standard_paths().path(scope, location) == airmap::platform::initial_path());
 }
 
 #if defined(AIRMAP_PLATFORM_LINUX)
 
-TEST_CASE("linux platform") {
-  SECTION("never throws for queries for paths") {
-    airmap::platform::null::Interface itf;
-    for (auto scope : {airmap::platform::StandardPaths::Scope::user, airmap::platform::StandardPaths::Scope::system})
-      for (auto location :
-           {airmap::platform::StandardPaths::Location::cache, airmap::platform::StandardPaths::Location::config,
-            airmap::platform::StandardPaths::Location::data, airmap::platform::StandardPaths::Location::runtime})
-        REQUIRE_NOTHROW(itf.standard_paths().path(scope, location));
-  }
+BOOST_AUTO_TEST_CASE(linux_platform_never_throws_for_queries_for_paths) {
+  airmap::platform::null::Interface itf;
+  for (auto scope : {airmap::platform::StandardPaths::Scope::user, airmap::platform::StandardPaths::Scope::system})
+    for (auto location :
+         {airmap::platform::StandardPaths::Location::cache, airmap::platform::StandardPaths::Location::config,
+          airmap::platform::StandardPaths::Location::data, airmap::platform::StandardPaths::Location::runtime})
+      BOOST_TEST_NOTHROW(itf.standard_paths().path(scope, location));
 }
 
 #endif  // AIRMAP_PLATFORM_LINUX

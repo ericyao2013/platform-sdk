@@ -1,50 +1,64 @@
+#define BOOST_TEST_MODULE geometry
+
 #include <airmap/geometry.h>
 
-#include <catch/catch.hpp>
+#include <boost/test/included/unit_test.hpp>
 
-TEST_CASE("Geometry") {
-  SECTION("default ctor yields an invalid geometry") {
-    airmap::Geometry geometry;
-    REQUIRE(geometry.type() == airmap::Geometry::Type::invalid);
-  }
-  SECTION("copy ctor yields instances that compare equal") {
-    airmap::Geometry g1, g2;
-    REQUIRE(g1 == g2);
-  }
-  SECTION("assignment operator yields instances that compare equal") {
-    SECTION("for default ctor") {
-      airmap::Geometry g1;
-      auto g2 = g1;
-      REQUIRE(g1 == g2);
-    }
-    SECTION("for instances with trivial details") {
-      airmap::Geometry::Point p;
-      p.latitude  = 42.f;
-      p.longitude = 21.f;
-      p.altitude  = 6.f;
+namespace airmap {
 
-      airmap::Geometry g1{p};
-      auto g2 = g1;
-      REQUIRE(g1 == g2);
-    }
-    SECTION("for instances with complex details") {
-      airmap::Geometry::GeometryCollection gc;
+std::ostream& operator<<(std::ostream& out, Geometry::Type) {
+  return out;
+}
 
-      airmap::Geometry::Point p;
-      p.latitude  = 42.f;
-      p.longitude = 21.f;
-      p.altitude  = 6.f;
+std::ostream& operator<<(std::ostream& out, const Geometry&) {
+  return out;
+}
 
-      airmap::Geometry::LineString ls;
-      ls.coordinates.push_back(airmap::Geometry::Coordinate{42.f, 21.f, 6.f, 6.f});
-      ls.coordinates.push_back(airmap::Geometry::Coordinate{41.f, 21.f, 6.f, 6.f});
+}  // namespace airmap
 
-      gc.push_back(airmap::Geometry{p});
-      gc.push_back(airmap::Geometry{ls});
+BOOST_AUTO_TEST_CASE(default_ctor_yields_an_invalid_geometry) {
+  airmap::Geometry geometry;
+  BOOST_TEST(geometry.type() == airmap::Geometry::Type::invalid);
+}
 
-      airmap::Geometry g1{gc};
-      auto g2 = g1;
-      REQUIRE(g1 == g2);
-    }
-  }
+BOOST_AUTO_TEST_CASE(copy_ctor_yields_instances_that_compare_equal) {
+  airmap::Geometry g1, g2;
+  BOOST_TEST(g1 == g2);
+}
+
+BOOST_AUTO_TEST_CASE(assignment_operator_yields_instances_that_compare_equal_for_default_ctor) {
+  airmap::Geometry g1;
+  auto g2 = g1;
+  BOOST_TEST(g1 == g2);
+}
+
+BOOST_AUTO_TEST_CASE(assignment_operator_yields_instances_that_compare_equal_for_instances_with_trivial_details) {
+  airmap::Geometry::Point p;
+  p.latitude  = 42.f;
+  p.longitude = 21.f;
+  p.altitude  = 6.f;
+
+  airmap::Geometry g1{p};
+  auto g2 = g1;
+  BOOST_TEST(g1 == g2);
+}
+
+BOOST_AUTO_TEST_CASE(assignment_operator_yields_instances_that_compare_equal_for_instances_with_complex_details) {
+  airmap::Geometry::GeometryCollection gc;
+
+  airmap::Geometry::Point p;
+  p.latitude  = 42.f;
+  p.longitude = 21.f;
+  p.altitude  = 6.f;
+
+  airmap::Geometry::LineString ls;
+  ls.coordinates.push_back(airmap::Geometry::Coordinate{42.f, 21.f, 6.f, 6.f});
+  ls.coordinates.push_back(airmap::Geometry::Coordinate{41.f, 21.f, 6.f, 6.f});
+
+  gc.push_back(airmap::Geometry{p});
+  gc.push_back(airmap::Geometry{ls});
+
+  airmap::Geometry g1{gc};
+  auto g2 = g1;
+  BOOST_TEST(g1 == g2);
 }

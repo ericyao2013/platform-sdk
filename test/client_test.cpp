@@ -1,55 +1,52 @@
+#define BOOST_TEST_MODULE client
+
 #include <helper.h>
 
 #include <airmap/client.h>
 
-#include <catch/catch.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 #include <fstream>
 
-TEST_CASE("airmap::Client") {
-  SECTION("Configuration") {
-    SECTION("can be parsed from valid json") {
-      std::ifstream json{test::source_dir() + "/airmapd.valid.config.json"};
-      auto config = airmap::Client::load_configuration_from_json(json);
-      REQUIRE(config.host == "api.airmap.com");
-      REQUIRE(config.version == airmap::Client::Version::production);
-      REQUIRE(config.sso.host == "sso.airmap.io");
-      REQUIRE(config.sso.port == 443);
-      REQUIRE(config.telemetry.host == "api-udp-telemetry.airmap.com");
-      REQUIRE(config.telemetry.port == 16060);
-      REQUIRE(config.traffic.host == "mqtt-prod.airmap.io");
-      REQUIRE(config.traffic.port == 8883);
-      REQUIRE(config.credentials.api_key == "lalelu");
-    }
+BOOST_AUTO_TEST_CASE(configuration_can_be_parsed_from_valid_json) {
+  std::ifstream json{test::source_dir() + "/airmapd.valid.config.json"};
+  auto config = airmap::Client::load_configuration_from_json(json);
+  BOOST_TEST(config.host == "api.airmap.com");
+  BOOST_TEST(config.version == airmap::Client::Version::production);
+  BOOST_TEST(config.sso.host == "sso.airmap.io");
+  BOOST_TEST(config.sso.port == 443);
+  BOOST_TEST(config.telemetry.host == "api-udp-telemetry.airmap.com");
+  BOOST_TEST(config.telemetry.port == 16060);
+  BOOST_TEST(config.traffic.host == "mqtt-prod.airmap.io");
+  BOOST_TEST(config.traffic.port == 8883);
+  BOOST_TEST(config.credentials.api_key == "lalelu");
+}
+
+BOOST_AUTO_TEST_CASE(version_is_read_correctly_from_input_stream) {
+  airmap::Client::Version version{airmap::Client::Version::production};
+
+  {
+    std::stringstream ss{"staging"};
+    ss >> version;
   }
+  BOOST_TEST(version == airmap::Client::Version::staging);
 
-  SECTION("Version") {
-    SECTION("is read correctly from input stream") {
-      airmap::Client::Version version{airmap::Client::Version::production};
+  {
+    std::stringstream ss{"production"};
+    ss >> version;
+  }
+  BOOST_TEST(version == airmap::Client::Version::production);
+}
 
-      {
-        std::stringstream ss{"staging"};
-        ss >> version;
-      }
-      REQUIRE(version == airmap::Client::Version::staging);
-
-      {
-        std::stringstream ss{"production"};
-        ss >> version;
-      }
-      REQUIRE(version == airmap::Client::Version::production);
-    }
-    SECTION("is written correctly to output stream") {
-      {
-        std::stringstream ss;
-        ss << airmap::Client::Version::production;
-        REQUIRE(ss.str() == "production");
-      }
-      {
-        std::stringstream ss;
-        ss << airmap::Client::Version::staging;
-        REQUIRE(ss.str() == "staging");
-      }
-    }
+BOOST_AUTO_TEST_CASE(version_is_written_correctly_to_output_stream) {
+  {
+    std::stringstream ss;
+    ss << airmap::Client::Version::production;
+    BOOST_TEST(ss.str() == "production");
+  }
+  {
+    std::stringstream ss;
+    ss << airmap::Client::Version::staging;
+    BOOST_TEST(ss.str() == "staging");
   }
 }
