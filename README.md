@@ -117,7 +117,7 @@ Please note that these instructions only apply to Intel Aero images featuring `s
 This is the case if you are using the latest Intel Aero image (1.5.1 at the time of this writing).
 
 We rely on `docker` to deliver `airmapd` to the Intel Aero. For that, you first need to buid a docker container with the
-following command line:
+following command line (*on your host machine*):
 ```
 tools/alpine/build-docker-image.sh
 ```
