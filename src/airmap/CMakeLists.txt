@@ -204,12 +204,6 @@ add_library(
   ${TELEMETRY_PROTOBUF_HEADERS}
 )
 
-add_library(
-  airmap-server
-
-  daemon.h
-  daemon.cpp)
-
 add_executable(
   airmap
 
@@ -245,20 +239,20 @@ add_executable(
   ${AIRMAP_TELEMETRY_AMD_UAV_FLIGHT_UPDATE_PROTOBUF_HEADERS}
 )
 
-
-add_executable(
-  airmap-telemetry-simulator
-
-  cmds/airmap_telemetry_simulator/airmap_telemetry_simulator.cpp)
-
 set_property(TARGET airmap-client PROPERTY CXX_STANDARD 14)
-set_property(TARGET airmap-server PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap PROPERTY CXX_STANDARD 14)
-set_property(TARGET airmap-telemetry-simulator PROPERTY CXX_STANDARD 14)
 
-target_link_libraries(airmap-client fmt network-uri spdlog ${AIRMAP_PLATFORM_LIBRARIES} ${Boost_LIBRARIES} ${OPENSSL_LDFLAGS} ${PROTOBUF_LIBRARIES})
+target_link_libraries(
+  airmap-client
+
+  fmt
+  network-uri
+  spdlog
+  ${AIRMAP_PLATFORM_LIBRARIES}
+  ${Boost_LIBRARIES}
+  ${OPENSSL_LDFLAGS}
+  ${PROTOBUF_LIBRARIES})
+
 target_link_libraries(airmap airmap-client )
-target_link_libraries(airmap-server airmap-client)
-target_link_libraries(airmap-telemetry-simulator airmap-client)
 
 install(TARGETS airmap RUNTIME DESTINATION bin)
