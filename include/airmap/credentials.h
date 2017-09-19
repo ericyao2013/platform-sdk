@@ -3,6 +3,7 @@
 
 #include <airmap/optional.h>
 
+#include <iosfwd>
 #include <string>
 
 namespace airmap {
@@ -10,6 +11,8 @@ namespace airmap {
 /// Credentials bundles up all credentials required
 /// to use the AirMap SDK and APIs.
 struct Credentials {
+  enum class Type { anonymous, oauth };
+
   /// Anonymous bundles up all attributes needed to
   /// authenticate anonymously with the AirMap services.
   struct Anonymous {
@@ -29,6 +32,11 @@ struct Credentials {
   Optional<OAuth> oauth;  /// Optional attributes for authenticating with username/password with the AirMap services
   Optional<Anonymous> anonymous;  /// Optional attributes for authenticating anonymously with the AirMap services
 };
+
+/// operator>> extracts type from in.
+std::istream& operator>>(std::istream& in, Credentials::Type& type);
+/// operator<< inserts type into out.
+std::ostream& operator<<(std::ostream& out, Credentials::Type type);
 
 }  // namespace airmap
 

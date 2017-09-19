@@ -44,6 +44,7 @@ add_library(
   ${CMAKE_SOURCE_DIR}/include/airmap/airspaces.h
   ${CMAKE_SOURCE_DIR}/include/airmap/authenticator.h
   ${CMAKE_SOURCE_DIR}/include/airmap/client.h
+  ${CMAKE_SOURCE_DIR}/include/airmap/credentials.h
   ${CMAKE_SOURCE_DIR}/include/airmap/date_time.h
   ${CMAKE_SOURCE_DIR}/include/airmap/flight.h
   ${CMAKE_SOURCE_DIR}/include/airmap/flights.h
@@ -60,6 +61,7 @@ add_library(
   client.cpp
   codec.h
   context.cpp
+  credentials.cpp
   date_time.cpp
   geometry.cpp
   jsend.h
@@ -220,6 +222,8 @@ add_executable(
   cmds/airmap/cmd/flags.cpp
   cmds/airmap/cmd/get_status.h
   cmds/airmap/cmd/get_status.cpp
+  cmds/airmap/cmd/init.h
+  cmds/airmap/cmd/init.cpp
   cmds/airmap/cmd/login.h
   cmds/airmap/cmd/login.cpp
   cmds/airmap/cmd/pilot.h

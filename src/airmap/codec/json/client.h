@@ -14,6 +14,8 @@ namespace json {
 
 void decode(const nlohmann::json& j, Client::Configuration& configuration);
 void decode(const nlohmann::json& j, Client::Version& version);
+void encode(nlohmann::json& j, const Client::Configuration& configuration);
+void encode(nlohmann::json& j, Client::Version version);
 
 }  // namespace json
 }  // namespace codec

@@ -21,6 +21,7 @@ endfunction (airmap_add_test)
 
 airmap_add_test(airspace_test airspace_test.cpp)
 airmap_add_test(client_test client_test.cpp)
+airmap_add_test(credentials_test credentials_test.cpp)
 airmap_add_test(geometry_test geometry_test.cpp)
 airmap_add_test(platform_test platform_test.cpp)
 airmap_add_test(rest_test rest_test.cpp)

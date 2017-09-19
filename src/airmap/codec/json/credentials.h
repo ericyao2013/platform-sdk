@@ -16,6 +16,9 @@ void decode(const nlohmann::json& j, Credentials::Anonymous& anonymous);
 void decode(const nlohmann::json& j, Credentials::OAuth& oauth);
 void decode(const nlohmann::json& j, Credentials& credentials);
 
+void encode(nlohmann::json& j, const Credentials::OAuth& oauth);
+void encode(nlohmann::json& j, const Credentials& credentials);
+
 }  // namespace json
 }  // namespace codec
 }  // namespace airmap

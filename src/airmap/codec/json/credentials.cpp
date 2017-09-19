@@ -19,3 +19,18 @@ void airmap::codec::json::decode(const nlohmann::json& j, Credentials& credentia
   get(credentials.anonymous, j, "anonymous");
   get(credentials.oauth, j, "oauth");
 }
+
+void airmap::codec::json::encode(nlohmann::json& j, const Credentials::OAuth& oauth) {
+  j["username"]  = oauth.username;
+  j["password"]  = oauth.password;
+  j["client-id"] = oauth.client_id;
+  j["device-id"] = oauth.device_id;
+}
+
+void airmap::codec::json::encode(nlohmann::json& j, const Credentials& credentials) {
+  j["api-key"] = credentials.api_key;
+  if (credentials.anonymous)
+    j["anonymous"] = credentials.anonymous;
+  if (credentials.oauth)
+    j["oauth"] = credentials.oauth;
+}

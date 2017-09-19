@@ -107,10 +107,10 @@ cmd::Login::Login()
 
 void cmd::Login::renew_authentication(const Credentials& credentials, const Token& token) {
   Authenticator::RenewAuthentication::Params params;
-  params.client_id = credentials.oauth.get().client_id;
+  params.client_id     = credentials.oauth.get().client_id;
   params.refresh_token = token.oauth().refresh;
   client_->authenticator().renew_authentication(
-    params, std::bind(&Login::handle_result_for_renewed_authentication, this, ph::_1));
+      params, std::bind(&Login::handle_result_for_renewed_authentication, this, ph::_1));
 }
 
 void cmd::Login::request_authentication(const Credentials& credentials) {

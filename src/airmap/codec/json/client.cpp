@@ -18,3 +18,19 @@ void airmap::codec::json::decode(const nlohmann::json& j, Client::Configuration&
 void airmap::codec::json::decode(const nlohmann::json& j, Client::Version& version) {
   version = boost::lexical_cast<Client::Version>(j.get<std::string>());
 }
+
+void airmap::codec::json::encode(nlohmann::json& j, const Client::Configuration& configuration) {
+  j["host"]              = configuration.host;
+  j["version"]           = configuration.version;
+  j["sso"]["host"]       = configuration.sso.host;
+  j["sso"]["port"]       = configuration.sso.port;
+  j["telemetry"]["host"] = configuration.telemetry.host;
+  j["telemetry"]["port"] = configuration.telemetry.port;
+  j["traffic"]["host"]   = configuration.traffic.host;
+  j["traffic"]["port"]   = configuration.traffic.port;
+  j["credentials"]       = configuration.credentials;
+}
+
+void airmap::codec::json::encode(nlohmann::json& j, Client::Version version) {
+  j = boost::lexical_cast<std::string>(version);
+}
