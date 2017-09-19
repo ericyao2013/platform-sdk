@@ -5,6 +5,8 @@
 #include <airmap/version.h>
 #include <nlohmann/json.hpp>
 
+#include <cstdlib>
+
 #include <fstream>
 
 namespace cli = airmap::util::cli;
@@ -13,6 +15,7 @@ using json    = nlohmann::json;
 
 namespace {
 constexpr const char* component{"init"};
+constexpr const char* replace_marker{"REPLACE_ME"};
 }  // namespace
 
 cmd::Init::Init()
@@ -29,29 +32,36 @@ cmd::Init::Init()
       config_file_ = ConfigFile{paths::config_file(version_).string()};
     }
 
-    std::ofstream config_file{config_file_.get()};
-    if (!config_file) {
-      log.errorf(component, "failed to open config file %s for writing", config_file_.get());
-      return 1;
+    {
+      // This scope ensures that the config_file is properly written to disk prior
+      // to invoking the user's editor on the file.
+      std::ofstream config_file{config_file_.get()};
+      if (!config_file) {
+        log.errorf(component, "failed to open config file %s for writing", config_file_.get());
+        return 1;
+      }
+
+      Credentials credentials;
+      credentials.api_key = replace_marker;
+
+      switch (credentials_type_) {
+        case Credentials::Type::anonymous:
+          credentials.anonymous = Credentials::Anonymous{replace_marker};
+          break;
+        case Credentials::Type::oauth:
+          credentials.oauth = Credentials::OAuth{replace_marker, replace_marker, replace_marker, replace_marker};
+          break;
+      }
+
+      json j = Client::default_configuration(version_, credentials);
+      config_file << j.dump(2);
+
+      log.infof(component, "persisted configuration to %s", config_file_.get());
     }
 
-    Credentials credentials;
-    credentials.api_key = "REPLACE_ME";
-
-    switch (credentials_type_) {
-      case Credentials::Type::anonymous:
-        credentials.anonymous = Credentials::Anonymous{"REPLACE_ME"};
-        break;
-      case Credentials::Type::oauth:
-        credentials.oauth = Credentials::OAuth{"REPLACE_ME", "REPLACE_ME", "REPLACE_ME", "REPLACE_ME"};
-        break;
+    if (auto editor = std::getenv("EDITOR")) {
+      std::system(fmt::sprintf("%s %s", editor, config_file_.get()).c_str());
     }
-
-    json j = Client::default_configuration(version_, credentials);
-    config_file << j.dump(2);
-
-    log.infof(component, "persisted configuration to %s", config_file_.get());
-    log.infof(component, "please edit %s and fill in your credentials", config_file_.get());
 
     return 0;
   });
