@@ -5,6 +5,28 @@ set(AIRMAPD_VERSION_MAJOR 0)
 set(AIRMAPD_VERSION_MINOR 0)
 set(AIRMAPD_VERSION_PATCH 1)
 
+find_program(GIT_EXECUTABLE
+  NAMES git
+  DOC "git executable"
+)
+
+if (GIT_EXECUTABLE)
+  execute_process(
+    COMMAND git rev-parse HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE AIRMAPD_VERSION_GIT_REVISION
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  message(STATUS "Building in git revision ${AIRMAPD_VERSION_GIT_REVISION}")
+else()
+  set(AIRMAPD_VERSION_GIT_REVISION "n/a")
+  message(STATUS "Executable git is missing, choosing default value for git revision")
+endif()
+
+
+string(TIMESTAMP AIRMAPD_VERSION_BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%S.000000Z" UTC)
+message(STATUS "Building in build timestamp ${AIRMAPD_VERSION_BUILD_TIMESTAMP}")
+
 enable_testing()
 
 find_package(Boost REQUIRED date_time filesystem program_options system)
