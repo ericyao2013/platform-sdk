@@ -49,7 +49,7 @@ void airmap::Daemon::handle_mavlink_message(const mavlink_message_t& msg) {
 }
 
 void airmap::Daemon::on_vehicle_added(const std::shared_ptr<mavlink::Vehicle>& vehicle) {
-  auto submitter = TelemetrySubmitter::create(configuration_.user_id, configuration_.aircraft_id, log_.logger(),
+  auto submitter = TelemetrySubmitter::create(configuration_.credentials, configuration_.aircraft_id, log_.logger(),
                                               configuration_.client);
   vehicle->register_monitor(std::make_shared<mavlink::LoggingVehicleMonitor>(
       component, log_.logger(), std::make_shared<SubmittingVehicleMonitor>(submitter)));
@@ -60,16 +60,16 @@ void airmap::Daemon::on_vehicle_removed(const std::shared_ptr<mavlink::Vehicle>&
 }
 
 std::shared_ptr<airmap::Daemon::TelemetrySubmitter> airmap::Daemon::TelemetrySubmitter::create(
-    const std::string& user_id, const std::string& aircraft_id, const std::shared_ptr<Logger>& logger,
+    const Credentials& credentials, const std::string& aircraft_id, const std::shared_ptr<Logger>& logger,
     const std::shared_ptr<Client>& client) {
   return std::shared_ptr<airmap::Daemon::TelemetrySubmitter>{
-      new airmap::Daemon::TelemetrySubmitter{user_id, aircraft_id, logger, client}};
+      new airmap::Daemon::TelemetrySubmitter{credentials, aircraft_id, logger, client}};
 }
 
-airmap::Daemon::TelemetrySubmitter::TelemetrySubmitter(const std::string& user_id, const std::string& aircraft_id,
+airmap::Daemon::TelemetrySubmitter::TelemetrySubmitter(const Credentials& credentials, const std::string& aircraft_id,
                                                        const std::shared_ptr<Logger>& logger,
                                                        const std::shared_ptr<Client>& client)
-    : log_{logger}, client_{client}, user_id_{user_id}, aircraft_id_{aircraft_id} {
+    : log_{logger}, client_{client}, credentials_{credentials}, aircraft_id_{aircraft_id} {
 }
 
 void airmap::Daemon::TelemetrySubmitter::activate() {
@@ -126,20 +126,38 @@ void airmap::Daemon::TelemetrySubmitter::request_authorization() {
     return;
   }
 
-  Authenticator::AuthenticateAnonymously::Params params{uuids::to_string(uuids::random_generator()())};
-  client_->authenticator().authenticate_anonymously(params, [sp = shared_from_this()](const auto& result) {
-    if (result) {
-      sp->handle_request_authorization_finished(result.value().id);
-    } else {
-      try {
-        std::rethrow_exception(result.error());
-      } catch (const std::exception& e) {
-        sp->log_.errorf(component, "failed to authenticate with AirMap services: %s", e.what());
-      } catch (...) {
-        sp->log_.errorf(component, "failed to authenticate with AirMap services");
+  if (credentials_.oauth) {
+    Authenticator::AuthenticateWithPassword::Params params;
+    params.oauth = credentials_.oauth.get();
+    client_->authenticator().authenticate_with_password(params, [sp = shared_from_this()](const auto& result) {
+      if (result) {
+        sp->handle_request_authorization_finished(result.value().id);
+      } else {
+        try {
+          std::rethrow_exception(result.error());
+        } catch (const std::exception& e) {
+          sp->log_.errorf(component, "failed to authenticate with AirMap services: %s", e.what());
+        } catch (...) {
+          sp->log_.errorf(component, "failed to authenticate with AirMap services");
+        }
       }
-    }
-  });
+    });
+  } else {
+    Authenticator::AuthenticateAnonymously::Params params{uuids::to_string(uuids::random_generator()())};
+    client_->authenticator().authenticate_anonymously(params, [sp = shared_from_this()](const auto& result) {
+      if (result) {
+        sp->handle_request_authorization_finished(result.value().id);
+      } else {
+        try {
+          std::rethrow_exception(result.error());
+        } catch (const std::exception& e) {
+          sp->log_.errorf(component, "failed to authenticate with AirMap services: %s", e.what());
+        } catch (...) {
+          sp->log_.errorf(component, "failed to authenticate with AirMap services");
+        }
+      }
+    });
+  }
 }
 
 void airmap::Daemon::TelemetrySubmitter::handle_request_authorization_finished(const std::string& authorization) {

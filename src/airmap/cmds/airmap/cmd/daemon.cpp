@@ -114,11 +114,7 @@ cmd::Daemon::Daemon() : cli::CommandWithFlagsAndAction{"daemon", "runs the airma
             return;
           }
 
-          ::airmap::Daemon::Configuration configuration{config.credentials.api_key,
-                                                        config.credentials.oauth.get().username,
-                                                        aircraft_id_.get(),
-                                                        log_.logger(),
-                                                        channel,
+          ::airmap::Daemon::Configuration configuration{config.credentials, aircraft_id_.get(), log_.logger(), channel,
                                                         result.value()};
 
           ::airmap::Daemon::create(configuration)->start();

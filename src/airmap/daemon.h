@@ -24,8 +24,7 @@ namespace airmap {
 class Daemon : public mavlink::VehicleTracker::Monitor, public std::enable_shared_from_this<Daemon> {
  public:
   struct Configuration {
-    std::string api_key;
-    std::string user_id;
+    Credentials credentials;
     std::string aircraft_id;
     std::shared_ptr<Logger> logger;
     std::shared_ptr<mavlink::Channel> channel;
@@ -60,7 +59,7 @@ class Daemon : public mavlink::VehicleTracker::Monitor, public std::enable_share
    public:
     enum class State { active, inactive };
 
-    static std::shared_ptr<TelemetrySubmitter> create(const std::string& user_id, const std::string& aircraft_id,
+    static std::shared_ptr<TelemetrySubmitter> create(const Credentials& credentials, const std::string& aircraft_id,
                                                       const std::shared_ptr<Logger>& logger,
                                                       const std::shared_ptr<Client>& client);
 
@@ -70,7 +69,7 @@ class Daemon : public mavlink::VehicleTracker::Monitor, public std::enable_share
     void submit(const mavlink::GlobalPositionInt&);
 
    private:
-    explicit TelemetrySubmitter(const std::string& user_id, const std::string& aircraft_id,
+    explicit TelemetrySubmitter(const Credentials& credentials, const std::string& aircraft_id,
                                 const std::shared_ptr<Logger>& logger, const std::shared_ptr<Client>& client);
 
     void request_authorization();
@@ -86,7 +85,7 @@ class Daemon : public mavlink::VehicleTracker::Monitor, public std::enable_share
 
     util::FormattingLogger log_;
     std::shared_ptr<Client> client_;
-    std::string user_id_;
+    Credentials credentials_;
     std::string aircraft_id_;
 
     Optional<mavlink::GlobalPositionInt> current_position_;
