@@ -24,6 +24,7 @@ cmd::Init::Init()
   flag(flags::config_file(config_file_));
   flag(flags::version(version_));
   flag(cli::make_flag("credentials-type", "type of credentials in {anonymous, oauth}", credentials_type_));
+  flag(cli::make_flag("interactive", "enable interactive editing of the final configuration file", interactive_));
 
   action([this](const cli::Command::Context& ctxt) {
     util::FormattingLogger log{create_default_logger(ctxt.cout)};
@@ -59,8 +60,10 @@ cmd::Init::Init()
       log.infof(component, "persisted configuration to %s", config_file_.get());
     }
 
-    if (auto editor = std::getenv("EDITOR")) {
-      std::system(fmt::sprintf("%s %s", editor, config_file_.get()).c_str());
+    if (interactive_) {
+      if (auto editor = std::getenv("EDITOR")) {
+        std::system(fmt::sprintf("%s %s", editor, config_file_.get()).c_str());
+      }
     }
 
     return 0;
