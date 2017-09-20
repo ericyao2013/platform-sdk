@@ -43,11 +43,39 @@ make format
 
 ## Setup & Dependencies:
 
-Please refer to the platform-specific `setup*.sh` scripts in the `tools/${PLATFORM}` subfolder. For Ubuntu, and under the assumption of `docker` being available,
-you can bootstrap a development environment in a `docker` container with:
+### Ubuntu
+Run the following commands from the top-level `airmapd` folder:
+
+```
+tools/ubuntu/setup.dev.sh
+mkdir build
+cd build
+cmake ..
+make
+```
+
+### Docker with Ubuntu
+Run the following commands from the top-level `airmapd` folder:
+
 ```
 docker run -v $(PWD):/airmapd -it ubuntu:17.04 bash
 tools/ubuntu/setup.dev.sh
+mkdir build
+cd build
+cmake ..
+make
+```
+
+
+### OS X
+Run the following commands from the top-level `airmapd` folder:
+
+```
+tools/osx/setup.sh
+mkdir build
+cd build
+cmake ..
+make
 ```
 
 ## Configuration
