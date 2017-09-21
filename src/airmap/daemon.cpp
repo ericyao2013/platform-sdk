@@ -111,8 +111,10 @@ void airmap::Daemon::TelemetrySubmitter::submit(const mavlink::GlobalPositionInt
 
   if (state_ == State::inactive)
     return;
-  if (!flight_ || !encryption_key_)
+  if (!authorization_ || !flight_ || !encryption_key_) {
+    request_authorization();
     return;
+  }
 
   client_->telemetry().submit_updates(flight_.get(), encryption_key_.get(),
                                       {Telemetry::Update{Telemetry::Position{
