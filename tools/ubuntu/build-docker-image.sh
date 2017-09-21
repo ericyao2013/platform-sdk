@@ -2,6 +2,6 @@
 
 set -ex
 
-# Please note that --squash=true requires a docker daemon that runs
-# with the experimental flag set to true.
-sudo docker build --force-rm=true --squash=true -t airmapd:latest -f Dockerfile.ubuntu .
+build_opts="--force-rm=true $@"
+
+sudo docker build ${build_opts} -t airmapd:latest -f Dockerfile.ubuntu .
