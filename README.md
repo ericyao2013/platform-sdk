@@ -124,9 +124,18 @@ airmap init
 ```
 If you have a default text editor configured (e.g., by setting $VISUAL or $EDITOR), the configuration file will be opened for editing for you. If not, you need to open the file `~/.config/airmap/production/config.json` in your favorite editor and fill in your actual credentials for accessing the AirMap services.
 
+## Authentication
+Authenticate with the AirMap services by running:
+```
+airmap login
+```
+This will place the resulting token into `~/.config/airmap/production/token.json`.
+If you have a proper AirMap account and authenticated previously, you can renew your authentication token by running:
+```
+airmap login --renew=true
+```
+
 ## Running `airmapd` on Intel Aero
-
 Please refer to
-
  * https://airmap.atlassian.net/wiki/spaces/AIRMAP/pages/69992501/Intel+Aero for Intel Aero setup instructions.
  * https://github.com/airmap/intel-aero for scripts and identities that help in provisioning Intel.
