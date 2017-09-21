@@ -10,8 +10,8 @@ class Airmapd < Formula
   depends_on "openssl"
 
   def install
-    system "mkdir", "build"
-    system "cd", "build"
+    Dir.mkdir("build")
+    Dir.chdir("build")
     system "cmake","-DCMAKE_INSTALL_PREFIX=#{prefix}", ".."
     system "make"
     system "make", "install"
