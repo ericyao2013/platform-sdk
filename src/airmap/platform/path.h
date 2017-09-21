@@ -7,8 +7,10 @@ namespace airmap {
 namespace platform {
 
 using Path = ::boost::filesystem::path;
+using ::boost::filesystem::create_directories;
 using ::boost::filesystem::current_path;
 using ::boost::filesystem::initial_path;
+using ::boost::filesystem::exists;
 
 }  // namespace platform
 }  // namespace airmap

@@ -34,6 +34,9 @@ cmd::Init::Init()
     }
 
     {
+      if (!platform::exists(paths::config_dir(version_)))
+        platform::create_directories(paths::config_dir(version_));
+
       // This scope ensures that the config_file is properly written to disk prior
       // to invoking the user's editor on the file.
       std::ofstream config_file{config_file_.get()};
@@ -61,9 +64,15 @@ cmd::Init::Init()
     }
 
     if (interactive_) {
-      if (auto editor = std::getenv("EDITOR")) {
-        std::system(fmt::sprintf("%s %s", editor, config_file_.get()).c_str());
+      std::string editor{"editor"};
+
+      if (auto ve = std::getenv("VISUAL")) {
+        editor = ve;
+      } else if (auto le = std::getenv("EDITOR")) {
+        editor = le;
       }
+
+      std::system(fmt::sprintf("%s %s", editor, config_file_.get()).c_str());
     }
 
     return 0;

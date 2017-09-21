@@ -118,31 +118,11 @@ The main configuration of the `airmap` executable lives in the file `~/.config/a
   }
 }
 ```
-Users should replace `${AIRMAP_SERVICE_VERSION}` with `production` or `staging`. You can request anonymous authentication by replacing the `oauth` block as in:
+Bootstrap a configuration by running:
 ```
-{
-  "host": "api.airmap.com",
-  "version": "production",
-  "sso": {
-    "host": "sso.airmap.io",
-    "port": 443
-  },
-  "telemetry": {
-    "host": "api-udp-telemetry.airmap.com",
-    "port": 16060
-  },
-  "traffic": {
-    "host": "mqtt-prod.airmap.io",
-    "port": 8883
-  },
-  "credentials": {
-    "api-key": "your api key should go here",
-    "anonymous": {
-      "id": "some id"
-    }
-  }
-}
+airmap init
 ```
+If you have a default text editor configured (e.g., by setting $VISUAL or $EDITOR), the configuration file will be opened for editing for you. If not, you need to open the file `~/.config/airmap/production/config.json` in your favorite editor and fill in your actual credentials for accessing the AirMap services.
 
 ## Running `airmapd` on Intel Aero
 
