@@ -66,10 +66,16 @@ cmake ..
 make
 ```
 
+### macOS - homebrew
+Run the following commands:
+```
+brew tap airmap/airmapd https://github.com/airmap/airmapd.git
+brew install airmap/airmapd
+```
+Please note that the recent updates to macOS and XCode (in 9.2017) break the cmake brew formula in version 3.9.3 (see https://gitlab.kitware.com/cmake/cmake/issues/17101 for the details). Please downgrade your brew cmake installation to 3.9.2.
 
-### OS X
+### macOS - Build Manually
 Run the following commands from the top-level `airmapd` folder:
-
 ```
 tools/osx/setup.sh
 mkdir build
