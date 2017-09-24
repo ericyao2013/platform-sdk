@@ -12,7 +12,9 @@
 
 namespace airmap {
 
+/// Pilot bundles up all properties describing a pilot on the AirMap services.
 struct Pilot {
+  /// Aircraft describes a vehicle owned by a Pilot.
   struct Aircraft {
     std::string id;
     std::string nick_name;
@@ -20,11 +22,11 @@ struct Pilot {
     DateTime created_at;
   };
 
-  std::string id;
-  std::string first_name;
-  std::string last_name;
-  std::string user_name;
-  Optional<std::string> picture_url;
+  std::string id;                     /// The unique id of the pilot in the context of AirMap.
+  std::string first_name;             /// The first name of the pilot.
+  std::string last_name;              /// The last name of the pilot.
+  std::string user_name;              /// The AirMap username of this pilot.
+  Optional<std::string> picture_url;  /// The URL of a picture showing the pilot.
 
   /// VerificationStatus summarizes the
   /// status of contact detail verification.
@@ -51,7 +53,7 @@ struct Pilot {
     std::map<std::string, std::string> app;
     std::map<std::string, std::string> user;
   } metadata;
-  DateTime created_at;
+  DateTime created_at;  /// Timestamp of the creation of this pilot in the AirMap system.
 };
 
 }  // namespace airmap

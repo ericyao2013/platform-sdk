@@ -7,8 +7,10 @@
 
 namespace airmap {
 
+/// Geometry bundles up different types of geometries.
 class Geometry {
  public:
+  /// Type enumerates all known geometry types.
   enum class Type {
     invalid,
     point,
@@ -20,6 +22,7 @@ class Geometry {
     geometry_collection
   };
 
+  /// Coordinate marks a point in 3-dimensional space.
   struct Coordinate {
     double latitude;
     double longitude;
@@ -27,6 +30,7 @@ class Geometry {
     Optional<double> elevation;
   };
 
+  /// CoordinateVector is a collection of points in 3-dimensional space.
   template <Type tag>
   struct CoordinateVector {
     std::vector<Coordinate> coordinates;
@@ -40,30 +44,49 @@ class Geometry {
   using MultiPolygon       = std::vector<Polygon>;
   using GeometryCollection = std::vector<Geometry>;
 
+  /// point returns a Geometry instance with Type::point at the given coordinate (lat, lon).
   static Geometry point(double lat, double lon);
+  /// polygon returns a Geometry instance with Type::polygon with the given 'coordinates'.
   static Geometry polygon(const std::vector<Coordinate>& coordinates);
 
+  /// Initializes a new instance with Type::invalid.
   Geometry();
+  /// Geometry initializes a new instance with the given Point.
   explicit Geometry(const Point& other);
+  /// Geometry initializes a new instance with the given MultiPoint.
   explicit Geometry(const MultiPoint& other);
+  /// Geometry initializes a new instance with the given LineString.
   explicit Geometry(const LineString& other);
+  /// Geometry initializes a new instance with the given MultiLineString.
   explicit Geometry(const MultiLineString& other);
+  /// Geometry initializes a new instance with the given Polyon.
   explicit Geometry(const Polygon& other);
+  /// Geometry initializes a new instance with the given MultiPolygon.
   explicit Geometry(const MultiPolygon& other);
+  /// Geometry initializes a new instance with the given GeometryCollection.
   explicit Geometry(const GeometryCollection& other);
+  /// @cond
   Geometry(const Geometry& other);
   ~Geometry();
-
   Geometry& operator=(const Geometry& rhs);
   bool operator==(const Geometry& rhs) const;
+  /// @endcond
 
+  /// type returns the Type of the geometry.
   Type type() const;
+  /// details_for_point returns an immutable instance to the contained Point instance.
   const Point& details_for_point() const;
+  /// details_for_multi_point returns an immutable instance to the contained MultiPoint instance.
   const MultiPoint& details_for_multi_point() const;
+  /// details_for_line_string returns an immutable instance to the contained LineString instance.
   const LineString& details_for_line_string() const;
+  /// details_for_multi_line_string returns an immutable instance to the contained MultiLineString instance.
   const MultiLineString& details_for_multi_line_string() const;
+  /// details_for_polygon returns an immutable instance to the contained Polygon instance.
   const Polygon& details_for_polygon() const;
+  /// details_for_multi_polygon returns an immutable instance to the contained MultiPolygon instance.
   const MultiPolygon& details_for_multi_polygon() const;
+  /// details_for_geometry_collection returns an immutable instance to the contained GeometryCollection instance.
   const GeometryCollection details_for_geometry_collection() const;
 
  private:
@@ -97,12 +120,14 @@ class Geometry {
   Data data_;
 };
 
+/// @cond
 bool operator==(const Geometry::Coordinate& lhs, const Geometry::Coordinate& rhs);
 
 template <Geometry::Type tag>
 bool operator==(const Geometry::CoordinateVector<tag>& lhs, const Geometry::CoordinateVector<tag>& rhs) {
   return lhs.coordinates == rhs.coordinates;
 }
+/// @endcond
 
 }  // namespace airmap
 

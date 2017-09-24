@@ -14,10 +14,14 @@
 
 namespace airmap {
 
+/// Pilots provides functionality to manage (the authorized) pilot.
 class Pilots : DoNotCopyOrMove {
  public:
+  /// Exclude enumerates fields that can be excluded when querying pilot and aircraft properties.
   enum class Exclude { aircraft = 1 << 0, user_metadata = 1 << 1, app_metadata = 1 << 2, authorized_apps = 1 << 3 };
 
+  /// Authenticated bundles up types to ease interaction
+  /// with Pilots::authenticated.
   struct Authenticated {
     struct Parameters {
       std::string authorization;
@@ -29,6 +33,8 @@ class Pilots : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// ForId bundles up types to ease interaction
+  /// with Pilots::for_id.
   struct ForId {
     struct Parameters {
       std::string authorization;
@@ -41,6 +47,8 @@ class Pilots : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// UpdateForId bundles up types to ease interaction
+  /// with Pilots::update_for_id.
   struct UpdateForId {
     struct Parameters {
       std::string authorization;
@@ -57,6 +65,8 @@ class Pilots : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// StartVerifyPilotPhoneForId bundles up types to ease interaction
+  /// with Pilots::start_verify_pilot_phone_for_id.
   struct StartVerifyPilotPhoneForId {
     struct Parameters {
       std::string authorization;
@@ -69,6 +79,8 @@ class Pilots : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// FinishVerifyPilotPhoneForId bundles up types to ease interaction
+  /// with Pilots::finish_verify_pilot_phone_for_id.
   struct FinishVerifyPilotPhoneForId {
     struct Parameters {
       std::string authorization;
@@ -82,6 +94,8 @@ class Pilots : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// Aircrafts bundles up types to ease interaction
+  /// with Pilots::aircrafts.
   struct Aircrafts {
     struct Parameters {
       std::string authorization;
@@ -92,6 +106,8 @@ class Pilots : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// AddAircraft bundles up types to ease interaction
+  /// with Pilots::add_aircraft.
   struct AddAircraft {
     struct Parameters {
       std::string authorization;
@@ -104,6 +120,8 @@ class Pilots : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// DeleteAircraft bundles up types to ease interaction
+  /// with Pilots::delete_aircraft.
   struct DeleteAircraft {
     struct Parameters {
       std::string authorization;
@@ -117,6 +135,8 @@ class Pilots : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// UpdateAircraft bundles up types to ease interaction
+  /// with Pilots::update_aircraft.
   struct UpdateAircraft {
     struct Parameters {
       std::string authorization;
@@ -169,9 +189,11 @@ class Pilots : DoNotCopyOrMove {
   Pilots() = default;
 };
 
+/// @cond
 Pilots::Exclude operator|(Pilots::Exclude, Pilots::Exclude);
 Pilots::Exclude operator&(Pilots::Exclude, Pilots::Exclude);
 std::ostream& operator<<(std::ostream& out, Pilots::Exclude exclude);
+/// @endcond
 
 }  // namespace airmap
 

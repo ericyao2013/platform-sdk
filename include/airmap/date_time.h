@@ -18,14 +18,20 @@ using Seconds      = boost::posix_time::seconds;
 using Milliseconds = boost::posix_time::milliseconds;
 using Microseconds = boost::posix_time::microseconds;
 
+/// milliseconds_since_epoch returns the milliseconds that elapsed since the UNIX epoch.
 std::uint64_t milliseconds_since_epoch(const DateTime& dt);
+/// from_seconds_since_epoch returns a DateTime.
 DateTime from_seconds_since_epoch(const Seconds& s);
+/// from_milliseconds_since_epoch returns a DateTime.
 DateTime from_milliseconds_since_epoch(const Milliseconds& ms);
+/// from_microseconds_since_epoch returns a DateTime.
 DateTime from_microseconds_since_epoch(const Microseconds& us);
 
 namespace iso8601 {
 
+/// parse parses a DateTime instance from the string s in iso8601 format.
 DateTime parse(const std::string& s);
+/// generate returns a string in iso8601 corresponding to 'dt'.
 std::string generate(const DateTime& dt);
 
 }  // namespace iso8601

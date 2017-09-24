@@ -5,7 +5,7 @@
 
 namespace airmap {
 
-// TODO(tvoss): Verify the clock we use for timestamping.
+/// Timestamp models a specific point in time.
 using Timestamp = DateTime;
 
 }  // namespace airmap

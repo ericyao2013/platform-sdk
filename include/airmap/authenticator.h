@@ -13,6 +13,7 @@
 
 namespace airmap {
 
+/// Authenticator provides functionality to authenticate with the AirMap services.
 class Authenticator : DoNotCopyOrMove {
  public:
   enum class Scope { access_token = 0, open_id = 1, open_id_offline_access = 2 };
@@ -21,10 +22,8 @@ class Authenticator : DoNotCopyOrMove {
 
   enum class Connection { username_password_authentication = 0 };
 
-  struct AnonymousToken {
-    std::string id;
-  };
-
+  /// AuthenticateWithPassword groups together types to ease interaction with
+  /// Authenticator::authenticate_with_password.
   struct AuthenticateWithPassword {
     struct Params {
       Credentials::OAuth oauth;
@@ -37,12 +36,16 @@ class Authenticator : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// AuthenticateAnonymously groups together types to ease interaction with
+  /// Authenticator::authenticate_anonymously.
   struct AuthenticateAnonymously {
     using Params   = Credentials::Anonymous;
     using Result   = Outcome<Token::Anonymous, std::exception_ptr>;
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// RenewAuthentication groups together types to ease interaction with
+  /// Authenticator::renew_authentication.
   struct RenewAuthentication {
     struct Params {
       std::string client_id;
@@ -70,7 +73,9 @@ class Authenticator : DoNotCopyOrMove {
                                     const RenewAuthentication::Callback& cb) = 0;
 
  protected:
+  /// @cond
   Authenticator() = default;
+  /// @endcond
 };
 
 }  // namespace airmap

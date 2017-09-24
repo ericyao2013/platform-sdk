@@ -5,19 +5,24 @@
 
 namespace airmap {
 
+/// Aircraft describes an aircraft in terms of its model and its manufacturer.
 struct Aircraft {
+  /// Model bundles up a model id and a product name.
   struct Model {
     std::string id;
     std::string name;
   };
 
+  /// Manufacturer bundles up an id and a human-readable name.
+  /// Please note that the id is only unique/relevant in the context of the
+  /// AirMap services.
   struct Manufacturer {
     std::string id;
     std::string name;
   };
 
-  Model model;
-  Manufacturer manufacturer;
+  Model model;                /// Details describing the model of an aircraft.
+  Manufacturer manufacturer;  /// Details about the manufacturer of an aircraft.
 };
 
 }  // namespace airmap

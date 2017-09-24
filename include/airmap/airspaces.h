@@ -11,8 +11,11 @@
 
 namespace airmap {
 
+/// Airspaces provides functionality to query the airspace database.
 class Airspaces : DoNotCopyOrMove {
  public:
+  /// ForIds groups together types to ease interaction with
+  /// Airspaces::ForIds.
   struct ForIds {
     struct Parameters {
       Airspace::Id id;
@@ -22,6 +25,8 @@ class Airspaces : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// Search groups together types to ease interaction with
+  /// Airspaces::Search.
   struct Search {
     struct Parameters {
       Optional<Airspace::Type> types;
@@ -47,7 +52,9 @@ class Airspaces : DoNotCopyOrMove {
   virtual void for_ids(const ForIds::Parameters& parameters, const ForIds::Callback& cb) = 0;
 
  protected:
+  /// cond
   Airspaces() = default;
+  /// @endcond
 };
 
 }  // namespace airmap

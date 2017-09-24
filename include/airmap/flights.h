@@ -14,8 +14,11 @@
 
 namespace airmap {
 
+/// Flights provides functionality for managing flights.
 class Flights : DoNotCopyOrMove {
  public:
+  /// ForId bundles up types to ease interaction with
+  /// Flights::for_id.
   struct ForId {
     struct Parameters {
       Optional<std::string> authorization;
@@ -27,6 +30,8 @@ class Flights : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// Search bundles up types to ease interaction with
+  /// Flights::search.
   struct Search {
     struct Parameters {
       Optional<std::string> authorization;
@@ -46,6 +51,8 @@ class Flights : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// CreateFlight bundles up types to ease interaction with
+  /// Flights::create_flight.
   struct CreateFlight {
     struct Parameters {
       std::string authorization;
@@ -64,6 +71,8 @@ class Flights : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// DeleteFlight bundles up types to ease interaction with
+  /// Flights::delete_flight.
   struct DeleteFlight {
     struct Parameters {
       std::string authorization;
@@ -78,6 +87,8 @@ class Flights : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// EndFlight bundles up types to ease interaction with
+  /// Flights::end_flight.
   struct EndFlight {
     struct Parameters {
       std::string authorization;
@@ -92,6 +103,8 @@ class Flights : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// StartFlightCommunications bundles up types to ease interaction with
+  /// Flights::start_flight_communications.
   struct StartFlightCommunications {
     struct Parameters {
       std::string authorization;
@@ -106,6 +119,8 @@ class Flights : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// EndFlightCommunications bundles up types to ease interaction with
+  /// Flights::end_flight_communications.
   struct EndFlightCommunications {
     struct Parameters {
       std::string authorization;
@@ -158,7 +173,9 @@ class Flights : DoNotCopyOrMove {
                                          const EndFlightCommunications::Callback& cb) = 0;
 
  protected:
+  /// @cond
   Flights() = default;
+  /// @endcond
 };
 
 }  // namespace airmap

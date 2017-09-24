@@ -16,21 +16,28 @@
 
 namespace airmap {
 
+/// Status provides functionality to query airspace and weather information about
+/// a geographic area.
 class Status : DoNotCopyOrMove {
  public:
+  /// Color enumerates known colors assigned to advisories.
   enum class Color { green = 0, yellow = 1, orange = 2, red = 3 };
 
+  /// Advisory bundles together airspace information and its evaluation in terms
+  /// good to fly/needs information or feedback/conflict.
   struct Advisory {
-    Airspace airspace;
-    Color color;
+    Airspace airspace;  /// The airspace that the advisory refers to.
+    Color color;        /// The evaluation of the airspace.
   };
 
+  /// Wind bundles up attributes describing a wind conditions.
   struct Wind {
     std::uint32_t heading = 0;
     std::uint32_t speed   = 0;
     std::uint32_t gusting = 0;
   };
 
+  /// Weather bundles up attributes describing a weather condition.
   struct Weather {
     std::string condition;
     std::string icon;
@@ -41,6 +48,7 @@ class Status : DoNotCopyOrMove {
     std::uint32_t precipitation = 0;
   };
 
+  /// Report summarizes information about a geographic area.
   struct Report {
     std::uint32_t max_safe_distance = 0;
     Color advisory_color;
@@ -48,6 +56,8 @@ class Status : DoNotCopyOrMove {
     Weather weather;
   };
 
+  /// GetStatus bundles up types to ease interaction
+  /// with Status::get_status*.
   struct GetStatus {
     struct Parameters {
       Required<float> latitude;
@@ -79,8 +89,10 @@ class Status : DoNotCopyOrMove {
   Status() = default;
 };
 
+/// @cond
 std::ostream& operator<<(std::ostream& out, Status::Color color);
 std::istream& operator>>(std::istream& in, Status::Color& color);
+/// @endcond
 
 }  // namespace airmap
 

@@ -122,12 +122,15 @@ class Client : DoNotCopyOrMove {
   virtual Traffic& traffic() = 0;
 
  protected:
+  /// @cond
   Client() = default;
+  /// @endcond
 };
 
+/// @cond
 std::istream& operator>>(std::istream& in, Client::Version& version);
 std::ostream& operator<<(std::ostream& out, Client::Version version);
-
+/// @endcond
 }  // namespace airmap
 
 #endif  // AIRMAP_CLIENT_H_

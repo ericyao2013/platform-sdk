@@ -10,20 +10,25 @@ namespace airmap {
 template <typename Value, typename Error>
 class Outcome {
  public:
+  /// @cond
   static_assert(not std::is_same<Value, Error>::value, "Value and Error must not be the same type");
   static_assert(std::is_copy_constructible<Value>::value && std::is_move_constructible<Value>::value,
                 "Value must be copy- and move-constructible");
   static_assert(std::is_copy_constructible<Error>::value && std::is_move_constructible<Error>::value,
                 "Error must be copy- and move-constructible");
+  /// @endcond
 
+  /// Outcome initializes a new instance with value.
   explicit Outcome(const Value& value) : type{Type::value} {
     new (&data.value) Value{value};
   }
 
+  /// Outcome initializes a new instance with error.
   explicit Outcome(const Error& error) : type{Type::error} {
     new (&data.error) Error{error};
   }
 
+  /// Outcome initializes a new instance with the value or error of 'other'.
   Outcome(const Outcome& other) : type{other.type} {
     switch (type) {
       case Type::error:
@@ -35,6 +40,7 @@ class Outcome {
     }
   }
 
+  /// Outcome initializes a new instance with the value or error of 'other'.
   Outcome(Outcome&& other) : type{other.type} {
     switch (type) {
       case Type::error:
@@ -46,6 +52,7 @@ class Outcome {
     }
   }
 
+  /// Outcome assigns the value or error contained in 'other' to this instance.
   Outcome& operator=(const Outcome& other) {
     switch (type) {
       case Type::error: {
@@ -74,6 +81,7 @@ class Outcome {
     return *this;
   }
 
+  /// Outcome assigns the value or error contained in 'other' to this instance.
   Outcome& operator=(Outcome&& other) {
     switch (type) {
       case Type::error: {
@@ -102,6 +110,7 @@ class Outcome {
     return *this;
   }
 
+  /// ~Outcome frees up the contained error or value contained in this instance.
   ~Outcome() {
     switch (type) {
       case Type::error:
@@ -113,21 +122,29 @@ class Outcome {
     }
   }
 
+  /// operator bool returns true if a value is contained in this instance.
   explicit operator bool() const {
     return !has_error();
   }
+
+  /// has_error returns true if this instance carries an error.
   inline bool has_error() const {
     return type == Type::error;
   }
 
+  /// has_value returns true if this instance carries a value.
   inline bool has_value() const {
     return type == Type::value;
   }
 
+  /// error returns an immutable reference to the Error contained in this instance.
+  /// The result of this call is undefined if has_error() returns false.
   inline const Error& error() const {
     return data.error;
   }
 
+  /// value returns an immutable reference to the Value contained in this instance.
+  /// The result of this call is undefined if has_value() returns false.
   inline const Value& value() const {
     return data.value;
   }

@@ -12,8 +12,12 @@
 
 namespace airmap {
 
+/// Aircrafts models access to a database of aircraft models (specifically drones)
+/// and manufacturers.
 class Aircrafts : DoNotCopyOrMove {
  public:
+  /// Manufacturers groups together types to ease interaction with
+  /// Aircrafts::manufacturers.
   struct Manufacturers {
     struct Parameters {
       Optional<std::string> manufacturer_name;
@@ -23,6 +27,8 @@ class Aircrafts : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// Models groups together types to ease interaction with
+  /// Aircrafts::models.
   struct Models {
     struct Parameters {
       Optional<Aircraft::Manufacturer> manufacturer;
@@ -33,6 +39,8 @@ class Aircrafts : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
+  /// ModelForId groups together types to ease interaction with
+  /// Aircrafts::model_for_id.
   struct ModelForId {
     struct Parameters {
       std::string id;
@@ -55,7 +63,9 @@ class Aircrafts : DoNotCopyOrMove {
   virtual void model_for_id(const ModelForId::Parameters& parameters, const ModelForId::Callback& cb) = 0;
 
  protected:
+  /// @cond
   Aircrafts() = default;
+  /// @endcond
 };
 
 }  // namespace airmap

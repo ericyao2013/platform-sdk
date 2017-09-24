@@ -103,7 +103,9 @@ class Traffic : DoNotCopyOrMove {
   virtual void monitor(const Monitor::Params& params, const Monitor::Callback& cb) = 0;
 
  protected:
+  /// @cond
   Traffic() = default;
+  /// @endcond
 };
 
 }  // namespace airmap

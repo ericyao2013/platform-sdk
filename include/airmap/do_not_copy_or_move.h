@@ -3,6 +3,7 @@
 
 namespace airmap {
 
+/// @cond
 struct DoNotCopyOrMove {
   DoNotCopyOrMove()                       = default;
   DoNotCopyOrMove(const DoNotCopyOrMove&) = delete;
@@ -11,6 +12,7 @@ struct DoNotCopyOrMove {
   DoNotCopyOrMove& operator=(const DoNotCopyOrMove&) = delete;
   DoNotCopyOrMove& operator=(DoNotCopyOrMove&&) = delete;
 };
+/// @endcond
 
 }  // namespace airmap
 

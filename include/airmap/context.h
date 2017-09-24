@@ -11,15 +11,24 @@
 
 namespace airmap {
 
+/// Context consitutes the point-of-entry for interaction with the classes and interfaces
+/// in airmap::*.
 class Context : DoNotCopyOrMove {
  public:
-  enum class ReturnCode { success = 0, error = 1, already_running = 2 };
+  /// ReturnCode enumerates all known return values for a call to run or exec.
+  enum class ReturnCode {
+    success         = 0,  /// Execution finished successfully
+    error           = 1,  /// Execution finished with an error
+    already_running = 2   /// Indicates that the context is already executing on another thread
+  };
 
+  /// @cond
   using ClientCreateResult   = Outcome<std::shared_ptr<Client>, std::exception_ptr>;
   using ClientCreateCallback = std::function<void(const ClientCreateResult&)>;
   using CreateResult         = Outcome<std::shared_ptr<Context>, std::exception_ptr>;
   using SignalHandler        = std::function<void(int)>;
   using SignalSet            = std::unordered_set<int>;
+  /// @endcond
 
   /// create tries to assemble and return a new Context instance.
   static CreateResult create(const std::shared_ptr<Logger>& logger);
@@ -50,7 +59,9 @@ class Context : DoNotCopyOrMove {
   virtual void stop(ReturnCode rc = ReturnCode::success) = 0;
 
  protected:
+  /// @cond
   Context() = default;
+  /// @endcond
 };
 
 }  // namespace airmap
