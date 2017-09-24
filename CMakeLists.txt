@@ -49,6 +49,7 @@ message(STATUS "Enabling platform ${AIRMAP_PLATFORM}")
 
 # All vendored dependencies should be listed here
 set(SPDLOG_BUILD_TESTING OFF CACHE BOOL "Build the spdlog tests")
+set(Uri_BUILD_DOCS OFF CACHE BOOL "Build the URI docs")
 set(Uri_BUILD_TESTS OFF CACHE BOOL "Build the URI tests")
 set(XDG_BUILD_TESTS OFF CACHE BOOL "Build the xdg tests")
 
@@ -78,6 +79,7 @@ include_directories(
   ${OPENSSL_INCLUDE_DIRS}
   ${PROTOBUF_INCLUDE_DIRS})
 
+add_subdirectory(doc)
 add_subdirectory(src/airmap)
 add_subdirectory(test)
 
