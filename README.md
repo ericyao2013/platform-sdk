@@ -21,8 +21,10 @@ and expose higher-level concepts.
 The implementation is structured as followed:
  - `src/airmap`: General implementation, most importantly:
    - `${AIRMAPD_ROOT}/src/airmap/daemon.h` and `${AIRMAPD_ROOT}/src/airmap/daemon.cpp` implementing `airmapd`
+ - `src/airmap/boost`: Point-of-entry to the boost-based implementation of core platform components
  - `src/airmap/cmds`: Command-line executables
  - `src/airmap/codec`: Encoding and decoding of core data types and structures into different formats
+ - `src/airmap/net`: Network-specific infrastructure goes here
  - `src/airmap/mavlink`: MavLink-specific for reading and writing MavLink-messages over arbitrary transports
  - `src/airmap/platform`: Platform-specific interfaces and implementations go here
  - `src/airmap/rest`: An implementation of the public-facing API, using the existing ReST-APIs exposed by AirMap
