@@ -13,16 +13,16 @@ namespace airmap {
 struct Flight {
   using Id = std::string;
 
-  Id id;                     /// The unique identifier of a flight in the context of AirMap.
-  Pilot pilot;               /// The pilot responsible for the flight.
-  Pilot::Aircraft aircraft;  /// The aircraft conducting the flight.
-  float latitude;            /// The latitude component of the takeoff point.
-  float longitude;           /// The longitude component of the takeoff point.
-  float max_altitude;        /// The maximum altitude over the entire flight.
-  Geometry geometry;         /// The geometry describing the flight.
-  DateTime created_at;       /// Point in time when the flight was created.
-  DateTime start_time;       /// Point in time when the flight will start/was started.
-  DateTime end_time;         /// Point in time when the fligth will end.
+  Id id;                     ///< The unique identifier of a flight in the context of AirMap.
+  Pilot pilot;               ///< The pilot responsible for the flight.
+  Pilot::Aircraft aircraft;  ///< The aircraft conducting the flight.
+  float latitude;            ///< The latitude component of the takeoff point in [°].
+  float longitude;           ///< The longitude component of the takeoff point in [°].
+  float max_altitude;        ///< The maximum altitude over the entire flight in [m].
+  Geometry geometry;         ///< The geometry describing the flight.
+  DateTime created_at;       ///< Point in time when the flight was created.
+  DateTime start_time;       ///< Point in time when the flight will start/was started.
+  DateTime end_time;         ///< Point in time when the fligth will end.
 };
 
 }  // namespace airmap
