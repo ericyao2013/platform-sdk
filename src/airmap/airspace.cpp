@@ -182,107 +182,107 @@ void airmap::Airspace::set_rules(const std::vector<Rule> &rules) {
   rules_ = rules;
 }
 
-const airmap::Airport &airmap::Airspace::details_for_airport() const {
+const airmap::Airspace::Airport &airmap::Airspace::details_for_airport() const {
   return details_.airport;
 }
 
-airmap::Airport &airmap::Airspace::details_for_airport() {
+airmap::Airspace::Airport &airmap::Airspace::details_for_airport() {
   return details_.airport;
 }
 
-const airmap::ControlledAirspace &airmap::Airspace::details_for_controlled_airspace() const {
+const airmap::Airspace::ControlledAirspace &airmap::Airspace::details_for_controlled_airspace() const {
   return details_.controlled_airspace;
 }
 
-airmap::ControlledAirspace &airmap::Airspace::details_for_controlled_airspace() {
+airmap::Airspace::ControlledAirspace &airmap::Airspace::details_for_controlled_airspace() {
   return details_.controlled_airspace;
 }
 
-const airmap::Emergency &airmap::Airspace::details_for_emergency() const {
+const airmap::Airspace::Emergency &airmap::Airspace::details_for_emergency() const {
   return details_.emergency;
 }
 
-airmap::Emergency &airmap::Airspace::details_for_emergency() {
+airmap::Airspace::Emergency &airmap::Airspace::details_for_emergency() {
   return details_.emergency;
 }
 
-const airmap::Fire &airmap::Airspace::details_for_fire() const {
+const airmap::Airspace::Fire &airmap::Airspace::details_for_fire() const {
   return details_.fire;
 }
 
-airmap::Fire &airmap::Airspace::details_for_fire() {
+airmap::Airspace::Fire &airmap::Airspace::details_for_fire() {
   return details_.fire;
 }
 
-const airmap::Heliport &airmap::Airspace::details_for_heliport() const {
+const airmap::Airspace::Heliport &airmap::Airspace::details_for_heliport() const {
   return details_.heliport;
 }
 
-airmap::Heliport &airmap::Airspace::details_for_heliport() {
+airmap::Airspace::Heliport &airmap::Airspace::details_for_heliport() {
   return details_.heliport;
 }
 
-const airmap::Hospital &airmap::Airspace::details_for_hospital() const {
+const airmap::Airspace::Hospital &airmap::Airspace::details_for_hospital() const {
   return details_.hospital;
 }
 
-airmap::Hospital &airmap::Airspace::details_for_hospital() {
+airmap::Airspace::Hospital &airmap::Airspace::details_for_hospital() {
   return details_.hospital;
 }
 
-const airmap::Park &airmap::Airspace::details_for_park() const {
+const airmap::Airspace::Park &airmap::Airspace::details_for_park() const {
   return details_.park;
 }
 
-airmap::Park &airmap::Airspace::details_for_park() {
+airmap::Airspace::Park &airmap::Airspace::details_for_park() {
   return details_.park;
 }
 
-const airmap::PowerPlant &airmap::Airspace::details_for_power_plant() const {
+const airmap::Airspace::PowerPlant &airmap::Airspace::details_for_power_plant() const {
   return details_.power_plant;
 }
 
-airmap::PowerPlant &airmap::Airspace::details_for_power_plant() {
+airmap::Airspace::PowerPlant &airmap::Airspace::details_for_power_plant() {
   return details_.power_plant;
 }
 
-const airmap::Prison &airmap::Airspace::details_for_prison() const {
+const airmap::Airspace::Prison &airmap::Airspace::details_for_prison() const {
   return details_.prison;
 }
 
-airmap::Prison &airmap::Airspace::details_for_prison() {
+airmap::Airspace::Prison &airmap::Airspace::details_for_prison() {
   return details_.prison;
 }
 
-const airmap::School &airmap::Airspace::details_for_school() const {
+const airmap::Airspace::School &airmap::Airspace::details_for_school() const {
   return details_.school;
 }
 
-airmap::School &airmap::Airspace::details_for_school() {
+airmap::Airspace::School &airmap::Airspace::details_for_school() {
   return details_.school;
 }
 
-const airmap::SpecialUseAirspace &airmap::Airspace::details_for_special_use_airspace() const {
+const airmap::Airspace::SpecialUseAirspace &airmap::Airspace::details_for_special_use_airspace() const {
   return details_.special_use_airspace;
 }
 
-airmap::SpecialUseAirspace &airmap::Airspace::details_for_special_use_airspace() {
+airmap::Airspace::SpecialUseAirspace &airmap::Airspace::details_for_special_use_airspace() {
   return details_.special_use_airspace;
 }
 
-const airmap::TemporaryFlightRestriction &airmap::Airspace::details_for_temporary_flight_restriction() const {
+const airmap::Airspace::TemporaryFlightRestriction &airmap::Airspace::details_for_temporary_flight_restriction() const {
   return details_.tfr;
 }
 
-airmap::TemporaryFlightRestriction &airmap::Airspace::details_for_temporary_flight_restriction() {
+airmap::Airspace::TemporaryFlightRestriction &airmap::Airspace::details_for_temporary_flight_restriction() {
   return details_.tfr;
 }
 
-const airmap::Wildfire &airmap::Airspace::details_for_wildfire() const {
+const airmap::Airspace::Wildfire &airmap::Airspace::details_for_wildfire() const {
   return details_.wildfire;
 }
 
-airmap::Wildfire &airmap::Airspace::details_for_wildfire() {
+airmap::Airspace::Wildfire &airmap::Airspace::details_for_wildfire() {
   return details_.wildfire;
 }
 
@@ -450,62 +450,62 @@ airmap::Airspace::Details::Details() : invalid{} {
 airmap::Airspace::Details::~Details() {
 }
 
-bool airmap::operator==(const Airport &lhs, const Airport &rhs) {
+bool airmap::operator==(const Airspace::Airport &lhs, const Airspace::Airport &rhs) {
   return lhs.iata == rhs.iata && lhs.icao == rhs.icao && lhs.paved == rhs.paved && lhs.phone == rhs.phone &&
          lhs.tower == rhs.tower && lhs.runways == rhs.runways && lhs.elevation == rhs.elevation &&
          lhs.longest_runway == rhs.longest_runway &&
          lhs.instrument_approach_procedure == rhs.instrument_approach_procedure && lhs.use == rhs.use;
 }
 
-bool airmap::operator==(const Airport::Runway &lhs, const Airport::Runway &rhs) {
+bool airmap::operator==(const Airspace::Airport::Runway &lhs, const Airspace::Airport::Runway &rhs) {
   return lhs.name == rhs.name && lhs.length == rhs.length && lhs.bearing == rhs.bearing;
 }
 
-bool airmap::operator==(const ControlledAirspace &, const ControlledAirspace &) {
+bool airmap::operator==(const Airspace::ControlledAirspace &, const Airspace::ControlledAirspace &) {
   return true;
 }
 
-bool airmap::operator==(const SpecialUseAirspace &lhs, const SpecialUseAirspace &rhs) {
+bool airmap::operator==(const Airspace::SpecialUseAirspace &lhs, const Airspace::SpecialUseAirspace &rhs) {
   return lhs.type == rhs.type;
 }
 
-bool airmap::operator==(const TemporaryFlightRestriction &lhs, const TemporaryFlightRestriction &rhs) {
+bool airmap::operator==(const Airspace::TemporaryFlightRestriction &lhs, const Airspace::TemporaryFlightRestriction &rhs) {
   return lhs.url == rhs.url && lhs.type == rhs.type && lhs.reason == rhs.reason;
 }
 
-bool airmap::operator==(const Wildfire &lhs, const Wildfire &rhs) {
+bool airmap::operator==(const Airspace::Wildfire &lhs, const Airspace::Wildfire &rhs) {
   return lhs.effective_date == rhs.effective_date;
 }
 
-bool airmap::operator==(const Park &, const Park &) {
+bool airmap::operator==(const Airspace::Park &, const Airspace::Park &) {
   return true;
 }
 
-bool airmap::operator==(const Prison &, const Prison &) {
+bool airmap::operator==(const Airspace::Prison &, const Airspace::Prison &) {
   return true;
 }
 
-bool airmap::operator==(const School &, const School &) {
+bool airmap::operator==(const Airspace::School &, const Airspace::School &) {
   return true;
 }
 
-bool airmap::operator==(const Hospital &, const Hospital &) {
+bool airmap::operator==(const Airspace::Hospital &, const Airspace::Hospital &) {
   return true;
 }
 
-bool airmap::operator==(const Fire &, const Fire &) {
+bool airmap::operator==(const Airspace::Fire &, const Airspace::Fire &) {
   return true;
 }
 
-bool airmap::operator==(const Emergency &, const Emergency &) {
+bool airmap::operator==(const Airspace::Emergency &, const Airspace::Emergency &) {
   return true;
 }
 
-bool airmap::operator==(const Heliport &lhs, const Heliport &rhs) {
+bool airmap::operator==(const Airspace::Heliport &lhs, const Airspace::Heliport &rhs) {
   return lhs.faa_id == rhs.faa_id && lhs.phone == rhs.phone && lhs.usage == rhs.usage;
 }
 
-bool airmap::operator==(const PowerPlant &lhs, const PowerPlant &rhs) {
+bool airmap::operator==(const Airspace::PowerPlant &lhs, const Airspace::PowerPlant &rhs) {
   return lhs.technology == rhs.technology && lhs.code == rhs.code;
 }
 

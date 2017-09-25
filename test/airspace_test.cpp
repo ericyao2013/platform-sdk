@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(assignment_operator_yields_instances_that_compare_equal_for
 }
 
 BOOST_AUTO_TEST_CASE(assignment_operator_yields_instances_that_compare_equal_for_instances_with_trivial_details) {
-  airmap::Park park;
+  airmap::Airspace::Park park;
   airmap::Airspace a1;
   a1.set_details(park);
   auto a2 = a1;
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(assignment_operator_yields_instances_that_compare_equal_for
 }
 
 BOOST_AUTO_TEST_CASE(assignment_operator_yields_instances_that_compare_equal_for_instances_with_complex_details) {
-  airmap::Airport airport;
+  airmap::Airspace::Airport airport;
   airmap::Airspace a1;
   a1.set_details(airport);
   auto a2 = a1;

@@ -28,43 +28,43 @@ void airmap::codec::json::decode(const nlohmann::json& j, Airspace& airspace) {
   if (j.count("type") > 0) {
     switch (j["type"].get<Airspace::Type>()) {
       case Airspace::Type::airport:
-        airspace.set_details(j["properties"].get<Airport>());
+        airspace.set_details(j["properties"].get<Airspace::Airport>());
         break;
       case Airspace::Type::controlled_airspace:
-        airspace.set_details(j["properties"].get<ControlledAirspace>());
+        airspace.set_details(j["properties"].get<Airspace::ControlledAirspace>());
         break;
       case Airspace::Type::special_use_airspace:
-        airspace.set_details(j["properties"].get<SpecialUseAirspace>());
+        airspace.set_details(j["properties"].get<Airspace::SpecialUseAirspace>());
         break;
       case Airspace::Type::tfr:
-        airspace.set_details(j["properties"].get<TemporaryFlightRestriction>());
+        airspace.set_details(j["properties"].get<Airspace::TemporaryFlightRestriction>());
         break;
       case Airspace::Type::wildfire:
-        airspace.set_details(j["properties"].get<Wildfire>());
+        airspace.set_details(j["properties"].get<Airspace::Wildfire>());
         break;
       case Airspace::Type::park:
-        airspace.set_details(j["properties"].get<Park>());
+        airspace.set_details(j["properties"].get<Airspace::Park>());
         break;
       case Airspace::Type::power_plant:
-        airspace.set_details(j["properties"].get<PowerPlant>());
+        airspace.set_details(j["properties"].get<Airspace::PowerPlant>());
         break;
       case Airspace::Type::heliport:
-        airspace.set_details(j["properties"].get<Heliport>());
+        airspace.set_details(j["properties"].get<Airspace::Heliport>());
         break;
       case Airspace::Type::prison:
-        airspace.set_details(j["properties"].get<Prison>());
+        airspace.set_details(j["properties"].get<Airspace::Prison>());
         break;
       case Airspace::Type::school:
-        airspace.set_details(j["properties"].get<School>());
+        airspace.set_details(j["properties"].get<Airspace::School>());
         break;
       case Airspace::Type::hospital:
-        airspace.set_details(j["properties"].get<Hospital>());
+        airspace.set_details(j["properties"].get<Airspace::Hospital>());
         break;
       case Airspace::Type::fire:
-        airspace.set_details(j["properties"].get<Fire>());
+        airspace.set_details(j["properties"].get<Airspace::Fire>());
         break;
       case Airspace::Type::emergency:
-        airspace.set_details(j["properties"].get<Emergency>());
+        airspace.set_details(j["properties"].get<Airspace::Emergency>());
         break;
       default:
         break;
@@ -110,7 +110,7 @@ void airmap::codec::json::decode(const nlohmann::json& j, Airspace::Type& type) 
     type = Airspace::Type::wildfire;
 }
 
-void airmap::codec::json::decode(const nlohmann::json& j, Airport& airport) {
+void airmap::codec::json::decode(const nlohmann::json& j, Airspace::Airport& airport) {
   get(airport.iata, j, "iata");
   get(airport.icao, j, "icao");
   get(airport.paved, j, "paved");
@@ -122,64 +122,64 @@ void airmap::codec::json::decode(const nlohmann::json& j, Airport& airport) {
   get(airport.use, j, "use");
 }
 
-void airmap::codec::json::decode(const nlohmann::json& j, Airport::Runway& runway) {
+void airmap::codec::json::decode(const nlohmann::json& j, Airspace::Airport::Runway& runway) {
   get(runway.name, j, "name");
   get(runway.length, j, "length");
   get(runway.bearing, j, "bearing");
 }
 
-void airmap::codec::json::decode(const nlohmann::json& j, std::vector<Airport::Runway>& v) {
+void airmap::codec::json::decode(const nlohmann::json& j, std::vector<Airspace::Airport::Runway>& v) {
   for (auto element : j) {
-    v.push_back(Airport::Runway{});
+    v.push_back(Airspace::Airport::Runway{});
     v.back() = element;
   }
 }
 
-void airmap::codec::json::decode(const nlohmann::json&, Airport::Use&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::Airport::Use&) {
 }
-void airmap::codec::json::decode(const nlohmann::json&, ControlledAirspace&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::ControlledAirspace&) {
 }
-void airmap::codec::json::decode(const nlohmann::json& j, SpecialUseAirspace& sua) {
-  sua.type = j["type"].get<SpecialUseAirspace::Type>();
+void airmap::codec::json::decode(const nlohmann::json& j, Airspace::SpecialUseAirspace& sua) {
+  sua.type = j["type"].get<Airspace::SpecialUseAirspace::Type>();
 }
-void airmap::codec::json::decode(const nlohmann::json&, SpecialUseAirspace::Type&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::SpecialUseAirspace::Type&) {
 }
-void airmap::codec::json::decode(const nlohmann::json& j, TemporaryFlightRestriction& tfr) {
+void airmap::codec::json::decode(const nlohmann::json& j, Airspace::TemporaryFlightRestriction& tfr) {
   get(tfr.url, j, "url");
   get(tfr.type, j, "type");
   get(tfr.reason, j, "notam_reason");
 }
 
-void airmap::codec::json::decode(const nlohmann::json&, TemporaryFlightRestriction::Type&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::TemporaryFlightRestriction::Type&) {
 }
 
-void airmap::codec::json::decode(const nlohmann::json& j, Wildfire& wf) {
+void airmap::codec::json::decode(const nlohmann::json& j, Airspace::Wildfire& wf) {
   get(wf.effective_date, j, "date_effective");
 }
 
-void airmap::codec::json::decode(const nlohmann::json&, Park&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::Park&) {
 }
-void airmap::codec::json::decode(const nlohmann::json&, Prison&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::Prison&) {
 }
-void airmap::codec::json::decode(const nlohmann::json&, School&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::School&) {
 }
-void airmap::codec::json::decode(const nlohmann::json&, Hospital&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::Hospital&) {
 }
-void airmap::codec::json::decode(const nlohmann::json&, Fire&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::Fire&) {
 }
-void airmap::codec::json::decode(const nlohmann::json&, Emergency&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::Emergency&) {
 }
 
-void airmap::codec::json::decode(const nlohmann::json& j, Heliport& hp) {
+void airmap::codec::json::decode(const nlohmann::json& j, Airspace::Heliport& hp) {
   get(hp.faa_id, j, "faa");
   get(hp.phone, j, "phone");
   get(hp.usage, j, "usage");
 }
 
-void airmap::codec::json::decode(const nlohmann::json&, Heliport::Usage&) {
+void airmap::codec::json::decode(const nlohmann::json&, Airspace::Heliport::Usage&) {
 }
 
-void airmap::codec::json::decode(const nlohmann::json& j, PowerPlant& pp) {
+void airmap::codec::json::decode(const nlohmann::json& j, Airspace::PowerPlant& pp) {
   get(pp.technology, j, "tech");
   get(pp.code, j, "plant_code");
 }
