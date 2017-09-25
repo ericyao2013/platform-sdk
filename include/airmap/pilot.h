@@ -16,17 +16,17 @@ namespace airmap {
 struct Pilot {
   /// Aircraft describes a vehicle owned by a Pilot.
   struct Aircraft {
-    std::string id;
-    std::string nick_name;
-    airmap::Aircraft model;
-    DateTime created_at;
+    std::string id;          ///< The unique id of the vehicle in the context of AirMap.
+    std::string nick_name;   ///< The human-readable nickname of the vehicle.
+    airmap::Aircraft model;  ///< The model of the aircraft.
+    DateTime created_at;     ///< Timestamp marking the creation of the device in the AirMap system.
   };
 
-  std::string id;                     /// The unique id of the pilot in the context of AirMap.
-  std::string first_name;             /// The first name of the pilot.
-  std::string last_name;              /// The last name of the pilot.
-  std::string user_name;              /// The AirMap username of this pilot.
-  Optional<std::string> picture_url;  /// The URL of a picture showing the pilot.
+  std::string id;                     ///< The unique id of the pilot in the context of AirMap.
+  std::string first_name;             ///< The first name of the pilot.
+  std::string last_name;              ///< The last name of the pilot.
+  std::string user_name;              ///< The AirMap username of this pilot.
+  Optional<std::string> picture_url;  ///< The URL of a picture showing the pilot.
 
   /// VerificationStatus summarizes the
   /// status of contact detail verification.
@@ -42,18 +42,18 @@ struct Pilot {
     struct Flight {
       std::uint64_t total;        ///< The total number of flights
       DateTime last_flight_time;  ///< Date and time of the last flight
-    } flight;
+    } flight;                     ///< Statistical details about flights conducted by a pilot.
     struct Aircraft {
       std::uint64_t total;  ///< The total number of aircrafts
-    } aircraft;
+    } aircraft;             ///< Statistical details about aircrafts owned by a pilot
   } statistics;
 
   /// App- and user-specific metadata.
   struct Metadata {
-    std::map<std::string, std::string> app;
-    std::map<std::string, std::string> user;
-  } metadata;
-  DateTime created_at;  /// Timestamp of the creation of this pilot in the AirMap system.
+    std::map<std::string, std::string> app;   ///< App-specific meta-data.
+    std::map<std::string, std::string> user;  ///< User-specific meta-data.
+  } metadata;                                 ///< Metadata associated with a pilot.
+  DateTime created_at;                        ///< Timestamp of the creation of this pilot in the AirMap system.
 };
 
 }  // namespace airmap
