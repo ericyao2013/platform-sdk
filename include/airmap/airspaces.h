@@ -17,29 +17,37 @@ class Airspaces : DoNotCopyOrMove {
   /// ForIds groups together types to ease interaction with
   /// Airspaces::ForIds.
   struct ForIds {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      Airspace::Id id;
+      Airspace::Id id;  ///< Search for the airspace with this id.
     };
 
-    using Result   = Outcome<std::vector<Airspace>, std::exception_ptr>;
+    /// Result models the outcome of calling Airspaces::for_id.
+    using Result = Outcome<std::vector<Airspace>, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Airspaces::for_id finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
   /// Search groups together types to ease interaction with
   /// Airspaces::Search.
   struct Search {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      Optional<Airspace::Type> types;
-      Optional<Airspace::Type> ignored_types;
-      Optional<bool> full;
-      Geometry geometry;
-      Optional<std::uint32_t> buffer;
-      Optional<std::uint32_t> limit;
+      Optional<Airspace::Type> types;          ///< Search for airspaces with either one of these types.
+      Optional<Airspace::Type> ignored_types;  ///< Ignore airspaces with either one of these types.
+      Optional<bool> full;  ///< If true, the complete description of airspaces in the result set is requested.
+      Geometry geometry;    ///< Search airspaces intersection this geometry.
+      Optional<std::uint32_t> buffer;  ///< Buffer around the geometry in [m].
+      Optional<std::uint32_t> limit;   ///< Limit the number of results to 'limit'.
       Optional<std::uint32_t> offset;
       Optional<DateTime> date_time;
     };
 
-    using Result   = Outcome<std::vector<Airspace>, std::exception_ptr>;
+    /// Result models the outcome of calling Airspaces::search.
+    using Result = Outcome<std::vector<Airspace>, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Airspaces::search finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
