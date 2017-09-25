@@ -19,34 +19,46 @@ class Aircrafts : DoNotCopyOrMove {
   /// Manufacturers groups together types to ease interaction with
   /// Aircrafts::manufacturers.
   struct Manufacturers {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      Optional<std::string> manufacturer_name;
+      Optional<std::string> manufacturer_name;  ///< Search for the specific manufacturer with this name.
     };
 
-    using Result   = Outcome<std::vector<Aircraft::Manufacturer>, std::exception_ptr>;
+    /// Result models the outcome of calling Flights::manufacturers.
+    using Result = Outcome<std::vector<Aircraft::Manufacturer>, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Flights::manufacturers finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
   /// Models groups together types to ease interaction with
   /// Aircrafts::models.
   struct Models {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      Optional<Aircraft::Manufacturer> manufacturer;
-      Optional<std::string> model_name;
+      Optional<Aircraft::Manufacturer> manufacturer;  ///< Only list models by this manufacturer.
+      Optional<std::string> model_name;               ///< Search for the specific model with this name.
     };
 
-    using Result   = Outcome<std::vector<Aircraft>, std::exception_ptr>;
+    /// Result models the outcome of calling Flights::models.
+    using Result = Outcome<std::vector<Aircraft>, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Flights::models finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
   /// ModelForId groups together types to ease interaction with
   /// Aircrafts::model_for_id.
   struct ModelForId {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      std::string id;
+      std::string id;  ///< Search for the model with this id.
     };
 
-    using Result   = Outcome<Aircraft, std::exception_ptr>;
+    /// Result models the outcome of calling Flights::model_for_id.
+    using Result = Outcome<Aircraft, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Flights::model_for_id finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
