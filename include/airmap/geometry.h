@@ -12,28 +12,28 @@ class Geometry {
  public:
   /// Type enumerates all known geometry types.
   enum class Type {
-    invalid,
-    point,
-    multi_point,
-    line_string,
-    multi_line_string,
-    polygon,
-    multi_polygon,
-    geometry_collection
+    invalid,             ///< Marks an invalid geometry.
+    point,               ///< Geometry contains a Point.
+    multi_point,         ///< Geometry contains a MultiPoint.
+    line_string,         ///< Geometry contains a LineString.
+    multi_line_string,   ///< Geometry contains a MultiLineString.
+    polygon,             ///< Geometry contains a Polygon.
+    multi_polygon,       ///< Geometry contains a MultiPolygon.
+    geometry_collection  ///< Geometry is a GemetryCollection.
   };
 
   /// Coordinate marks a point in 3-dimensional space.
   struct Coordinate {
-    double latitude;
-    double longitude;
-    Optional<double> altitude;
+    double latitude;            /// The latitude component of this coordinate in [°].
+    double longitude;           /// The longitude component of this coordinate in [°].
+    Optional<double> altitude;  /// The altitude component of this coordinate in [m].
     Optional<double> elevation;
   };
 
   /// CoordinateVector is a collection of points in 3-dimensional space.
   template <Type tag>
   struct CoordinateVector {
-    std::vector<Coordinate> coordinates;
+    std::vector<Coordinate> coordinates;  ///< The individual coordinates.
   };
 
   using Point              = Coordinate;
