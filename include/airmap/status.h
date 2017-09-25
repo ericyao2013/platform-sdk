@@ -32,44 +32,48 @@ class Status : DoNotCopyOrMove {
 
   /// Wind bundles up attributes describing a wind conditions.
   struct Wind {
-    std::uint32_t heading = 0;
-    std::uint32_t speed   = 0;
+    std::uint32_t heading = 0;  ///< The heading in [°].
+    std::uint32_t speed   = 0;  ///< The speed in [°].
     std::uint32_t gusting = 0;
   };
 
   /// Weather bundles up attributes describing a weather condition.
   struct Weather {
-    std::string condition;
-    std::string icon;
-    Wind wind;
-    std::int32_t temperature    = 0;
+    std::string condition;            ///< The overall weather condition.
+    std::string icon;                 ///< The icon or class of icon that should be used for display purposes.
+    Wind wind;                        ///< The details about the current wind conditions.
+    std::int32_t temperature    = 0;  ///< The temperature in [°C].
     float humidity              = 0.0;
-    std::uint32_t visibility    = 0;
-    std::uint32_t precipitation = 0;
+    std::uint32_t visibility    = 0;  ///< Visibility in [m].
+    std::uint32_t precipitation = 0;  ///< The probability of precipitation in [%].
   };
 
   /// Report summarizes information about a geographic area.
   struct Report {
-    std::uint32_t max_safe_distance = 0;
-    Color advisory_color;
-    std::vector<Advisory> advisories;
-    Weather weather;
+    std::uint32_t max_safe_distance = 0;  ///< The distance to the area that is considered safe in [m].
+    Color advisory_color;                 ///< The overall evaluation of all advisories.
+    std::vector<Advisory> advisories;     ///< All relevant advisories.
+    Weather weather;                      ///< The weather conditions.
   };
 
   /// GetStatus bundles up types to ease interaction
   /// with Status::get_status*.
   struct GetStatus {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      Required<float> latitude;
-      Required<float> longitude;
-      Optional<Airspace::Type> types;
-      Optional<Airspace::Type> ignored_types;
-      Optional<bool> weather;
-      Optional<DateTime> flight_date_time;
-      Optional<Geometry> geometry;
-      Optional<std::uint32_t> buffer;
+      Required<float> latitude;                ///< The latitude of the center point of the query.
+      Required<float> longitude;               ///< The longitude of the center point of the query.
+      Optional<Airspace::Type> types;          ///< Query status information for these types of airspaces.
+      Optional<Airspace::Type> ignored_types;  ///< Ignore these types of airspaces when querying status information.
+      Optional<bool> weather;                  ///< If true, weather conditions are included with the status report.
+      Optional<DateTime> flight_date_time;     ///< Time when a flight is going to happen.
+      Optional<Geometry> geometry;             ///< The geometry for the query.
+      Optional<std::uint32_t> buffer;          ///< Buffer around the center point of the query.
     };
+    /// Result models the outcome of calling Status::get_status*.
     using Result   = Outcome<Report, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Status::get_status* finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
@@ -86,7 +90,9 @@ class Status : DoNotCopyOrMove {
   virtual void get_status_by_polygon(const GetStatus::Parameters& parameters, const GetStatus::Callback& cb) = 0;
 
  protected:
+  /// @cond
   Status() = default;
+  /// @endcond
 };
 
 /// @cond
