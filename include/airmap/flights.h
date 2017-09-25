@@ -20,116 +20,149 @@ class Flights : DoNotCopyOrMove {
   /// ForId bundles up types to ease interaction with
   /// Flights::for_id.
   struct ForId {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      Optional<std::string> authorization;
-      Flight::Id id;
-      Optional<bool> enhance;
+      Optional<std::string> authorization;  ///< Authorization token obtained by logging in to the AirMap services.
+      Flight::Id id;                        ///< Search for the flight with this id.
+      Optional<bool> enhance;               ///< If true, provides extended information per flight in the result set.
     };
 
-    using Result   = Outcome<Flight, std::exception_ptr>;
+    /// Result models the outcome of calling Flights::for_id.
+    using Result = Outcome<Flight, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is invoked
+    /// when a call to Flights::for_id finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
   /// Search bundles up types to ease interaction with
   /// Flights::search.
   struct Search {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      Optional<std::string> authorization;
-      Optional<std::uint32_t> limit;
-      Optional<Geometry> geometry;
-      Optional<std::string> country;
-      Optional<std::string> state;
-      Optional<std::string> city;
-      Optional<std::string> pilot_id;
-      Optional<DateTime> start_after;
-      Optional<DateTime> start_before;
-      Optional<DateTime> end_after;
-      Optional<DateTime> end_before;
-      Optional<bool> enhance;
+      Optional<std::string> authorization;  ///< Authorization token obtained by logging in to the AirMap services.
+      Optional<std::uint32_t> limit;        ///< Limit the number of results to 'limit'.
+      Optional<Geometry> geometry;          ///< Search for flights intersecting this geometry.
+      Optional<std::string> country;        ///< Search for flights in this country.
+      Optional<std::string> state;          ///< Search for flights in this state.
+      Optional<std::string> city;           ///< Search for flights in this city.
+      Optional<std::string> pilot_id;       ///< Search for flights operated by this pilot.
+      Optional<DateTime> start_after;       ///< Search for flights that started after this timestamp.
+      Optional<DateTime> start_before;      ///< Search for flights that started before this timestamp.
+      Optional<DateTime> end_after;         ///< Search for flights that ended after this timestamp.
+      Optional<DateTime> end_before;        ///< Search for flights that ended before this timestamp.
+      Optional<bool> enhance;               ///< If true, provides extended information per flight in the result set.
     };
-    using Result   = Outcome<std::vector<Flight>, std::exception_ptr>;
+    /// Result models the outcome of calling Flights::search.
+    using Result = Outcome<std::vector<Flight>, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is invoked
+    /// when a call to Flights::search finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
   /// CreateFlight bundles up types to ease interaction with
-  /// Flights::create_flight.
+  /// Flights::create_flight_by_point, Flights::create_flight_by_path and
+  /// Flights::create_flight_by_polygon.
   struct CreateFlight {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      std::string authorization;
-      Required<float> latitude;
-      Required<float> longitude;
-      float max_altitude = 121.;
-      std::string aircraft_id;
-      DateTime start_time;
-      DateTime end_time;
-      bool is_public           = true;
-      bool give_digital_notice = true;
-      float buffer             = 100;
-      Optional<Geometry> geometry;
+      std::string authorization;        ///< Authorization token obtained by logging in to the AirMap services.
+      Required<float> latitude;         ///< Latitude of take-off point in [°].
+      Required<float> longitude;        ///< Longitude of take-off point in [°].
+      float max_altitude = 121.;        ///< Maximum altitude of the entire flight in [m].
+      std::string aircraft_id;          ///< Id of the aircraft carrying out the flight.
+      DateTime start_time;              ///< Point in time when the flight started.
+      DateTime end_time;                ///< Point in time when the flight will end.
+      bool is_public           = true;  ///< If true, the flight is considered public and displayed to AirMap users.
+      bool give_digital_notice = true;  ///< If true, the flight is announced to airspace operators.
+      float buffer             = 100;   ///< Buffer around the take-off point in [m].
+      Optional<Geometry> geometry;      ///< The geometry that describes the flight.
     };
-    using Result   = Outcome<Flight, std::exception_ptr>;
+    /// Result models the outcome of calling Flights::create_flight.
+    using Result = Outcome<Flight, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is invoked
+    /// when a call to Flights::create_flight finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
   /// DeleteFlight bundles up types to ease interaction with
   /// Flights::delete_flight.
   struct DeleteFlight {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      std::string authorization;
-      Flight::Id id;
+      std::string authorization;  ///< Authorization token obtained by logging in to the AirMap services.
+      Flight::Id id;              ///< Id of the flight that should be deleted.
     };
 
+    /// Response models the response from the AirMap services.
     struct Response {
-      Flight::Id id;
+      Flight::Id id;  ///< Id of the flight that was deleted.
     };
 
-    using Result   = Outcome<Response, std::exception_ptr>;
+    /// Result models the outcome of calling Flights::delete_flight.
+    using Result = Outcome<Response, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Flights::delete_flight finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
   /// EndFlight bundles up types to ease interaction with
   /// Flights::end_flight.
   struct EndFlight {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      std::string authorization;
-      Flight::Id id;
+      std::string authorization;  ///< Authorization token obtained by logging in to the AirMap services.
+      Flight::Id id;              ///< Id of the flight that should be ended.
     };
 
+    /// Response models the response from the AirMap services.
     struct Response {
-      DateTime end_time;
+      DateTime end_time;  ///< Point in time when the flight was ended.
     };
 
-    using Result   = Outcome<Response, std::exception_ptr>;
+    /// Result models the outcome of calling Flights::delete_flight.
+    using Result = Outcome<Response, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Flights::end_flight finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
   /// StartFlightCommunications bundles up types to ease interaction with
   /// Flights::start_flight_communications.
   struct StartFlightCommunications {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      std::string authorization;
-      Flight::Id id;
+      std::string authorization;  ///< Authorization token obtained by logging in to the AirMap services.
+      Flight::Id id;              ///< Id of the flight for which flight comms should be started.
     };
 
+    /// Response models the response from the AirMap services.
     struct Response {
-      std::string key;
+      std::string key;  ///< The encryption key that should be used to encrypt individual telemetry updates.
     };
 
-    using Result   = Outcome<Response, std::exception_ptr>;
+    /// Result models the outcome of calling Flights::start_flight_communications.
+    using Result = Outcome<Response, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Flights::start_flight_communications.
     using Callback = std::function<void(const Result&)>;
   };
 
   /// EndFlightCommunications bundles up types to ease interaction with
   /// Flights::end_flight_communications.
   struct EndFlightCommunications {
+    /// Parameters bundles up input parameters.
     struct Parameters {
-      std::string authorization;
-      Flight::Id id;
+      std::string authorization;  ///< Authorization token obtained by logging in to the AirMap services.
+      Flight::Id id;              ///< Id of the flight for which flight comms should be ended.
     };
 
+    /// Response models the response from the AirMap services.
     struct Response {};
 
-    using Result   = Outcome<Response, std::exception_ptr>;
+    /// Result models the outcome of calling Flights::end_flight_communications.
+    using Result = Outcome<Response, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Flights::end_flight_communications finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
