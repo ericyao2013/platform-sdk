@@ -17,34 +17,34 @@ class Telemetry : DoNotCopyOrMove {
  public:
   /// Position describes a timestamped geographical position.
   struct Position {
-    std::uint64_t timestamp;
-    double latitude;
-    double longitude;
-    double altitude_msl;
-    double altitude_gl;
-    double horizontal_accuracy;
+    std::uint64_t timestamp;     ///< Ingestion timestamp of the update.
+    double latitude;             ///< The latitude of the position [°].
+    double longitude;            ///< The longitude of the position in [°].
+    double altitude_msl;         ///< The altitude above mean sea level of the position in [m].
+    double altitude_gl;          ///< The altitude above ground level of the position in [m].
+    double horizontal_accuracy;  ///< The horizontal accuracy of the position in [m].
   };
 
   /// Speed describes the timestamped 3-dim velocity of a vehicle.
   struct Speed {
-    std::uint64_t timestamp;
-    float velocity_x;
-    float velocity_y;
-    float velocity_z;
+    std::uint64_t timestamp;  ///< Ingestion timestamp of the update.
+    float velocity_x;         ///< The velocity of the vehicle in direction of the x axis in [m/s].
+    float velocity_y;         ///< The velocity of the vehicle in direction of the y axis in [m/s].
+    float velocity_z;         ///< The velocity of the vehicle in direction of the z axis in [m/s].
   };
 
   /// Attitude describes the timestamped 3-dim orientation of a vehicle.
   struct Attitude {
-    std::uint64_t timestamp;
-    float yaw;
-    float pitch;
-    float roll;
+    std::uint64_t timestamp;  ///< Ingestion timestamp of the update.
+    float yaw;                ///< The yaw of the vehicle in [°/s].
+    float pitch;              ///< The pitch of the vehicle in [°/s].
+    float roll;               ///< The roll of the vehicle in [°/s].
   };
 
   /// Barometer describes the timestamped atmospheric pressurce conditions.
   struct Barometer {
-    std::uint64_t timestamp;
-    float pressure;
+    std::uint64_t timestamp; ///< Ingestion timestamp of the update.
+    float pressure; ///< The atmospheric pressure measurement in [Pa].
   };
 
   /// @cond
@@ -59,7 +59,12 @@ class Telemetry : DoNotCopyOrMove {
   class Update {
    public:
     /// Type enumerates all known update types.
-    enum class Type : std::uint8_t { position = 1, speed = 2, attitude = 3, barometer = 4 };
+    enum class Type : std::uint8_t {
+      position = 1, ///< The update contains a Position instance.
+      speed = 2, ///< The update contains a Speed instance.
+      attitude = 3, ///< The update contains an Attitude instance.
+      barometer = 4 ///< The update contains a Barometer instance.
+    };
 
     /// Update initializes a new instance with 'position'.
     explicit Update(const Position& position);
