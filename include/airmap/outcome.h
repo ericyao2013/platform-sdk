@@ -5,7 +5,7 @@
 
 namespace airmap {
 
-/// Outcome<T,U> models a return value from a function XOR an error object
+/// Outcome models a return value from a function XOR an error object
 /// describing the error condition if no value can be returned.
 template <typename Value, typename Error>
 class Outcome {
