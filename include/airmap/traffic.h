@@ -20,29 +20,32 @@ class Traffic : DoNotCopyOrMove {
   /// Update bundles together information about aerial traffic
   /// relevant to a UAV flight.
   struct Update {
-    std::string id;
-    std::string aircraft_id;
-    double latitude;
-    double longitude;
-    double altitude;
-    double ground_speed;
-    double heading;
-    double direction;
-
-    DateTime recorded;
-    DateTime timestamp;
+    std::string id;           ///< The unique id of the underlying track in the context of AirMap.
+    std::string aircraft_id;  ///< The 'other' aircraft's id.
+    double latitude;          ///< The latitude of the other aircraft in [°].
+    double longitude;         ///< The longitude of the other aircraft in [°].
+    double altitude;          ///< The altitude of the other aircraft in [m].
+    double ground_speed;      ///< The speed over ground of the other aircraft in [m/s].
+    double heading;           ///< The heading of the other aircraft in [°].
+    double direction;         ///< The direction of the other aircraft in relation to the current aircraft in [°].
+    DateTime recorded;        ///< The time when the datum triggering the udpate was recorded.
+    DateTime timestamp;       ///< The time when the update was generated.
   };
 
   /// Monitor models handling of individual subscribers
   /// to per-flight alerts and awareness notices.
   class Monitor : DoNotCopyOrMove {
    public:
+    /// Parameters bundles up input parameters.
     struct Params {
-      std::string flight_id;
-      std::string authorization;
+      std::string flight_id;      ///< The id of the flight for which traffic udpates should be started.
+      std::string authorization;  ///< The authorization token.
     };
 
-    using Result   = Outcome<std::shared_ptr<Monitor>, std::exception_ptr>;
+    /// Result models the outcome of calling Traffic::monitor.
+    using Result = Outcome<std::shared_ptr<Monitor>, std::exception_ptr>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Traffic::monitor finishes.
     using Callback = std::function<void(const Result&)>;
 
     /// Subscriber abstracts handling of batches of Update instances.
