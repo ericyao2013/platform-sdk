@@ -11,28 +11,33 @@ namespace airmap {
 class Token {
  public:
   /// Type enumerates all known token types.
-  enum class Type { unknown, anonymous, oauth, refreshed };
+  enum class Type {
+    unknown,    ///< Marks the unknown token type.
+    anonymous,  ///< The token contains an Anonymous instance.
+    oauth,      ///< The token contains an OAuth instance.
+    refreshed   ///< The token contains a Refreshed instance.
+  };
 
   /// Anonymous models a token for an anonymous authentication with the AirMap services.
   struct Anonymous {
-    std::string id;
+    std::string id;  ///< The authentication id.
   };
 
   /// OAuth models a token for an authentication with OAuth credentials with the AirMap services.
   struct OAuth {
     enum class Type { bearer };
-    Type type;
-    std::string refresh;
-    std::string id;
-    std::string access;
+    Type type;            ///< The type of the OAuth token.
+    std::string refresh;  ///< The refresh token for subsequent renewal requests.
+    std::string id;       ///< The id token.
+    std::string access;   ///< The access token.
   };
 
-  /// Refreshed models a t ocken for a refreshed authentication with OAuth credentials with the AirMap services.
+  /// Refreshed models a token for a refreshed authentication with OAuth credentials with the AirMap services.
   struct Refreshed {
     enum class Type { bearer };
-    Type type;
-    std::chrono::seconds expires_in;
-    std::string id;
+    Type type;                        ///< The type of the Refreshed token.
+    std::chrono::seconds expires_in;  ///< The token expires in 'expires_in' seconds.
+    std::string id;                   ///< The id token.
   };
 
   /// load_from_json reads a Token instance from the input stream 'in'.
