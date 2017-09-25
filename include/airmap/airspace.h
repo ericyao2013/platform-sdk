@@ -18,25 +18,27 @@ namespace airmap {
 struct Airport {
   /// Runway describes an individual runway of an airport.
   struct Runway {
-    std::string name;
-    float length;
-    float bearing;
+    std::string name;  ///< Commn name assigned to the runway in the context of a specific airport.
+    float length;      ///< Lenght of the runway in [m].
+    float bearing;     ///< Bearing of the runway in [°].
   };
 
   /// Use enumerates all known usage types for
   /// an airport.
-  enum class Use { public_ };
+  enum class Use {
+    public_  ///< The airport is available for public use.
+  };
 
-  std::string iata;
-  std::string icao;
-  bool paved;
-  std::string phone;
-  bool tower;
-  std::vector<Runway> runways;
-  float elevation;
-  float longest_runway;
-  bool instrument_approach_procedure;
-  Use use;
+  std::string iata;                    ///< IATA code of the airport.
+  std::string icao;                    ///< ICAO code of the airport.
+  bool paved;                          ///< True if the airport features paved runways.
+  std::string phone;                   ///< The phone number of the airport (typically the tower).
+  bool tower;                          ///< True if the airport features a tower.
+  std::vector<Runway> runways;         ///< Collection of runways available at the airport.
+  float elevation;                     ///< The elevation of the airport in [m].
+  float longest_runway;                ///< The lenght of th longest runway in [m].
+  bool instrument_approach_procedure;  ///< True if the airport features equipment supporting an IAP.
+  Use use;                             ///< Types of use offered by the airport.
 };
 
 /// ControlledAirspace bundles up properties describing
@@ -46,17 +48,19 @@ struct ControlledAirspace {};
 /// SpecialUseAirspace bundles up properties describing
 /// a special use airspace.
 struct SpecialUseAirspace {
+  /// Type enumerates all known special-purpose types.
   enum class Type {};
-  Type type;
+  Type type;  ///< The type of the SpecialUseAirspace.
 };
 
 /// TemporaryFlightRestriction describes an airspace that
 /// modelling a temporary restriction of the airspace.
 struct TemporaryFlightRestriction {
+  /// Type enumerates all known types of temporary flight restrictions.
   enum class Type {};
-  std::string url;
-  Type type;
-  std::string reason;
+  std::string url;     ///< The URL providing further information about the temporary flight restriction.
+  Type type;           ///< The type of the temporary flight restriction.
+  std::string reason;  ///< The reason for the temporary flight restriction.
 };
 
 /// Wildfire describes an airspace around a wildfire.
@@ -64,38 +68,36 @@ struct Wildfire {
   std::string effective_date;
 };
 
+/// Park describes an airspace over a park.
 struct Park {};
-
+/// Prison describes an airspace over a prison.
 struct Prison {};
-
+/// School describes an airspace over a school.
 struct School {};
-
+/// Hospital describes an airspace over a hospital.
 struct Hospital {};
-
+/// Fire describes an airspace over a fire.
 struct Fire {};
-
+/// Emergency describes an airspace over an emergency situation.
 struct Emergency {};
 
 /// Heliport describes an airspace around a heliport.
 struct Heliport {
+  /// Usage enumerates all known usages of a heliport.
   enum class Usage {};
-  std::string faa_id;
-  std::string phone;
-  Usage usage;
+  std::string faa_id;  ///< The FAA id of the heliport.
+  std::string phone;   ///< The phone number of the heliport.
+  Usage usage;         ///< The usages supported by the heliport.
 };
 
-/// Powerplant describes the airspace around a powerplant.
+/// Powerplant describes the airspace around a power plant.
 struct PowerPlant {
-  std::string technology;
-  std::uint64_t code;
+  std::string technology;  ///< The technology used by the power plant.
+  std::uint64_t code;      ///< Official number of the power plant.
 };
 
-// Compactly places general and detailed
-// data within one object. The Airspace description
-// has hardly any behavior on its own. More to this,
-// relying on a compact representation instead of modelling
-// an inheritance hierarchy helps on "embedded" platforms in
-// passing around instances.
+/// Airspace groups together general information about an airspace and
+/// in-depth information providing more details.
 class Airspace {
  public:
   // Enumerates all known airspace types.
