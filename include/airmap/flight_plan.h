@@ -30,6 +30,7 @@ struct FlightPlan {
         required,  ///< Satisfying the RuleSet is required.
         optional   ///< Satisfying the RuleSet is not required.
       };
+
       /// Id models a unique identifier for a briefing in the context of AirMap.
       using Id = std::string;
 

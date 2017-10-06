@@ -61,6 +61,13 @@ void airmap::codec::json::decode(const nlohmann::json& j, std::vector<FlightPlan
   }
 }
 
+void airmap::codec::json::decode(const nlohmann::json& j, std::vector<FlightPlan::Briefing::RuleSet::Id>& v) {
+  for (auto element : j) {
+    v.push_back(FlightPlan::Briefing::RuleSet::Id{});
+    v.back() = element;
+  }
+}
+
 void airmap::codec::json::decode(const nlohmann::json& j, FlightPlan::Briefing::RuleSet::Type& t) {
   t = boost::lexical_cast<FlightPlan::Briefing::RuleSet::Type>(j.get<std::string>());
 }
@@ -124,4 +131,10 @@ void airmap::codec::json::decode(const nlohmann::json& j, FlightPlan::Briefing::
 
 void airmap::codec::json::decode(const nlohmann::json& j, FlightPlan::Briefing::Validation::Status& s) {
   s = boost::lexical_cast<FlightPlan::Briefing::Validation::Status>(j.get<std::string>());
+}
+
+void airmap::codec::json::encode(nlohmann::json& j, const std::vector<FlightPlan::Briefing::RuleSet::Id>& v) {
+  for (const auto& id : v) {
+    j.push_back(id);
+  }
 }

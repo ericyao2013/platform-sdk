@@ -19,6 +19,7 @@ void decode(const nlohmann::json& j, FlightPlan::Briefing& b);
 void decode(const nlohmann::json& j, FlightPlan::Briefing::RuleSet& r);
 void decode(const nlohmann::json& j, std::vector<FlightPlan::Briefing::RuleSet>& v);
 void decode(const nlohmann::json& j, FlightPlan::Briefing::RuleSet::Type& t);
+void decode(const nlohmann::json& j, std::vector<FlightPlan::Briefing::RuleSet::Id>& v);
 void decode(const nlohmann::json& j, FlightPlan::Briefing::Jurisdiction& jd);
 void decode(const nlohmann::json& j, FlightPlan::Briefing::Jurisdiction::Region& r);
 void decode(const nlohmann::json& j, FlightPlan::Briefing::AdvisoryStatus& a);
@@ -30,6 +31,7 @@ void decode(const nlohmann::json& j, FlightPlan::Briefing::Validation& v);
 void decode(const nlohmann::json& j, std::vector<FlightPlan::Briefing::Validation>& v);
 void decode(const nlohmann::json& j, FlightPlan::Briefing::Validation::Feature& f);
 void decode(const nlohmann::json& j, FlightPlan::Briefing::Validation::Status& s);
+void encode(nlohmann::json& j, const std::vector<FlightPlan::Briefing::RuleSet::Id>& v);
 
 }  // namespace json
 }  // namespace codec
