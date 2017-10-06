@@ -17,6 +17,9 @@ void encode(nlohmann::json& j, const FlightPlan& p);
 
 void decode(const nlohmann::json& j, FlightPlan::Briefing& b);
 void decode(const nlohmann::json& j, FlightPlan::Briefing::RuleSet& r);
+void decode(const nlohmann::json& j, FlightPlan::Briefing::RuleSet::Rule& r);
+void decode(const nlohmann::json& j, std::vector<FlightPlan::Briefing::RuleSet::Rule>& v);
+void decode(const nlohmann::json& j, FlightPlan::Briefing::RuleSet::Rule::Status& s);
 void decode(const nlohmann::json& j, std::vector<FlightPlan::Briefing::RuleSet>& v);
 void decode(const nlohmann::json& j, FlightPlan::Briefing::RuleSet::Type& t);
 void decode(const nlohmann::json& j, std::vector<FlightPlan::Briefing::RuleSet::Id>& v);

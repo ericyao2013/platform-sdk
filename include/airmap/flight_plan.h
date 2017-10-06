@@ -24,6 +24,23 @@ struct FlightPlan {
   struct Briefing {
     /// RuleSet models a set of rules that apply to flight or flight plan.
     struct RuleSet {
+      /// Rule models the individual result of a Rule evaluation.
+      struct Rule {
+        /// Status enumerates all known status codes of a rule.
+        enum class Status {
+          unknown,          ///< The status of the rule is unknown.
+          conflicting,      ///< The rule is conflicting.
+          not_conflicting,  ///< The rule is not conflicting, all good to go.
+          missing_info,     ///< The evaluation requires further information.
+          informational     ///< The rule is of informational nature.
+        };
+
+        Status status;               ///< The status of the rule.
+        std::string short_text;      ///< The human-readable short summary of the rule.
+        std::string description;     ///< The human-readable description of the rule.
+        std::int32_t display_order;  ///< An indicator for ordering the ruleset.
+      };
+
       /// Type enumerates all known types for a RuleSet.
       enum class Type {
         pickone,   ///< One rule from the overall set needs to be picked.
@@ -140,6 +157,9 @@ struct FlightPlan {
 /// @cond
 std::ostream& operator<<(std::ostream& out, FlightPlan::Briefing::RuleSet::Type type);
 std::istream& operator>>(std::istream& in, FlightPlan::Briefing::RuleSet::Type& type);
+
+std::ostream& operator<<(std::ostream& out, FlightPlan::Briefing::RuleSet::Rule::Status status);
+std::istream& operator>>(std::istream& in, FlightPlan::Briefing::RuleSet::Rule::Status& status);
 
 std::ostream& operator<<(std::ostream& out, FlightPlan::Briefing::Jurisdiction::Region region);
 std::istream& operator>>(std::istream& in, FlightPlan::Briefing::Jurisdiction::Region& region);
