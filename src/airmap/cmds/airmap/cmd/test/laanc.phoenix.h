@@ -44,9 +44,25 @@ class Suite : public Test::Suite {
   Optional<Pilot::Aircraft> aircraft_;
 };
 
-class Phoenix : public Suite {
+class PhoenixZoo : public Suite {
  public:
-  static constexpr const char* name{"laanc.phoenix"};
+  static constexpr const char* name{"laanc.phoenix.zoo"};
+
+ private:
+  FlightPlans::Create::Parameters parameters() override;
+};
+
+class PhoenixSchwegg : public Suite {
+ public:
+  static constexpr const char* name{"laanc.phoenix.schwegg"};
+
+ private:
+  FlightPlans::Create::Parameters parameters() override;
+};
+
+class PhoenixUniversity : public Suite {
+ public:
+  static constexpr const char* name{"laanc.phoenix.university"};
 
  private:
   FlightPlans::Create::Parameters parameters() override;

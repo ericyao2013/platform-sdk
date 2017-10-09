@@ -21,8 +21,13 @@ cmd::Test::Test() : cli::CommandWithFlagsAndAction{"test", "executes runtime tes
   flag(flags::token_file(token_file_));
   flag(cli::make_flag("test-suite", "test suite name", test_suite_));
 
-  test_suite_registry_[test::laanc::Phoenix::name] = []() { return std::make_shared<test::laanc::Phoenix>(); };
-
+  test_suite_registry_[test::laanc::PhoenixZoo::name] = []() { return std::make_shared<test::laanc::PhoenixZoo>(); };
+  test_suite_registry_[test::laanc::PhoenixSchwegg::name] = []() {
+    return std::make_shared<test::laanc::PhoenixSchwegg>();
+  };
+  test_suite_registry_[test::laanc::PhoenixUniversity::name] = []() {
+    return std::make_shared<test::laanc::PhoenixUniversity>();
+  };
   action([this](const cli::Command::Context& ctxt) {
     log_ = util::FormattingLogger(create_filtering_logger(log_level_, create_default_logger(ctxt.cout)));
 

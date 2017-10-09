@@ -149,7 +149,7 @@ void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit:
   }
 }
 
-airmap::FlightPlans::Create::Parameters laanc::Phoenix::parameters() {
+airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
   static constexpr const char* json          = R"_(
     {
         "takeoff_longitude": -118.364180570977,
@@ -291,6 +291,188 @@ airmap::FlightPlans::Create::Parameters laanc::Phoenix::parameters() {
                     [
                         -118.364180570977,
                         34.0168307437243
+                    ]
+                ]
+            ]
+        },
+        "buffer": 100,
+        "rulesets": ["usa_part_107", "usa_sec_91"],
+        "flight_features": {
+          "environment_visibility": 5000.0,
+          "flight_max_speed": 3.0,
+          "flight_vlos": true,
+          "flight_authorized": false,
+          "flight_carries_property_for_hire": false,
+          "flight_crosses_us_state_border": false,
+          "pilot_first_name": "Thomas",
+          "pilot_last_name": "Voß",
+          "pilot_phone_number": "+491621074430",
+          "pilot_in_command_part107_cert": true,
+          "uav_nav_lights": true,
+          "uav_preflight_check": true,
+          "uav_registered": true,
+          "uav_weight" : 1.0
+        }
+    }
+  )_";
+  FlightPlans::Create::Parameters parameters = nlohmann::json::parse(json);
+  parameters.authorization                   = token_.id();
+  parameters.pilot                           = pilot_.get();
+  parameters.aircraft                        = aircraft_.get();
+  parameters.start_time                      = Clock::universal_time();
+  parameters.end_time                        = parameters.start_time + Minutes{5};
+  return parameters;
+}
+
+airmap::FlightPlans::Create::Parameters laanc::PhoenixSchwegg::parameters() {
+  static constexpr const char* json          = R"_(
+    {
+        "takeoff_longitude": -111.89334869384766,
+        "takeoff_latitude": 33.42943568280503,
+        "max_altitude_agl": 100,
+        "min_altitude_agl": 1,
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [
+                        -111.89334869384766,
+                        33.42943568280503
+                    ],
+                    [
+                        -111.89317703247069,
+                        33.48027899035629
+                    ],
+                    [
+                        -111.9070816040039,
+                        33.48027899035629
+                    ],
+                    [
+                        -111.90485000610352,
+                        33.430581775777526
+                    ],
+                    [
+                        -111.89334869384766,
+                        33.42943568280503
+                    ]
+                ]
+            ]
+        },
+        "buffer": 100,
+        "rulesets": ["usa_part_107", "usa_sec_91"],
+        "flight_features": {
+          "environment_visibility": 5000.0,
+          "flight_max_speed": 3.0,
+          "flight_vlos": true,
+          "flight_authorized": false,
+          "flight_carries_property_for_hire": false,
+          "flight_crosses_us_state_border": false,
+          "pilot_first_name": "Thomas",
+          "pilot_last_name": "Voß",
+          "pilot_phone_number": "+491621074430",
+          "pilot_in_command_part107_cert": true,
+          "uav_nav_lights": true,
+          "uav_preflight_check": true,
+          "uav_registered": true,
+          "uav_weight" : 1.0
+        }
+    }
+  )_";
+  FlightPlans::Create::Parameters parameters = nlohmann::json::parse(json);
+  parameters.authorization                   = token_.id();
+  parameters.pilot                           = pilot_.get();
+  parameters.aircraft                        = aircraft_.get();
+  parameters.start_time                      = Clock::universal_time();
+  parameters.end_time                        = parameters.start_time + Minutes{5};
+  return parameters;
+}
+
+airmap::FlightPlans::Create::Parameters laanc::PhoenixUniversity::parameters() {
+  static constexpr const char* json          = R"_(
+    {
+        "takeoff_longitude": -111.92922592163086,
+        "takeoff_latitude": 33.412672344081756,
+        "max_altitude_agl": 100,
+        "min_altitude_agl": 1,
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [
+                        -111.92922592163086,
+                        33.412672344081756
+                    ],
+                    [
+                        -111.9257926940918,
+                        33.412529053733444
+                    ],
+                    [
+                        -111.92699432373047,
+                        33.415681386786396
+                    ],
+                    [
+                        -111.92682266235352,
+                        33.41955000278094
+                    ],
+                    [
+                        -111.92682266235352,
+                        33.4216991594148
+                    ],
+                    [
+                        -111.92253112792969,
+                        33.4216991594148
+                    ],
+                    [
+                        -111.9206428527832,
+                        33.42485115958141
+                    ],
+                    [
+                        -111.92253112792969,
+                        33.42671365134311
+                    ],
+                    [
+                        -111.92544937133789,
+                        33.427859780257556
+                    ],
+                    [
+                        -111.92682266235352,
+                        33.427859780257556
+                    ],
+                    [
+                        -111.92819595336914,
+                        33.42671365134311
+                    ],
+                    [
+                        -111.9290542602539,
+                        33.42528096891931
+                    ],
+                    [
+                        -111.93248748779297,
+                        33.42341844641943
+                    ],
+                    [
+                        -111.93780899047852,
+                        33.42284535453425
+                    ],
+                    [
+                        -111.93780899047852,
+                        33.42040967181813
+                    ],
+                    [
+                        -111.93763732910156,
+                        33.41725751040402
+                    ],
+                    [
+                        -111.93489074707031,
+                        33.416397810158834
+                    ],
+                    [
+                        -111.93180084228516,
+                        33.4142485223105
+                    ],
+                    [
+                        -111.92922592163086,
+                        33.412672344081756
                     ]
                 ]
             ]
