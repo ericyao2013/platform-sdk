@@ -296,7 +296,7 @@ airmap::FlightPlans::Create::Parameters laanc::Phoenix::parameters() {
             ]
         },
         "buffer": 100,
-        "rulesets": ["usa_part_107"],
+        "rulesets": ["usa_part_107", "usa_sec_91"],
         "flight_features": {
           "environment_visibility": 5000.0,
           "flight_max_speed": 3.0,
