@@ -13,15 +13,14 @@ namespace cmd {
 namespace test {
 namespace laanc {
 
-class Phoenix : public Test::Suite {
+class Suite : public Test::Suite {
  public:
-  static constexpr const char* name{"laanc.phoenix"};
 
   void run(const std::shared_ptr<Logger>& logger, const std::shared_ptr<::airmap::Client>& client,
            const std::shared_ptr<::airmap::Context>& context, const ::airmap::Token& token) override;
 
- private:
-  FlightPlans::Create::Parameters parameters_for_zoo();
+ protected:
+  virtual FlightPlans::Create::Parameters parameters() = 0;
 
   void query_pilot();
   void handle_query_pilot_finished(const Pilots::Authenticated::Result& result);
@@ -41,9 +40,17 @@ class Phoenix : public Test::Suite {
   util::FormattingLogger log_{create_null_logger()};
   std::shared_ptr<::airmap::Client> client_;
   std::shared_ptr<::airmap::Context> context_;
-  ::airmap::Token token_;
+  Token token_;
   Optional<Pilot> pilot_;
   Optional<Pilot::Aircraft> aircraft_;
+};
+
+class Phoenix : public Suite {
+ public:
+  static constexpr const char* name{"laanc.phoenix"};
+
+ private:
+  FlightPlans::Create::Parameters parameters() override;
 };
 
 }  // namespace laanc

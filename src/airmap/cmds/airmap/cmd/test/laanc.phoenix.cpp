@@ -5,31 +5,14 @@
 namespace laanc = airmap::cmds::airmap::cmd::test::laanc;
 
 namespace {
-namespace env {
 
-std::string get(const char* name) {
-  if (auto value = ::getenv(name))
-    return value;
-  return std::string{};
-}
-
-std::string pilot_id() {
-  return get("AIRMAP_LAANC_PILOT_ID");
-}
-
-std::string aircraft_id() {
-  return get("AIRMAP_LAANC_AIRCRAFT_ID");
-}
-
-}  // namespace env
-
-constexpr const char* component{"laanc::phoenix::test"};
+constexpr const char* component{"laanc::Suite::test"};
 
 }  // namespace
 
 namespace ph = std::placeholders;
 
-void laanc::Phoenix::run(const std::shared_ptr<Logger>& logger, const std::shared_ptr<::airmap::Client>& client,
+void laanc::Suite::run(const std::shared_ptr<Logger>& logger, const std::shared_ptr<::airmap::Client>& client,
                          const std::shared_ptr<::airmap::Context>& context, const ::airmap::Token& token) {
   log_     = util::FormattingLogger{logger};
   client_  = client;
@@ -39,14 +22,14 @@ void laanc::Phoenix::run(const std::shared_ptr<Logger>& logger, const std::share
   query_pilot();
 }
 
-void laanc::Phoenix::query_pilot() {
+void laanc::Suite::query_pilot() {
   Pilots::Authenticated::Parameters parameters;
   parameters.authorization = token_.id();
 
-  client_->pilots().authenticated(parameters, std::bind(&Phoenix::handle_query_pilot_finished, this, ph::_1));
+  client_->pilots().authenticated(parameters, std::bind(&Suite::handle_query_pilot_finished, this, ph::_1));
 }
 
-void laanc::Phoenix::handle_query_pilot_finished(const Pilots::Authenticated::Result& result) {
+void laanc::Suite::handle_query_pilot_finished(const Pilots::Authenticated::Result& result) {
   if (result) {
     log_.infof(component, "successfully queried pilot profile");
     pilot_ = result.value();
@@ -63,15 +46,15 @@ void laanc::Phoenix::handle_query_pilot_finished(const Pilots::Authenticated::Re
   }
 }
 
-void laanc::Phoenix::query_aircrafts() {
+void laanc::Suite::query_aircrafts() {
   Pilots::Aircrafts::Parameters parameters;
   parameters.authorization = token_.id();
   parameters.id            = pilot_.get().id;
 
-  client_->pilots().aircrafts(parameters, std::bind(&Phoenix::handle_query_aircrafts_finished, this, ph::_1));
+  client_->pilots().aircrafts(parameters, std::bind(&Suite::handle_query_aircrafts_finished, this, ph::_1));
 }
 
-void laanc::Phoenix::handle_query_aircrafts_finished(const Pilots::Aircrafts::Result& result) {
+void laanc::Suite::handle_query_aircrafts_finished(const Pilots::Aircrafts::Result& result) {
   if (result) {
     log_.infof(component, "successfully queried pilot profile for aircrafts");
     if (result.value().empty()) {
@@ -93,12 +76,12 @@ void laanc::Phoenix::handle_query_aircrafts_finished(const Pilots::Aircrafts::Re
   }
 }
 
-void laanc::Phoenix::plan_flight() {
-  client_->flight_plans().create_by_polygon(parameters_for_zoo(),
-                                            std::bind(&Phoenix::handle_plan_flight_finished, this, ph::_1));
+void laanc::Suite::plan_flight() {
+  client_->flight_plans().create_by_polygon(parameters(),
+                                            std::bind(&Suite::handle_plan_flight_finished, this, ph::_1));
 }
 
-void laanc::Phoenix::handle_plan_flight_finished(const FlightPlans::Create::Result& result) {
+void laanc::Suite::handle_plan_flight_finished(const FlightPlans::Create::Result& result) {
   if (result) {
     log_.infof(component, "successfully created flight plan");
     render_briefing(result.value().id);
@@ -114,16 +97,16 @@ void laanc::Phoenix::handle_plan_flight_finished(const FlightPlans::Create::Resu
   }
 }
 
-void laanc::Phoenix::render_briefing(const FlightPlan::Id& id) {
+void laanc::Suite::render_briefing(const FlightPlan::Id& id) {
   FlightPlans::RenderBriefing::Parameters parameters;
   parameters.id            = id;
   parameters.authorization = token_.id();
 
   client_->flight_plans().render_briefing(parameters,
-                                          std::bind(&Phoenix::handle_render_briefing_finished, this, ph::_1, id));
+                                          std::bind(&Suite::handle_render_briefing_finished, this, ph::_1, id));
 }
 
-void laanc::Phoenix::handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result,
+void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result,
                                                      const FlightPlan::Id& id) {
   if (result) {
     log_.infof(component, "successfully rendered flight brief");
@@ -140,15 +123,15 @@ void laanc::Phoenix::handle_render_briefing_finished(const FlightPlans::RenderBr
   }
 }
 
-void laanc::Phoenix::submit_flight_plan(const FlightPlan::Id& id) {
+void laanc::Suite::submit_flight_plan(const FlightPlan::Id& id) {
   FlightPlans::Submit::Parameters parameters;
   parameters.id            = id;
   parameters.authorization = token_.id();
 
-  client_->flight_plans().submit(parameters, std::bind(&Phoenix::handle_submit_flight_plan_finished, this, ph::_1));
+  client_->flight_plans().submit(parameters, std::bind(&Suite::handle_submit_flight_plan_finished, this, ph::_1));
 }
 
-void laanc::Phoenix::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result) {
+void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result) {
   if (result) {
     log_.infof(component, "successfully submitted flight plan");
     context_->stop();
@@ -164,7 +147,7 @@ void laanc::Phoenix::handle_submit_flight_plan_finished(const FlightPlans::Submi
   }
 }
 
-airmap::FlightPlans::Create::Parameters laanc::Phoenix::parameters_for_zoo() {
+airmap::FlightPlans::Create::Parameters laanc::Phoenix::parameters() {
   static constexpr const char* json          = R"_(
     {
         "takeoff_longitude": -118.364180570977,
