@@ -15,7 +15,6 @@ namespace laanc {
 
 class Suite : public Test::Suite {
  public:
-
   void run(const std::shared_ptr<Logger>& logger, const std::shared_ptr<::airmap::Client>& client,
            const std::shared_ptr<::airmap::Context>& context, const ::airmap::Token& token) override;
 

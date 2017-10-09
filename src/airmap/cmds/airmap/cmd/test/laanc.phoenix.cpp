@@ -13,7 +13,7 @@ constexpr const char* component{"laanc::Suite::test"};
 namespace ph = std::placeholders;
 
 void laanc::Suite::run(const std::shared_ptr<Logger>& logger, const std::shared_ptr<::airmap::Client>& client,
-                         const std::shared_ptr<::airmap::Context>& context, const ::airmap::Token& token) {
+                       const std::shared_ptr<::airmap::Context>& context, const ::airmap::Token& token) {
   log_     = util::FormattingLogger{logger};
   client_  = client;
   context_ = context;
@@ -77,8 +77,7 @@ void laanc::Suite::handle_query_aircrafts_finished(const Pilots::Aircrafts::Resu
 }
 
 void laanc::Suite::plan_flight() {
-  client_->flight_plans().create_by_polygon(parameters(),
-                                            std::bind(&Suite::handle_plan_flight_finished, this, ph::_1));
+  client_->flight_plans().create_by_polygon(parameters(), std::bind(&Suite::handle_plan_flight_finished, this, ph::_1));
 }
 
 void laanc::Suite::handle_plan_flight_finished(const FlightPlans::Create::Result& result) {
@@ -107,9 +106,12 @@ void laanc::Suite::render_briefing(const FlightPlan::Id& id) {
 }
 
 void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result,
-                                                     const FlightPlan::Id& id) {
+                                                   const FlightPlan::Id& id) {
   if (result) {
     log_.infof(component, "successfully rendered flight brief");
+
+    auto briefing = result.value();
+
     submit_flight_plan(id);
   } else {
     try {
@@ -294,7 +296,23 @@ airmap::FlightPlans::Create::Parameters laanc::Phoenix::parameters() {
             ]
         },
         "buffer": 100,
-        "rulesets": ["usa_part_107"]
+        "rulesets": ["usa_part_107"],
+        "flight_features": {
+          "environment_visibility": 5000.0,
+          "flight_max_speed": 3.0,
+          "flight_vlos": true,
+          "flight_authorized": false,
+          "flight_carries_property_for_hire": false,
+          "flight_crosses_us_state_border": false,
+          "pilot_first_name": "Thomas",
+          "pilot_last_name": "Voß",
+          "pilot_phone_number": "+491621074430",
+          "pilot_in_command_part107_cert": true,
+          "uav_nav_lights": true,
+          "uav_preflight_check": true,
+          "uav_registered": true,
+          "uav_weight" : 1.0
+        }
     }
   )_";
   FlightPlans::Create::Parameters parameters = nlohmann::json::parse(json);

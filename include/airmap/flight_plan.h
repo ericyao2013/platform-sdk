@@ -3,12 +3,14 @@
 
 #include <airmap/date_time.h>
 #include <airmap/geometry.h>
+#include <airmap/optional.h>
 #include <airmap/pilot.h>
 #include <airmap/status.h>
 
 #include <cstdint>
 #include <iosfwd>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace airmap {
@@ -22,6 +24,59 @@ struct FlightPlan {
   /// The target audience is a hypothetical pilot or operator conducting
   /// the flight described in the flight plan.
   struct Briefing {
+    struct Feature {
+      enum class Type { unknown, boolean, floating_point, string };
+      enum class Measurement { unknown, speed, weight, distance };
+      enum class Unit { unknown, kilograms, meters, meters_per_sec };
+
+      class Value {
+       public:
+        Value();
+        explicit Value(bool value);
+        explicit Value(double value);
+        explicit Value(const std::string& value);
+        Value(const Value& other);
+        Value(Value&& other);
+        ~Value();
+        Value& operator=(const Value& other);
+        Value& operator=(Value&& other);
+
+        Type type() const;
+        bool boolean() const;
+        double floating_point() const;
+        const std::string& string() const;
+
+       private:
+        Value& construct(const Value& other);
+        Value& construct(Value&& other);
+        Value& construct(bool value);
+        Value& construct(double value);
+        Value& construct(const std::string& value);
+        Value& destruct();
+
+        Type type_;
+        union Detail {
+          Detail();
+          ~Detail();
+
+          bool b;
+          double d;
+          std::string s;
+        } detail_;
+      };
+
+      Optional<Value> value(bool b) const;
+      Optional<Value> value(double d) const;
+      Optional<Value> value(const std::string& s) const;
+
+      std::int32_t id{-1};
+      std::string name;
+      std::string description;
+      Type type{Type::unknown};
+      Measurement measurement{Measurement::unknown};
+      Unit unit{Unit::unknown};
+    };
+
     /// RuleSet models a set of rules that apply to flight or flight plan.
     struct RuleSet {
       /// Rule models the individual result of a Rule evaluation.
@@ -155,6 +210,15 @@ struct FlightPlan {
 };
 
 /// @cond
+std::ostream& operator<<(std::ostream& out, FlightPlan::Briefing::Feature::Type type);
+std::istream& operator>>(std::istream& in, FlightPlan::Briefing::Feature::Type& type);
+
+std::ostream& operator<<(std::ostream& out, FlightPlan::Briefing::Feature::Measurement measurement);
+std::istream& operator>>(std::istream& in, FlightPlan::Briefing::Feature::Measurement& measurement);
+
+std::ostream& operator<<(std::ostream& out, FlightPlan::Briefing::Feature::Unit unit);
+std::istream& operator>>(std::istream& in, FlightPlan::Briefing::Feature::Unit& unit);
+
 std::ostream& operator<<(std::ostream& out, FlightPlan::Briefing::RuleSet::Type type);
 std::istream& operator>>(std::istream& in, FlightPlan::Briefing::RuleSet::Type& type);
 
