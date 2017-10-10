@@ -115,7 +115,9 @@ void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBrie
     for (const auto& ruleset : result.value().rulesets) {
       for (const auto& rule : ruleset.rules) {
         for (const auto& feature : rule.features) {
-          if (feature.name == "flight_authorized" && feature.code == "laanc_authorization_required") {
+          if (feature.name == "flight_authorized" && feature.code &&
+              feature.code.get() == "laanc_authorization_required" &&
+              feature.status == FlightPlan::Briefing::RuleSet::Rule::Status::conflicting) {
             laanc_conflicted++;
           }
         }

@@ -48,6 +48,7 @@ void airmap::codec::json::decode(const nlohmann::json& j, FlightPlan::Briefing::
   get(f.code, j, "code");
   get(f.name, j, "flight_feature");
   get(f.description, j, "description");
+  get(f.status, j, "status");
   get(f.type, j, "input_type");
   get(f.measurement, j, "measurement_type");
   get(f.unit, j, "measurement_unit");
