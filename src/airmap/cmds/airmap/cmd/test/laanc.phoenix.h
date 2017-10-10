@@ -34,7 +34,10 @@ class Suite : public Test::Suite {
   void handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result, const FlightPlan::Id& id);
 
   void submit_flight_plan(const FlightPlan::Id& id);
-  void handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result);
+  void handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result, const FlightPlan::Id& id);
+
+  void rerender_briefing(const FlightPlan::Id& id);
+  void handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result);
 
   util::FormattingLogger log_{create_null_logger()};
   std::shared_ptr<::airmap::Client> client_;

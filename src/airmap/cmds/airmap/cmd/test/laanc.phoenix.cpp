@@ -130,13 +130,14 @@ void laanc::Suite::submit_flight_plan(const FlightPlan::Id& id) {
   parameters.id            = id;
   parameters.authorization = token_.id();
 
-  client_->flight_plans().submit(parameters, std::bind(&Suite::handle_submit_flight_plan_finished, this, ph::_1));
+  client_->flight_plans().submit(parameters, std::bind(&Suite::handle_submit_flight_plan_finished, this, ph::_1, id));
 }
 
-void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result) {
+void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result,
+                                                      const FlightPlan::Id& id) {
   if (result) {
     log_.infof(component, "successfully submitted flight plan");
-    context_->stop();
+    rerender_briefing(id);
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -144,6 +145,32 @@ void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit:
       log_.errorf(component, "failed to submit flight plan: %s", e.what());
     } catch (...) {
       log_.errorf(component, "failed to submit flight plan");
+    }
+    context_->stop(::airmap::Context::ReturnCode::error);
+  }
+}
+
+void laanc::Suite::rerender_briefing(const FlightPlan::Id& id) {
+  FlightPlans::RenderBriefing::Parameters parameters;
+  parameters.id            = id;
+  parameters.authorization = token_.id();
+
+  client_->flight_plans().render_briefing(parameters,
+                                          std::bind(&Suite::handle_rerender_briefing_finished, this, ph::_1));
+}
+
+void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully rerendered flight briefing");
+
+    context_->stop();
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "failed to rerender flight briefing: %s", e.what());
+    } catch (...) {
+      log_.errorf(component, "failed to rerender flight briefing");
     }
     context_->stop(::airmap::Context::ReturnCode::error);
   }
