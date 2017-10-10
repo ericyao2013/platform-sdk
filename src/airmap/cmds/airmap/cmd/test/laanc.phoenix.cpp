@@ -110,9 +110,24 @@ void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBrie
   if (result) {
     log_.infof(component, "successfully rendered flight brief");
 
-    auto briefing = result.value();
+    std::size_t laanc_conflicted = 0;
 
-    submit_flight_plan(id);
+    for (const auto& ruleset : result.value().rulesets) {
+      for (const auto& rule : ruleset.rules) {
+        for (const auto& feature : rule.features) {
+          if (feature.name == "flight_authorized" && feature.code == "laanc_authorization_required") {
+            laanc_conflicted++;
+          }
+        }
+      }
+    }
+
+    if (laanc_conflicted == 0) {
+      log_.errorf(component, "expected laanc authorization to be conflicting");
+      context_->stop(::airmap::Context::ReturnCode::error);
+    } else {
+      submit_flight_plan(id);
+    }
   } else {
     try {
       std::rethrow_exception(result.error());

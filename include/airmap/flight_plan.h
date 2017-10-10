@@ -71,6 +71,7 @@ struct FlightPlan {
 
       std::int32_t id{-1};
       std::string name;
+      std::string code;
       std::string description;
       Type type{Type::unknown};
       Measurement measurement{Measurement::unknown};
@@ -90,11 +91,11 @@ struct FlightPlan {
           informational     ///< The rule is of informational nature.
         };
 
-        Status status;               ///< The status of the rule.
-        std::string short_text;      ///< The human-readable short summary of the rule.
-        std::string description;     ///< The human-readable description of the rule.
-        std::int32_t display_order;  ///< An indicator for ordering the ruleset.
-        std::vector<Feature> features; ///< The features modelled by the rule.
+        Status status;                  ///< The status of the rule.
+        std::string short_text;         ///< The human-readable short summary of the rule.
+        std::string description;        ///< The human-readable description of the rule.
+        std::int32_t display_order;     ///< An indicator for ordering the ruleset.
+        std::vector<Feature> features;  ///< The features modelled by the rule.
       };
 
       /// Type enumerates all known types for a RuleSet.
