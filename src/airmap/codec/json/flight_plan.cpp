@@ -106,6 +106,7 @@ void airmap::codec::json::decode(const nlohmann::json& j, FlightPlan::Briefing::
   get(r.description, j, "description");
   get(r.status, j, "status");
   get(r.display_order, j, "display_order");
+  get(r.features, j, "flight_features");
 }
 
 void airmap::codec::json::decode(const nlohmann::json& j, std::vector<FlightPlan::Briefing::RuleSet::Rule>& v) {

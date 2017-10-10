@@ -94,6 +94,7 @@ struct FlightPlan {
         std::string short_text;      ///< The human-readable short summary of the rule.
         std::string description;     ///< The human-readable description of the rule.
         std::int32_t display_order;  ///< An indicator for ordering the ruleset.
+        std::vector<Feature> features; ///< The features modelled by the rule.
       };
 
       /// Type enumerates all known types for a RuleSet.
