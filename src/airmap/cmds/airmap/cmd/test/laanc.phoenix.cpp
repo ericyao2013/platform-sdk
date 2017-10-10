@@ -136,8 +136,11 @@ void laanc::Suite::submit_flight_plan(const FlightPlan::Id& id) {
 void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result,
                                                       const FlightPlan::Id& id) {
   if (result) {
+    static const Microseconds timeout{5 * 1000 * 1000};
+
     log_.infof(component, "successfully submitted flight plan");
-    rerender_briefing(id);
+    log_.infof(component, "scheduling rendering of flight plan");
+    context_->schedule_in(timeout, [this, id]() { rerender_briefing(id); });
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -159,7 +162,8 @@ void laanc::Suite::rerender_briefing(const FlightPlan::Id& id) {
                                           std::bind(&Suite::handle_rerender_briefing_finished, this, ph::_1, id));
 }
 
-void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result, const FlightPlan::Id& id) {
+void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result,
+                                                     const FlightPlan::Id& id) {
   if (result) {
     log_.infof(component, "successfully rerendered flight briefing");
     delete_flight_plan(id);
@@ -177,7 +181,7 @@ void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBr
 
 void laanc::Suite::delete_flight_plan(const FlightPlan::Id& id) {
   FlightPlans::Delete::Parameters parameters;
-  parameters.id = id;
+  parameters.id            = id;
   parameters.authorization = token_.id();
 
   client_->flight_plans().delete_(parameters, std::bind(&Suite::handle_delete_flight_plan_finished, this, ph::_1));
