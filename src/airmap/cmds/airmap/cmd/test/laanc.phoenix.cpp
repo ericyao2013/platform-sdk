@@ -83,7 +83,8 @@ void laanc::Suite::plan_flight() {
 void laanc::Suite::handle_plan_flight_finished(const FlightPlans::Create::Result& result) {
   if (result) {
     log_.infof(component, "successfully created flight plan");
-    render_briefing(result.value().id);
+    flight_plan_ = result.value();
+    render_briefing();
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -96,17 +97,15 @@ void laanc::Suite::handle_plan_flight_finished(const FlightPlans::Create::Result
   }
 }
 
-void laanc::Suite::render_briefing(const FlightPlan::Id& id) {
+void laanc::Suite::render_briefing() {
   FlightPlans::RenderBriefing::Parameters parameters;
-  parameters.id            = id;
+  parameters.id            = flight_plan_.get().id;
   parameters.authorization = token_.id();
 
-  client_->flight_plans().render_briefing(parameters,
-                                          std::bind(&Suite::handle_render_briefing_finished, this, ph::_1, id));
+  client_->flight_plans().render_briefing(parameters, std::bind(&Suite::handle_render_briefing_finished, this, ph::_1));
 }
 
-void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result,
-                                                   const FlightPlan::Id& id) {
+void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
   if (result) {
     log_.infof(component, "successfully rendered flight brief");
 
@@ -128,7 +127,7 @@ void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBrie
       log_.errorf(component, "expected laanc authorization to be conflicting");
       context_->stop(::airmap::Context::ReturnCode::error);
     } else {
-      submit_flight_plan(id);
+      submit_flight_plan();
     }
   } else {
     try {
@@ -142,22 +141,27 @@ void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBrie
   }
 }
 
-void laanc::Suite::submit_flight_plan(const FlightPlan::Id& id) {
+void laanc::Suite::submit_flight_plan() {
   FlightPlans::Submit::Parameters parameters;
-  parameters.id            = id;
+  parameters.id            = flight_plan_.get().id;
   parameters.authorization = token_.id();
 
-  client_->flight_plans().submit(parameters, std::bind(&Suite::handle_submit_flight_plan_finished, this, ph::_1, id));
+  client_->flight_plans().submit(parameters, std::bind(&Suite::handle_submit_flight_plan_finished, this, ph::_1));
 }
 
-void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result,
-                                                      const FlightPlan::Id& id) {
+void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result) {
   if (result) {
     static const Microseconds timeout{5 * 1000 * 1000};
 
-    log_.infof(component, "successfully submitted flight plan");
-    log_.infof(component, "scheduling rendering of flight plan");
-    context_->schedule_in(timeout, [this, id]() { rerender_briefing(id); });
+    if (result.value().flight_id) {
+      log_.infof(component, "successfully submitted flight plan and received flight id");
+      log_.infof(component, "scheduling rendering of flight plan");
+      flight_id_ = result.value().flight_id;
+      context_->schedule_in(timeout, [this]() { rerender_briefing(); });
+    } else {
+      log_.errorf(component, "successfully submitted flight plan but did not receive flight id");
+      context_->stop(::airmap::Context::ReturnCode::error);
+    }
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -170,20 +174,19 @@ void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit:
   }
 }
 
-void laanc::Suite::rerender_briefing(const FlightPlan::Id& id) {
+void laanc::Suite::rerender_briefing() {
   FlightPlans::RenderBriefing::Parameters parameters;
-  parameters.id            = id;
+  parameters.id            = flight_plan_.get().id;
   parameters.authorization = token_.id();
 
   client_->flight_plans().render_briefing(parameters,
-                                          std::bind(&Suite::handle_rerender_briefing_finished, this, ph::_1, id));
+                                          std::bind(&Suite::handle_rerender_briefing_finished, this, ph::_1));
 }
 
-void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result,
-                                                     const FlightPlan::Id& id) {
+void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
   if (result) {
     log_.infof(component, "successfully rerendered flight briefing");
-    delete_flight_plan(id);
+    delete_flight_plan();
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -196,9 +199,9 @@ void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBr
   }
 }
 
-void laanc::Suite::delete_flight_plan(const FlightPlan::Id& id) {
+void laanc::Suite::delete_flight_plan() {
   FlightPlans::Delete::Parameters parameters;
-  parameters.id            = id;
+  parameters.id            = flight_plan_.get().id;
   parameters.authorization = token_.id();
 
   client_->flight_plans().delete_(parameters, std::bind(&Suite::handle_delete_flight_plan_finished, this, ph::_1));
@@ -207,7 +210,7 @@ void laanc::Suite::delete_flight_plan(const FlightPlan::Id& id) {
 void laanc::Suite::handle_delete_flight_plan_finished(const FlightPlans::Delete::Result& result) {
   if (result) {
     log_.infof(component, "successfully deleted flight plan");
-    context_->stop();
+    delete_flight();
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -215,6 +218,30 @@ void laanc::Suite::handle_delete_flight_plan_finished(const FlightPlans::Delete:
       log_.errorf(component, "failed to delete flight plan: %s", e.what());
     } catch (...) {
       log_.errorf(component, "failed to delete flight plan");
+    }
+    context_->stop(::airmap::Context::ReturnCode::error);
+  }
+}
+
+void laanc::Suite::delete_flight() {
+  Flights::DeleteFlight::Parameters parameters;
+  parameters.id            = flight_id_.get();
+  parameters.authorization = token_.id();
+
+  client_->flights().delete_flight(parameters, std::bind(&Suite::handle_delete_flight_finished, this, ph::_1));
+}
+
+void laanc::Suite::handle_delete_flight_finished(const Flights::DeleteFlight::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully deleted flight");
+    context_->stop();
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "failed to delete flight: %s", e.what());
+    } catch (...) {
+      log_.errorf(component, "failed to delete flight");
     }
     context_->stop(::airmap::Context::ReturnCode::error);
   }
