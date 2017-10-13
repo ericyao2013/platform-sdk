@@ -151,13 +151,11 @@ void laanc::Suite::submit_flight_plan() {
 
 void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result) {
   if (result) {
-    static const Microseconds timeout{5 * 1000 * 1000};
-
     if (result.value().flight_id) {
       log_.infof(component, "successfully submitted flight plan and received flight id");
-      log_.infof(component, "scheduling rendering of flight plan");
+
       flight_id_ = result.value().flight_id;
-      context_->schedule_in(timeout, [this]() { rerender_briefing(); });
+      rerender_briefing();
     } else {
       log_.errorf(component, "successfully submitted flight plan but did not receive flight id");
       context_->stop(::airmap::Context::ReturnCode::error);
@@ -185,8 +183,10 @@ void laanc::Suite::rerender_briefing() {
 
 void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
   if (result) {
+    static const Microseconds timeout{20 * 1000 * 1000};
     log_.infof(component, "successfully rerendered flight briefing");
-    delete_flight_plan();
+    log_.infof(component, "scheduling final rendering of flight plan");
+    context_->schedule_in(timeout, [this]() { render_final_briefing(); });
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -194,6 +194,31 @@ void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBr
       log_.errorf(component, "failed to rerender flight briefing: %s", e.what());
     } catch (...) {
       log_.errorf(component, "failed to rerender flight briefing");
+    }
+    context_->stop(::airmap::Context::ReturnCode::error);
+  }
+}
+
+void laanc::Suite::render_final_briefing() {
+  FlightPlans::RenderBriefing::Parameters parameters;
+  parameters.id            = flight_plan_.get().id;
+  parameters.authorization = token_.id();
+
+  client_->flight_plans().render_briefing(parameters,
+                                          std::bind(&Suite::handle_render_final_briefing_finished, this, ph::_1));
+}
+
+void laanc::Suite::handle_render_final_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully render final flight briefing");
+    delete_flight_plan();
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "failed to render final flight briefing: %s", e.what());
+    } catch (...) {
+      log_.errorf(component, "failed to render final flight briefing");
     }
     context_->stop(::airmap::Context::ReturnCode::error);
   }
@@ -247,7 +272,7 @@ void laanc::Suite::handle_delete_flight_finished(const Flights::DeleteFlight::Re
   }
 }
 
-airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
+airmap::FlightPlans::Create::Parameters laanc::PhoenixManual::parameters() {
   static constexpr const char* json          = R"_(
     {
         "takeoff_longitude": -118.364180570977,
@@ -255,146 +280,34 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
         "max_altitude_agl": 100,
         "min_altitude_agl": 1,
         "geometry": {
-            "type": "Polygon",
-            "coordinates": [
-                [
-                    [
-                        -118.364180570977,
-                        34.0168307437243
-                    ],
-                    [
-                        -118.365628044777,
-                        34.0026580160048
-                    ],
-                    [
-                        -118.370366665279,
-                        33.9889926626396
-                    ],
-                    [
-                        -118.378212913785,
-                        33.9763595096654
-                    ],
-                    [
-                        -118.388864275762,
-                        33.9652435148409
-                    ],
-                    [
-                        -118.401911015266,
-                        33.9560712113537
-                    ],
-                    [
-                        -118.416851982014,
-                        33.9491944147928
-                    ],
-                    [
-                        -118.433113834775,
-                        33.9448768046356
-                    ],
-                    [
-                        -118.450072947987,
-                        33.9432838806463
-                    ],
-                    [
-                        -118.467079178993,
-                        33.9444766667622
-                    ],
-                    [
-                        -118.483480612439,
-                        33.9484093948682
-                    ],
-                    [
-                        -118.498648367065,
-                        33.954931253147
-                    ],
-                    [
-                        -118.512000548545,
-                        33.9637921333616
-                    ],
-                    [
-                        -118.523024460256,
-                        33.9746521633944
-                    ],
-                    [
-                        -118.531296241358,
-                        33.9870946705171
-                    ],
-                    [
-                        -118.536497187531,
-                        34.0006420919084
-                    ],
-                    [
-                        -118.538426122695,
-                        34.0147742363959
-                    ],
-                    [
-                        -118.537007327878,
-                        34.0289482094587
-                    ],
-                    [
-                        -118.532293692779,
-                        34.0426192459108
-                    ],
-                    [
-                        -118.524464932309,
-                        34.055261654524
-                    ],
-                    [
-                        -118.513820898597,
-                        34.0663890684601
-                    ],
-                    [
-                        -118.500770211903,
-                        34.0755732160792
-                    ],
-                    [
-                        -118.48581462341,
-                        34.0824604786282
-                    ],
-                    [
-                        -118.469529700366,
-                        34.086785583271
-                    ],
-                    [
-                        -118.45254258058,
-                        34.0883818892682
-                    ],
-                    [
-                        -118.435507670481,
-                        34.0871878577985
-                    ],
-                    [
-                        -118.419081251578,
-                        34.0832494465733
-                    ],
-                    [
-                        -118.403896008951,
-                        34.0767183326201
-                    ],
-                    [
-                        -118.390536499309,
-                        34.0678460332763
-                    ],
-                    [
-                        -118.379516534899,
-                        34.056974159122
-                    ],
-                    [
-                        -118.371259375595,
-                        34.0445211860435
-                    ],
-                    [
-                        -118.366081499672,
-                        34.030966270202
-                    ],
-                    [
-                        -118.364180570977,
-                        34.0168307437243
-                    ]
-                ]
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -112.10620880126953,
+                33.431011556740536
+              ],
+              [
+                -112.1000289916992,
+                33.42793141281223
+              ],
+              [
+                -112.09402084350586,
+                33.42914915719729
+              ],
+              [
+                -112.09917068481445,
+                33.431011556740536
+              ],
+              [
+                -112.10620880126953,
+                33.431011556740536
+              ]
             ]
+          ]
         },
         "buffer": 100,
-        "rulesets": ["usa_part_107", "usa_sec_91"],
+        "rulesets": ["usa_part_107"],
         "flight_features": {
           "environment_visibility": 5000.0,
           "flight_max_speed": 3.0,
@@ -417,7 +330,102 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = Clock::universal_time();
+  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{40};
+  parameters.end_time                        = parameters.start_time + Minutes{5};
+  return parameters;
+}
+
+airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
+  static constexpr const char* json          = R"_(
+    {
+        "takeoff_longitude": -111.95188522338867,
+        "takeoff_latitude": 33.45135208763854,
+        "max_altitude_agl": 100,
+        "min_altitude_agl": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -111.95188522338867,
+                33.45135208763854
+              ],
+              [
+                -111.95265769958495,
+                33.449132050292846
+              ],
+              [
+                -111.95059776306152,
+                33.446840339233134
+              ],
+              [
+                -111.94896697998047,
+                33.44691195612031
+              ],
+              [
+                -111.94888114929199,
+                33.44791458633172
+              ],
+              [
+                -111.94673538208006,
+                33.44798620233191
+              ],
+              [
+                -111.94493293762207,
+                33.448129434154886
+              ],
+              [
+                -111.94398880004883,
+                33.44949012467619
+              ],
+              [
+                -111.94441795349121,
+                33.451065634400095
+              ],
+              [
+                -111.94699287414551,
+                33.451065634400095
+              ],
+              [
+                -111.94862365722656,
+                33.45213982916561
+              ],
+              [
+                -111.95094108581543,
+                33.45199660396564
+              ],
+              [
+                -111.95188522338867,
+                33.45135208763854
+              ]
+            ]
+          ]
+        },
+        "buffer": 100,
+        "rulesets": ["usa_part_107"],
+        "flight_features": {
+          "environment_visibility": 5000.0,
+          "flight_max_speed": 3.0,
+          "flight_vlos": true,
+          "flight_authorized": false,
+          "flight_carries_property_for_hire": false,
+          "flight_crosses_us_state_border": false,
+          "pilot_first_name": "Thomas",
+          "pilot_last_name": "Voß",
+          "pilot_phone_number": "+491621074430",
+          "pilot_in_command_part107_cert": true,
+          "uav_nav_lights": true,
+          "uav_preflight_check": true,
+          "uav_registered": true,
+          "uav_weight" : 1.0
+        }
+    }
+  )_";
+  FlightPlans::Create::Parameters parameters = nlohmann::json::parse(json);
+  parameters.authorization                   = token_.id();
+  parameters.pilot                           = pilot_.get();
+  parameters.aircraft                        = aircraft_.get();
+  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{16};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
@@ -457,7 +465,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixSchwegg::parameters() {
             ]
         },
         "buffer": 100,
-        "rulesets": ["usa_part_107", "usa_sec_91"],
+        "rulesets": ["usa_part_107"],
         "flight_features": {
           "environment_visibility": 5000.0,
           "flight_max_speed": 3.0,
@@ -480,7 +488,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixSchwegg::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = Clock::universal_time();
+  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{16};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
@@ -576,7 +584,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixUniversity::parameters() {
             ]
         },
         "buffer": 100,
-        "rulesets": ["usa_part_107", "usa_sec_91"],
+        "rulesets": ["usa_part_107"],
         "flight_features": {
           "environment_visibility": 5000.0,
           "flight_max_speed": 3.0,
@@ -599,7 +607,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixUniversity::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = Clock::universal_time();
+  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{16};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
