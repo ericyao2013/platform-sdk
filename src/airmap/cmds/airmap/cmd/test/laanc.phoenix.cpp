@@ -471,7 +471,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
+  parameters.start_time                      = move_to_hour(Clock::universal_time(), 16);
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
@@ -534,7 +534,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixSchwegg::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
+  parameters.start_time                      = move_to_hour(Clock::universal_time(), 16);
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
@@ -943,7 +943,7 @@ airmap::FlightPlans::Create::Parameters laanc::WyomingTetonVillage::parameters()
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
+  parameters.start_time                      = move_to_hour(Clock::universal_time(), 16);
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
