@@ -91,6 +91,38 @@ class PhoenixUniversity : public Suite {
   FlightPlans::Create::Parameters parameters() override;
 };
 
+class KentuckyFlorence : public Suite {
+ public:
+  static constexpr const char* name{"laanc.kentucky.florence"};
+
+ private:
+  FlightPlans::Create::Parameters parameters() override;
+};
+
+class NevadaReno : public Suite {
+ public:
+  static constexpr const char* name{"laanc.nevada.reno"};
+
+ private:
+  FlightPlans::Create::Parameters parameters() override;
+};
+
+class ArkansasPineBluff : public Suite {
+ public:
+  static constexpr const char* name{"laanc.arkansas.pinebluff"};
+
+ private:
+  FlightPlans::Create::Parameters parameters() override;
+};
+
+class WyomingTetonVillage : public Suite {
+ public:
+  static constexpr const char* name{"laanc.wyoming.tetonvillage"};
+
+ private:
+  FlightPlans::Create::Parameters parameters() override;
+};
+
 }  // namespace laanc
 }  // namespace test
 }  // namespace cmd

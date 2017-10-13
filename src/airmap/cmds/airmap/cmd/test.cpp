@@ -31,6 +31,17 @@ cmd::Test::Test() : cli::CommandWithFlagsAndAction{"test", "executes runtime tes
   test_suite_registry_[test::laanc::PhoenixUniversity::name] = []() {
     return std::make_shared<test::laanc::PhoenixUniversity>();
   };
+  test_suite_registry_[test::laanc::KentuckyFlorence::name] = []() {
+    return std::make_shared<test::laanc::KentuckyFlorence>();
+  };
+  test_suite_registry_[test::laanc::NevadaReno::name] = []() { return std::make_shared<test::laanc::NevadaReno>(); };
+  test_suite_registry_[test::laanc::ArkansasPineBluff::name] = []() {
+    return std::make_shared<test::laanc::ArkansasPineBluff>();
+  };
+  test_suite_registry_[test::laanc::WyomingTetonVillage::name] = []() {
+    return std::make_shared<test::laanc::WyomingTetonVillage>();
+  };
+
   action([this](const cli::Command::Context& ctxt) {
     log_ = util::FormattingLogger(create_filtering_logger(log_level_, create_default_logger(ctxt.cout)));
 

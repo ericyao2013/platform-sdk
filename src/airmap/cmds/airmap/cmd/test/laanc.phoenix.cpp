@@ -625,3 +625,279 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixUniversity::parameters() {
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
+
+airmap::FlightPlans::Create::Parameters laanc::KentuckyFlorence::parameters() {
+  static constexpr const char* json          = R"_(
+    {
+        "takeoff_longitude": -84.61800813674927,
+        "takeoff_latitude": 39.00109310191585,
+        "max_altitude_agl": 100,
+        "min_altitude_agl": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -84.61800813674927,
+                39.00109310191585
+              ],
+              [
+                -84.61790084838867,
+                39.000759591417825
+              ],
+              [
+                -84.62045431137085,
+                38.999025311485944
+              ],
+              [
+                -84.61693525314331,
+                38.998058098444474
+              ],
+              [
+                -84.6162486076355,
+                38.99812480321662
+              ],
+              [
+                -84.61627006530762,
+                38.999125367252894
+              ],
+              [
+                -84.61740732192993,
+                39.00089299580567
+              ],
+              [
+                -84.6162486076355,
+                39.001526663213
+              ],
+              [
+                -84.61652755737305,
+                39.00172676753097
+              ],
+              [
+                -84.61800813674927,
+                39.00109310191585
+              ]
+            ]
+          ]
+        },
+        "buffer": 100,
+        "rulesets": ["usa_part_107"],
+        "flight_features": {
+          "environment_visibility": 5000.0,
+          "flight_max_speed": 3.0,
+          "flight_vlos": true,
+          "flight_authorized": false,
+          "flight_carries_property_for_hire": false,
+          "flight_crosses_us_state_border": false,
+          "pilot_first_name": "Thomas",
+          "pilot_last_name": "Voß",
+          "pilot_phone_number": "+491621074430",
+          "pilot_in_command_part107_cert": true,
+          "uav_nav_lights": true,
+          "uav_preflight_check": true,
+          "uav_registered": true,
+          "uav_weight" : 1.0
+        }
+    }
+  )_";
+  FlightPlans::Create::Parameters parameters = nlohmann::json::parse(json);
+  parameters.authorization                   = token_.id();
+  parameters.pilot                           = pilot_.get();
+  parameters.aircraft                        = aircraft_.get();
+  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
+  parameters.end_time                        = parameters.start_time + Minutes{5};
+  return parameters;
+}
+
+airmap::FlightPlans::Create::Parameters laanc::NevadaReno::parameters() {
+  static constexpr const char* json          = R"_(
+    {
+        "takeoff_longitude": -119.79702472686768,
+        "takeoff_latitude": 39.51084501367582,
+        "max_altitude_agl": 100,
+        "min_altitude_agl": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -119.79702472686768,
+                39.51084501367582
+              ],
+              [
+                -119.78983640670778,
+                39.51084501367582
+              ],
+              [
+                -119.78983640670778,
+                39.51134165240756
+              ],
+              [
+                -119.79702472686768,
+                39.51134165240756
+              ],
+              [
+                -119.79702472686768,
+                39.51084501367582
+              ]
+            ]
+          ]
+        },
+        "buffer": 100,
+        "rulesets": ["usa_part_107"],
+        "flight_features": {
+          "environment_visibility": 5000.0,
+          "flight_max_speed": 3.0,
+          "flight_vlos": true,
+          "flight_authorized": false,
+          "flight_carries_property_for_hire": false,
+          "flight_crosses_us_state_border": false,
+          "pilot_first_name": "Thomas",
+          "pilot_last_name": "Voß",
+          "pilot_phone_number": "+491621074430",
+          "pilot_in_command_part107_cert": true,
+          "uav_nav_lights": true,
+          "uav_preflight_check": true,
+          "uav_registered": true,
+          "uav_weight" : 1.0
+        }
+    }
+  )_";
+  FlightPlans::Create::Parameters parameters = nlohmann::json::parse(json);
+  parameters.authorization                   = token_.id();
+  parameters.pilot                           = pilot_.get();
+  parameters.aircraft                        = aircraft_.get();
+  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
+  parameters.end_time                        = parameters.start_time + Minutes{5};
+  return parameters;
+}
+
+airmap::FlightPlans::Create::Parameters laanc::ArkansasPineBluff::parameters() {
+  static constexpr const char* json          = R"_(
+    {
+        "takeoff_longitude": -91.97863340377808,
+        "takeoff_latitude": 34.219946599274,
+        "max_altitude_agl": 100,
+        "min_altitude_agl": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -91.97863340377808,
+                34.219946599274
+              ],
+              [
+                -91.97835445404053,
+                34.218101304583485
+              ],
+              [
+                -91.97726011276245,
+                34.217249616479045
+              ],
+              [
+                -91.97569370269775,
+                34.21865134857525
+              ],
+              [
+                -91.97863340377808,
+                34.219946599274
+              ]
+            ]
+          ]
+        },
+        "buffer": 100,
+        "rulesets": ["usa_part_107"],
+        "flight_features": {
+          "environment_visibility": 5000.0,
+          "flight_max_speed": 3.0,
+          "flight_vlos": true,
+          "flight_authorized": false,
+          "flight_carries_property_for_hire": false,
+          "flight_crosses_us_state_border": false,
+          "pilot_first_name": "Thomas",
+          "pilot_last_name": "Voß",
+          "pilot_phone_number": "+491621074430",
+          "pilot_in_command_part107_cert": true,
+          "uav_nav_lights": true,
+          "uav_preflight_check": true,
+          "uav_registered": true,
+          "uav_weight" : 1.0
+        }
+    }
+  )_";
+  FlightPlans::Create::Parameters parameters = nlohmann::json::parse(json);
+  parameters.authorization                   = token_.id();
+  parameters.pilot                           = pilot_.get();
+  parameters.aircraft                        = aircraft_.get();
+  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
+  parameters.end_time                        = parameters.start_time + Minutes{5};
+  return parameters;
+}
+
+airmap::FlightPlans::Create::Parameters laanc::WyomingTetonVillage::parameters() {
+  static constexpr const char* json          = R"_(
+    {
+        "takeoff_longitude": -110.82299709320068,
+        "takeoff_latitude": 43.58135458245754,
+        "max_altitude_agl": 100,
+        "min_altitude_agl": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -110.82299709320068,
+                43.58135458245754
+              ],
+              [
+                -110.82359790802002,
+                43.581820896362856
+              ],
+              [
+                -110.83806037902832,
+                43.577002145173076
+              ],
+              [
+                -110.83600044250488,
+                43.56876274176711
+              ],
+              [
+                -110.82286834716797,
+                43.56988212311368
+              ],
+              [
+                -110.82299709320068,
+                43.58135458245754
+              ]
+            ]
+          ]
+        },
+        "buffer": 100,
+        "rulesets": ["usa_part_107"],
+        "flight_features": {
+          "environment_visibility": 5000.0,
+          "flight_max_speed": 3.0,
+          "flight_vlos": true,
+          "flight_authorized": false,
+          "flight_carries_property_for_hire": false,
+          "flight_crosses_us_state_border": false,
+          "pilot_first_name": "Thomas",
+          "pilot_last_name": "Voß",
+          "pilot_phone_number": "+491621074430",
+          "pilot_in_command_part107_cert": true,
+          "uav_nav_lights": true,
+          "uav_preflight_check": true,
+          "uav_registered": true,
+          "uav_weight" : 1.0
+        }
+    }
+  )_";
+  FlightPlans::Create::Parameters parameters = nlohmann::json::parse(json);
+  parameters.authorization                   = token_.id();
+  parameters.pilot                           = pilot_.get();
+  parameters.aircraft                        = aircraft_.get();
+  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
+  parameters.end_time                        = parameters.start_time + Minutes{5};
+  return parameters;
+}
