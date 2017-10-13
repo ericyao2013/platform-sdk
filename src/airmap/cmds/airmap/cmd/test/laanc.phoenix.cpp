@@ -22,6 +22,50 @@ void laanc::Suite::run(const std::shared_ptr<Logger>& logger, const std::shared_
   query_pilot();
 }
 
+laanc::Suite::EvaluationResult laanc::Suite::evaluate_initial_flight_plan(const FlightPlan&) {
+  return EvaluationResult::passed;
+}
+
+laanc::Suite::EvaluationResult laanc::Suite::evaluate_initial_briefing(const FlightPlan::Briefing& briefing) {
+  std::size_t laanc_conflicted = 0;
+
+  for (const auto& ruleset : briefing.rulesets) {
+    for (const auto& rule : ruleset.rules) {
+      for (const auto& feature : rule.features) {
+        if (feature.name == "flight_authorized" && feature.code &&
+            feature.code.get() == "laanc_authorization_required" &&
+            feature.status == FlightPlan::Briefing::RuleSet::Rule::Status::conflicting) {
+          laanc_conflicted++;
+        }
+      }
+    }
+  }
+
+  return laanc_conflicted == 0 ? EvaluationResult::error : EvaluationResult::passed;
+}
+
+laanc::Suite::EvaluationResult laanc::Suite::evaluate_submitted_flight_plan(const FlightPlan& fp) {
+  return fp.flight_id ? EvaluationResult::passed : EvaluationResult::error;
+}
+
+laanc::Suite::EvaluationResult laanc::Suite::evaluate_submitted_briefing(const FlightPlan::Briefing&) {
+  return EvaluationResult::passed;
+}
+
+laanc::Suite::EvaluationResult laanc::Suite::evaluate_final_briefing(const FlightPlan::Briefing& b) {
+  if (b.authorizations.empty()) {
+    return EvaluationResult::error;
+  }
+
+  auto auth = b.authorizations.front();
+
+  if (auth.status != FlightPlan::Briefing::Authorization::Status::accepted || auth.authority.id != "faa-laanc") {
+    return EvaluationResult::error;
+  }
+
+  return EvaluationResult::passed;
+}
+
 void laanc::Suite::query_pilot() {
   Pilots::Authenticated::Parameters parameters;
   parameters.authorization = token_.id();
@@ -107,27 +151,12 @@ void laanc::Suite::render_briefing() {
 
 void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
   if (result) {
-    log_.infof(component, "successfully rendered flight brief");
-
-    std::size_t laanc_conflicted = 0;
-
-    for (const auto& ruleset : result.value().rulesets) {
-      for (const auto& rule : ruleset.rules) {
-        for (const auto& feature : rule.features) {
-          if (feature.name == "flight_authorized" && feature.code &&
-              feature.code.get() == "laanc_authorization_required" &&
-              feature.status == FlightPlan::Briefing::RuleSet::Rule::Status::conflicting) {
-            laanc_conflicted++;
-          }
-        }
-      }
-    }
-
-    if (laanc_conflicted == 0) {
+    if (evaluate_initial_briefing(result.value()) == EvaluationResult::passed) {
+      log_.infof(component, "successfully rendered flight brief");
+      submit_flight_plan();
+    } else {
       log_.errorf(component, "expected laanc authorization to be conflicting");
       context_->stop(::airmap::Context::ReturnCode::error);
-    } else {
-      submit_flight_plan();
     }
   } else {
     try {
@@ -151,9 +180,10 @@ void laanc::Suite::submit_flight_plan() {
 
 void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result) {
   if (result) {
-    if (result.value().flight_id) {
-      log_.infof(component, "successfully submitted flight plan and received flight id");
+    auto er = evaluate_submitted_flight_plan(result.value());
 
+    if (er == EvaluationResult::passed) {
+      log_.infof(component, "successfully submitted flight plan and received flight id");
       flight_id_ = result.value().flight_id;
       rerender_briefing();
     } else {
@@ -183,10 +213,17 @@ void laanc::Suite::rerender_briefing() {
 
 void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
   if (result) {
-    static const Microseconds timeout{20 * 1000 * 1000};
-    log_.infof(component, "successfully rerendered flight briefing");
-    log_.infof(component, "scheduling final rendering of flight plan");
-    context_->schedule_in(timeout, [this]() { render_final_briefing(); });
+    auto er = evaluate_submitted_briefing(result.value());
+
+    if (er == EvaluationResult::passed) {
+      static const Microseconds timeout{20 * 1000 * 1000};
+      log_.infof(component, "successfully rerendered flight briefing");
+      log_.infof(component, "scheduling final rendering of flight plan");
+      context_->schedule_in(timeout, [this]() { render_final_briefing(); });
+    } else {
+      log_.errorf(component, "successfully rerendered flight briefing but evluation failed");
+      context_->stop(::airmap::Context::ReturnCode::error);
+    }
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -210,22 +247,17 @@ void laanc::Suite::render_final_briefing() {
 
 void laanc::Suite::handle_render_final_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
   if (result) {
-    log_.infof(component, "successfully render final flight briefing");
-    if (result.value().authorizations.empty()) {
+    auto er = evaluate_final_briefing(result.value());
+
+    if (er == EvaluationResult::passed) {
+      log_.infof(component, "successfully render final flight briefing");
+
+      delete_flight_plan();
+    } else {
       log_.errorf(component, "missing laanc authorization in flight briefing");
       context_->stop(::airmap::Context::ReturnCode::error);
       return;
     }
-
-    auto auth = result.value().authorizations.front();
-
-    if (auth.status != FlightPlan::Briefing::Authorization::Status::accepted || auth.authority.id != "faa-laanc") {
-      log_.errorf(component, "missing laanc authorization in flight briefing");
-      context_->stop(::airmap::Context::ReturnCode::error);
-      return;
-    }
-
-    delete_flight_plan();
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -707,6 +739,20 @@ airmap::FlightPlans::Create::Parameters laanc::KentuckyFlorence::parameters() {
   parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
+}
+
+laanc::Suite::EvaluationResult laanc::NevadaReno::evaluate_final_briefing(const FlightPlan::Briefing& b) {
+  if (b.authorizations.empty()) {
+    return EvaluationResult::error;
+  }
+
+  auto auth = b.authorizations.front();
+
+  if (auth.status != FlightPlan::Briefing::Authorization::Status::rejected || auth.authority.id != "faa-laanc") {
+    return EvaluationResult::error;
+  }
+
+  return EvaluationResult::passed;
 }
 
 airmap::FlightPlans::Create::Parameters laanc::NevadaReno::parameters() {

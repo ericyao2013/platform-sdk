@@ -20,7 +20,18 @@ class Suite : public Test::Suite {
            const std::shared_ptr<::airmap::Context>& context, const ::airmap::Token& token) override;
 
  protected:
+  enum class EvaluationResult {
+    error,
+    passed,
+    finished,
+  };
+
   virtual FlightPlans::Create::Parameters parameters() = 0;
+  virtual EvaluationResult evaluate_initial_flight_plan(const FlightPlan& fp);
+  virtual EvaluationResult evaluate_initial_briefing(const FlightPlan::Briefing& briefing);
+  virtual EvaluationResult evaluate_submitted_flight_plan(const FlightPlan& fp);
+  virtual EvaluationResult evaluate_submitted_briefing(const FlightPlan::Briefing& briefing);
+  virtual EvaluationResult evaluate_final_briefing(const FlightPlan::Briefing& briefing);
 
   void query_pilot();
   void handle_query_pilot_finished(const Pilots::Authenticated::Result& result);
@@ -104,6 +115,7 @@ class NevadaReno : public Suite {
   static constexpr const char* name{"laanc.nevada.reno"};
 
  private:
+  EvaluationResult evaluate_final_briefing(const FlightPlan::Briefing& briefing) override;
   FlightPlans::Create::Parameters parameters() override;
 };
 
