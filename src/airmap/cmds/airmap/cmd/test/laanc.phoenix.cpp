@@ -291,7 +291,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixManual::parameters() {
     {
         "takeoff_longitude": -118.364180570977,
         "takeoff_latitude": 34.0168307437243,
-        "max_altitude_agl": 100,
+        "max_altitude_agl": 20,
         "min_altitude_agl": 1,
         "geometry": {
           "type": "Polygon",
@@ -354,7 +354,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
     {
         "takeoff_longitude": -111.95188522338867,
         "takeoff_latitude": 33.45135208763854,
-        "max_altitude_agl": 100,
+        "max_altitude_agl": 20,
         "min_altitude_agl": 1,
         "geometry": {
           "type": "Polygon",
@@ -449,7 +449,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixSchwegg::parameters() {
     {
         "takeoff_longitude": -111.89334869384766,
         "takeoff_latitude": 33.42943568280503,
-        "max_altitude_agl": 100,
+        "max_altitude_agl": 20,
         "min_altitude_agl": 1,
         "geometry": {
             "type": "Polygon",
@@ -512,7 +512,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixUniversity::parameters() {
     {
         "takeoff_longitude": -111.92922592163086,
         "takeoff_latitude": 33.412672344081756,
-        "max_altitude_agl": 100,
+        "max_altitude_agl": 20,
         "min_altitude_agl": 1,
         "geometry": {
             "type": "Polygon",
@@ -631,7 +631,7 @@ airmap::FlightPlans::Create::Parameters laanc::KentuckyFlorence::parameters() {
     {
         "takeoff_longitude": -84.61800813674927,
         "takeoff_latitude": 39.00109310191585,
-        "max_altitude_agl": 100,
+        "max_altitude_agl": 20,
         "min_altitude_agl": 1,
         "geometry": {
           "type": "Polygon",
@@ -714,7 +714,7 @@ airmap::FlightPlans::Create::Parameters laanc::NevadaReno::parameters() {
     {
         "takeoff_longitude": -119.79702472686768,
         "takeoff_latitude": 39.51084501367582,
-        "max_altitude_agl": 100,
+        "max_altitude_agl": 20,
         "min_altitude_agl": 1,
         "geometry": {
           "type": "Polygon",
@@ -777,7 +777,7 @@ airmap::FlightPlans::Create::Parameters laanc::ArkansasPineBluff::parameters() {
     {
         "takeoff_longitude": -91.97863340377808,
         "takeoff_latitude": 34.219946599274,
-        "max_altitude_agl": 100,
+        "max_altitude_agl": 20,
         "min_altitude_agl": 1,
         "geometry": {
           "type": "Polygon",
@@ -840,7 +840,7 @@ airmap::FlightPlans::Create::Parameters laanc::WyomingTetonVillage::parameters()
     {
         "takeoff_longitude": -110.82299709320068,
         "takeoff_latitude": 43.58135458245754,
-        "max_altitude_agl": 100,
+        "max_altitude_agl": 20,
         "min_altitude_agl": 1,
         "geometry": {
           "type": "Polygon",
