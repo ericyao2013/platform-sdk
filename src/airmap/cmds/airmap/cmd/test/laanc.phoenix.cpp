@@ -83,7 +83,8 @@ void laanc::Suite::plan_flight() {
 void laanc::Suite::handle_plan_flight_finished(const FlightPlans::Create::Result& result) {
   if (result) {
     log_.infof(component, "successfully created flight plan");
-    render_briefing(result.value().id);
+    flight_plan_ = result.value();
+    render_briefing();
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -96,17 +97,15 @@ void laanc::Suite::handle_plan_flight_finished(const FlightPlans::Create::Result
   }
 }
 
-void laanc::Suite::render_briefing(const FlightPlan::Id& id) {
+void laanc::Suite::render_briefing() {
   FlightPlans::RenderBriefing::Parameters parameters;
-  parameters.id            = id;
+  parameters.id            = flight_plan_.get().id;
   parameters.authorization = token_.id();
 
-  client_->flight_plans().render_briefing(parameters,
-                                          std::bind(&Suite::handle_render_briefing_finished, this, ph::_1, id));
+  client_->flight_plans().render_briefing(parameters, std::bind(&Suite::handle_render_briefing_finished, this, ph::_1));
 }
 
-void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result,
-                                                   const FlightPlan::Id& id) {
+void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
   if (result) {
     log_.infof(component, "successfully rendered flight brief");
 
@@ -128,7 +127,7 @@ void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBrie
       log_.errorf(component, "expected laanc authorization to be conflicting");
       context_->stop(::airmap::Context::ReturnCode::error);
     } else {
-      submit_flight_plan(id);
+      submit_flight_plan();
     }
   } else {
     try {
@@ -142,22 +141,26 @@ void laanc::Suite::handle_render_briefing_finished(const FlightPlans::RenderBrie
   }
 }
 
-void laanc::Suite::submit_flight_plan(const FlightPlan::Id& id) {
+void laanc::Suite::submit_flight_plan() {
   FlightPlans::Submit::Parameters parameters;
-  parameters.id            = id;
+  parameters.id            = flight_plan_.get().id;
   parameters.authorization = token_.id();
 
-  client_->flight_plans().submit(parameters, std::bind(&Suite::handle_submit_flight_plan_finished, this, ph::_1, id));
+  client_->flight_plans().submit(parameters, std::bind(&Suite::handle_submit_flight_plan_finished, this, ph::_1));
 }
 
-void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result,
-                                                      const FlightPlan::Id& id) {
+void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result) {
   if (result) {
-    static const Microseconds timeout{5 * 1000 * 1000};
+    if (result.value().flight_id) {
+      log_.infof(component, "successfully submitted flight plan and received flight id");
+      log_.infof(component, "scheduling rendering of flight plan");
 
-    log_.infof(component, "successfully submitted flight plan");
-    log_.infof(component, "scheduling rendering of flight plan");
-    context_->schedule_in(timeout, [this, id]() { rerender_briefing(id); });
+      flight_id_ = result.value().flight_id;
+      rerender_briefing();
+    } else {
+      log_.errorf(component, "successfully submitted flight plan but did not receive flight id");
+      context_->stop(::airmap::Context::ReturnCode::error);
+    }
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -170,20 +173,20 @@ void laanc::Suite::handle_submit_flight_plan_finished(const FlightPlans::Submit:
   }
 }
 
-void laanc::Suite::rerender_briefing(const FlightPlan::Id& id) {
+void laanc::Suite::rerender_briefing() {
   FlightPlans::RenderBriefing::Parameters parameters;
-  parameters.id            = id;
+  parameters.id            = flight_plan_.get().id;
   parameters.authorization = token_.id();
 
   client_->flight_plans().render_briefing(parameters,
-                                          std::bind(&Suite::handle_rerender_briefing_finished, this, ph::_1, id));
+                                          std::bind(&Suite::handle_rerender_briefing_finished, this, ph::_1));
 }
 
-void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result,
-                                                     const FlightPlan::Id& id) {
+void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
   if (result) {
+    static const Microseconds timeout{5 * 1000 * 1000};
     log_.infof(component, "successfully rerendered flight briefing");
-    delete_flight_plan(id);
+    context_->schedule_in(timeout, [this]() { render_final_briefing(); });
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -196,9 +199,34 @@ void laanc::Suite::handle_rerender_briefing_finished(const FlightPlans::RenderBr
   }
 }
 
-void laanc::Suite::delete_flight_plan(const FlightPlan::Id& id) {
+void laanc::Suite::render_final_briefing() {
+  FlightPlans::RenderBriefing::Parameters parameters;
+  parameters.id            = flight_plan_.get().id;
+  parameters.authorization = token_.id();
+
+  client_->flight_plans().render_briefing(parameters,
+                                          std::bind(&Suite::handle_render_final_briefing_finished, this, ph::_1));
+}
+
+void laanc::Suite::handle_render_final_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully render final flight briefing");
+    delete_flight_plan();
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "failed to render final flight briefing: %s", e.what());
+    } catch (...) {
+      log_.errorf(component, "failed to render final flight briefing");
+    }
+    context_->stop(::airmap::Context::ReturnCode::error);
+  }
+}
+
+void laanc::Suite::delete_flight_plan() {
   FlightPlans::Delete::Parameters parameters;
-  parameters.id            = id;
+  parameters.id            = flight_plan_.get().id;
   parameters.authorization = token_.id();
 
   client_->flight_plans().delete_(parameters, std::bind(&Suite::handle_delete_flight_plan_finished, this, ph::_1));
@@ -207,7 +235,7 @@ void laanc::Suite::delete_flight_plan(const FlightPlan::Id& id) {
 void laanc::Suite::handle_delete_flight_plan_finished(const FlightPlans::Delete::Result& result) {
   if (result) {
     log_.infof(component, "successfully deleted flight plan");
-    context_->stop();
+    delete_flight();
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -218,6 +246,93 @@ void laanc::Suite::handle_delete_flight_plan_finished(const FlightPlans::Delete:
     }
     context_->stop(::airmap::Context::ReturnCode::error);
   }
+}
+
+void laanc::Suite::delete_flight() {
+  Flights::DeleteFlight::Parameters parameters;
+  parameters.id            = flight_id_.get();
+  parameters.authorization = token_.id();
+
+  client_->flights().delete_flight(parameters, std::bind(&Suite::handle_delete_flight_finished, this, ph::_1));
+}
+
+void laanc::Suite::handle_delete_flight_finished(const Flights::DeleteFlight::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully deleted flight");
+    context_->stop();
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "failed to delete flight: %s", e.what());
+    } catch (...) {
+      log_.errorf(component, "failed to delete flight");
+    }
+    context_->stop(::airmap::Context::ReturnCode::error);
+  }
+}
+
+airmap::FlightPlans::Create::Parameters laanc::PhoenixManual::parameters() {
+  static constexpr const char* json          = R"_(
+    {
+        "takeoff_longitude": -118.364180570977,
+        "takeoff_latitude": 34.0168307437243,
+        "max_altitude_agl": 100,
+        "min_altitude_agl": 1,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -112.10620880126953,
+                33.431011556740536
+              ],
+              [
+                -112.1000289916992,
+                33.42793141281223
+              ],
+              [
+                -112.09402084350586,
+                33.42914915719729
+              ],
+              [
+                -112.09917068481445,
+                33.431011556740536
+              ],
+              [
+                -112.10620880126953,
+                33.431011556740536
+              ]
+            ]
+          ]
+        },
+        "buffer": 100,
+        "rulesets": ["usa_part_107"],
+        "flight_features": {
+          "environment_visibility": 5000.0,
+          "flight_max_speed": 3.0,
+          "flight_vlos": true,
+          "flight_authorized": false,
+          "flight_carries_property_for_hire": false,
+          "flight_crosses_us_state_border": false,
+          "pilot_first_name": "Thomas",
+          "pilot_last_name": "Voß",
+          "pilot_phone_number": "+491621074430",
+          "pilot_in_command_part107_cert": true,
+          "uav_nav_lights": true,
+          "uav_preflight_check": true,
+          "uav_registered": true,
+          "uav_weight" : 1.0
+        }
+    }
+  )_";
+  FlightPlans::Create::Parameters parameters = nlohmann::json::parse(json);
+  parameters.authorization                   = token_.id();
+  parameters.pilot                           = pilot_.get();
+  parameters.aircraft                        = aircraft_.get();
+  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{40};
+  parameters.end_time                        = parameters.start_time + Minutes{5};
+  return parameters;
 }
 
 airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
@@ -367,7 +482,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
             ]
         },
         "buffer": 100,
-        "rulesets": ["usa_part_107", "usa_sec_91"],
+        "rulesets": ["usa_part_107"],
         "flight_features": {
           "environment_visibility": 5000.0,
           "flight_max_speed": 3.0,
@@ -390,7 +505,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = Clock::universal_time();
+  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{16};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
@@ -430,7 +545,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixSchwegg::parameters() {
             ]
         },
         "buffer": 100,
-        "rulesets": ["usa_part_107", "usa_sec_91"],
+        "rulesets": ["usa_part_107"],
         "flight_features": {
           "environment_visibility": 5000.0,
           "flight_max_speed": 3.0,
@@ -453,7 +568,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixSchwegg::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = Clock::universal_time();
+  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{16};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
@@ -549,7 +664,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixUniversity::parameters() {
             ]
         },
         "buffer": 100,
-        "rulesets": ["usa_part_107", "usa_sec_91"],
+        "rulesets": ["usa_part_107"],
         "flight_features": {
           "environment_visibility": 5000.0,
           "flight_max_speed": 3.0,
@@ -572,7 +687,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixUniversity::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = Clock::universal_time();
+  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{16};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }

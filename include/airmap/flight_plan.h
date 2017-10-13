@@ -197,9 +197,10 @@ struct FlightPlan {
         authorizations;  ///< All Authorization instances relevant to a specific briefing/flight plan.
   };
 
-  Id id;                     ///< The unique identifier of a flight in the context of AirMap.
-  Pilot pilot;               ///< The pilot responsible for the flight.
-  Pilot::Aircraft aircraft;  ///< The aircraft conducting the flight.
+  Id id;                            ///< The unique identifier of a flight in the context of AirMap.
+  Optional<std::string> flight_id;  ///< The unique identifier of the flight that is created on successful submission.
+  Pilot pilot;                      ///< The pilot responsible for the flight.
+  Pilot::Aircraft aircraft;         ///< The aircraft conducting the flight.
   struct {
     float latitude;   ///< The latitude component of the takeoff coordinates in [°].
     float longitude;  ///< The longitude component of the takeoff coordinates in [°].

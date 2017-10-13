@@ -4,6 +4,7 @@
 #include <airmap/cmds/airmap/cmd/test.h>
 
 #include <airmap/flight_plans.h>
+#include <airmap/flights.h>
 #include <airmap/pilots.h>
 
 namespace airmap {
@@ -30,17 +31,23 @@ class Suite : public Test::Suite {
   void plan_flight();
   void handle_plan_flight_finished(const FlightPlans::Create::Result& result);
 
-  void render_briefing(const FlightPlan::Id& id);
-  void handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result, const FlightPlan::Id& id);
+  void render_briefing();
+  void handle_render_briefing_finished(const FlightPlans::RenderBriefing::Result& result);
 
-  void submit_flight_plan(const FlightPlan::Id& id);
-  void handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result, const FlightPlan::Id& id);
+  void submit_flight_plan();
+  void handle_submit_flight_plan_finished(const FlightPlans::Submit::Result& result);
 
-  void rerender_briefing(const FlightPlan::Id& id);
-  void handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result, const FlightPlan::Id& id);
+  void rerender_briefing();
+  void handle_rerender_briefing_finished(const FlightPlans::RenderBriefing::Result& result);
 
-  void delete_flight_plan(const FlightPlan::Id& id);
+  void render_final_briefing();
+  void handle_render_final_briefing_finished(const FlightPlans::RenderBriefing::Result& result);
+
+  void delete_flight_plan();
   void handle_delete_flight_plan_finished(const FlightPlans::Delete::Result& result);
+
+  void delete_flight();
+  void handle_delete_flight_finished(const Flights::DeleteFlight::Result& result);
 
   util::FormattingLogger log_{create_null_logger()};
   std::shared_ptr<::airmap::Client> client_;
@@ -48,11 +55,21 @@ class Suite : public Test::Suite {
   Token token_;
   Optional<Pilot> pilot_;
   Optional<Pilot::Aircraft> aircraft_;
+  Optional<FlightPlan> flight_plan_;
+  Optional<Flight::Id> flight_id_;
 };
 
 class PhoenixZoo : public Suite {
  public:
   static constexpr const char* name{"laanc.phoenix.zoo"};
+
+ private:
+  FlightPlans::Create::Parameters parameters() override;
+};
+
+class PhoenixManual : public Suite {
+ public:
+  static constexpr const char* name{"laanc.phoenix.manual"};
 
  private:
   FlightPlans::Create::Parameters parameters() override;
