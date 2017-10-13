@@ -161,6 +161,7 @@ void airmap::codec::json::decode(const nlohmann::json& j, FlightPlan::Briefing::
 
 void airmap::codec::json::decode(const nlohmann::json& j, FlightPlan::Briefing::Authority& a) {
   get(a.name, j, "name");
+  get(a.id, j, "id");
 }
 
 void airmap::codec::json::decode(const nlohmann::json& j, FlightPlan::Briefing::Authorization& a) {

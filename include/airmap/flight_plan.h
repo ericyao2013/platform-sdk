@@ -93,7 +93,8 @@ struct FlightPlan {
 
     /// Authority models an authority capable of authorizing flight plans.
     struct Authority {
-      std::string name;  /// The name of the authority.
+      std::string id;    ///< The id of the authority.
+      std::string name;  ///< The name of the authority.
     };
 
     /// Authorization bundles up the authorization status of a flight plan.

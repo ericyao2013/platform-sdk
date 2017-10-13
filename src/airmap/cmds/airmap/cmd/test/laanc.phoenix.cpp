@@ -211,6 +211,20 @@ void laanc::Suite::render_final_briefing() {
 void laanc::Suite::handle_render_final_briefing_finished(const FlightPlans::RenderBriefing::Result& result) {
   if (result) {
     log_.infof(component, "successfully render final flight briefing");
+    if (result.value().authorizations.empty()) {
+      log_.errorf(component, "missing laanc authorization in flight briefing");
+      context_->stop(::airmap::Context::ReturnCode::error);
+      return;
+    }
+
+    auto auth = result.value().authorizations.front();
+
+    if (auth.status != FlightPlan::Briefing::Authorization::Status::accepted || auth.authority.id != "faa-laanc") {
+      log_.errorf(component, "missing laanc authorization in flight briefing");
+      context_->stop(::airmap::Context::ReturnCode::error);
+      return;
+    }
+
     delete_flight_plan();
   } else {
     try {
@@ -330,7 +344,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixManual::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{40};
+  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{40};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
@@ -425,7 +439,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixZoo::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{16};
+  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
@@ -488,7 +502,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixSchwegg::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{16};
+  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
@@ -607,7 +621,7 @@ airmap::FlightPlans::Create::Parameters laanc::PhoenixUniversity::parameters() {
   parameters.authorization                   = token_.id();
   parameters.pilot                           = pilot_.get();
   parameters.aircraft                        = aircraft_.get();
-  parameters.start_time                      = DateTime(Clock::universal_time().date())+Hours{16};
+  parameters.start_time                      = DateTime(Clock::universal_time().date()) + Hours{16};
   parameters.end_time                        = parameters.start_time + Minutes{5};
   return parameters;
 }
