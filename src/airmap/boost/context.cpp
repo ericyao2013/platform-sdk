@@ -168,8 +168,8 @@ std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::flights(
 
 std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::flight_plans(
     const airmap::Client::Configuration& configuration) {
-  auto host = env::get("AIRMAP_HOST_FLIGHT_PLANS", configuration.host);
-  auto port = env::get("AIRMAP_PORT_FLIGHT_PLANS", ::boost::lexical_cast<std::string>(443));
+  auto host = env::get("AIRMAP_HOST_FLIGHTS", configuration.host);
+  auto port = env::get("AIRMAP_PORT_FLIGHTS", ::boost::lexical_cast<std::string>(443));
 
   return net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
                                              io_service_);
