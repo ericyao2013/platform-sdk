@@ -25,7 +25,6 @@ airmap::DateTime airmap::move_to_hour(const DateTime& dt, int hour) {
   return dt + Hours{((hour > dt.time_of_day().hours()) ? 0 : 24) + hour - dt.time_of_day().hours()};
 }
 
-
 airmap::DateTime airmap::iso8601::parse(const std::string& s) {
   boost::posix_time::time_input_facet facet{format, 1};
 

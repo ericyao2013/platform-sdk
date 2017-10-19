@@ -11,8 +11,9 @@ airmap::rest::Client::Client(const Configuration& configuration, const std::shar
                                              configuration_.credentials.api_key, requesters.aircrafts)},
       airspaces_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
                                              configuration_.credentials.api_key, requesters.airspaces)},
-      authenticator_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
-                                                 configuration_.credentials.api_key, requesters.authenticator),
+      authenticator_{configuration_.version,
+                     std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
+                                                                              requesters.authenticator),
                      requesters.sso},
       flight_plans_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
                                                 configuration_.credentials.api_key, requesters.flight_plans)},
@@ -20,6 +21,8 @@ airmap::rest::Client::Client(const Configuration& configuration, const std::shar
                                            configuration_.credentials.api_key, requesters.flights)},
       pilots_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
                                           configuration_.credentials.api_key, requesters.pilots)},
+      rulesets_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
+                                            configuration_.credentials.api_key, requesters.rulesets)},
       status_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
                                           configuration_.credentials.api_key, requesters.status)},
       telemetry_{std::make_shared<detail::OpenSSLAES256Encryptor>(), udp_sender_},
@@ -48,6 +51,10 @@ airmap::Flights& airmap::rest::Client::flights() {
 
 airmap::Pilots& airmap::rest::Client::pilots() {
   return pilots_;
+}
+
+airmap::RuleSets& airmap::rest::Client::rulesets() {
+  return rulesets_;
 }
 
 airmap::Status& airmap::rest::Client::status() {
