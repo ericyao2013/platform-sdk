@@ -8,24 +8,20 @@
 
 using json = nlohmann::json;
 
-namespace {
+std::string airmap::rest::FlightPlans::default_route_for_version(Client::Version version) {
+  static constexpr const char* pattern{"/flight/%s"};
 
-template <typename... Args>
-std::string version_to_path(airmap::Client::Version version, const char* pattern, Args&&... args) {
   switch (version) {
     case airmap::Client::Version::production:
-      return fmt::sprintf(pattern, "v2", std::forward<Args>(args)...);
+      return fmt::sprintf(pattern, "v2");
     case airmap::Client::Version::staging:
-      return fmt::sprintf(pattern, "stage", std::forward<Args>(args)...);
+      return fmt::sprintf(pattern, "stage");
   }
 
   throw std::logic_error{"should not reach here"};
 }
 
-}  // namespace
-
-airmap::rest::FlightPlans::FlightPlans(Client::Version version, const std::shared_ptr<net::http::Requester>& requester)
-    : version_{version}, requester_{requester} {
+airmap::rest::FlightPlans::FlightPlans(const std::shared_ptr<net::http::Requester>& requester) : requester_{requester} {
 }
 
 void airmap::rest::FlightPlans::for_id(const ForId::Parameters& parameters, const ForId::Callback& cb) {
@@ -34,7 +30,7 @@ void airmap::rest::FlightPlans::for_id(const ForId::Parameters& parameters, cons
   if (parameters.authorization)
     headers["Authorization"] = fmt::sprintf("Bearer %s", parameters.authorization.get());
 
-  requester_->get(version_to_path(version_, "/flight/%s/plan/%s", parameters.id), std::move(query), std::move(headers),
+  requester_->get(fmt::sprintf("/plan/%s", parameters.id), std::move(query), std::move(headers),
                   [cb](const net::http::Requester::Result& result) {
                     if (result) {
                       cb(jsend::to_outcome<FlightPlan>(json::parse(result.value().body)));
@@ -50,14 +46,13 @@ void airmap::rest::FlightPlans::create_by_polygon(const Create::Parameters& para
 
   json j = parameters;
 
-  requester_->post(version_to_path(version_, "/flight/%s/plan"), std::move(headers), j.dump(),
-                   [cb](const net::http::Requester::Result& result) {
-                     if (result) {
-                       cb(jsend::to_outcome<FlightPlan>(json::parse(result.value().body)));
-                     } else {
-                       cb(Create::Result{result.error()});
-                     }
-                   });
+  requester_->post("/plan", std::move(headers), j.dump(), [cb](const net::http::Requester::Result& result) {
+    if (result) {
+      cb(jsend::to_outcome<FlightPlan>(json::parse(result.value().body)));
+    } else {
+      cb(Create::Result{result.error()});
+    }
+  });
 }
 
 void airmap::rest::FlightPlans::update(const Update::Parameters& parameters, const Update::Callback& cb) {
@@ -69,8 +64,8 @@ void airmap::rest::FlightPlans::update(const Update::Parameters& parameters, con
   json j;
   j = parameters.flight_plan;
 
-  requester_->patch(version_to_path(version_, "/flight/%s/plan/%s", parameters.flight_plan.id), std::move(headers),
-                    j.dump(), [cb](const net::http::Requester::Result& result) {
+  requester_->patch(fmt::sprintf("/plan/%s", parameters.flight_plan.id), std::move(headers), j.dump(),
+                    [cb](const net::http::Requester::Result& result) {
                       if (result) {
                         cb(jsend::to_outcome<FlightPlan>(json::parse(result.value().body)));
                       } else {
@@ -85,8 +80,8 @@ void airmap::rest::FlightPlans::delete_(const Delete::Parameters& parameters, co
   if (parameters.authorization)
     headers["Authorization"] = fmt::sprintf("Bearer %s", parameters.authorization.get());
 
-  requester_->delete_(version_to_path(version_, "/flight/%s/plan/%s", parameters.id), std::move(query),
-                      std::move(headers), [cb](const net::http::Requester::Result& result) {
+  requester_->delete_(fmt::sprintf("/plan/%s", parameters.id), std::move(query), std::move(headers),
+                      [cb](const net::http::Requester::Result& result) {
                         if (result) {
                           cb(jsend::to_outcome<Delete::Response>(json::parse(result.value().body)));
                         } else {
@@ -102,8 +97,8 @@ void airmap::rest::FlightPlans::render_briefing(const RenderBriefing::Parameters
   if (parameters.authorization)
     headers["Authorization"] = fmt::sprintf("Bearer %s", parameters.authorization.get());
 
-  requester_->get(version_to_path(version_, "/flight/%s/plan/%s/briefing", parameters.id), std::move(query),
-                  std::move(headers), [cb](const net::http::Requester::Result& result) {
+  requester_->get(fmt::sprintf("/plan/%s/briefing", parameters.id), std::move(query), std::move(headers),
+                  [cb](const net::http::Requester::Result& result) {
                     if (result) {
                       auto j = json::parse(result.value().body);
                       std::cout << j.dump(2) << std::endl;
@@ -120,8 +115,8 @@ void airmap::rest::FlightPlans::submit(const Submit::Parameters& parameters, con
     headers["Authorization"] = fmt::sprintf("Bearer %s", parameters.authorization.get());
   };
 
-  requester_->post(version_to_path(version_, "/flight/%s/plan/%s/submit", parameters.id), std::move(headers),
-                   std::string{}, [cb](const net::http::Requester::Result& result) {
+  requester_->post(fmt::sprintf("/plan/%s/submit", parameters.id), std::move(headers), std::string{},
+                   [cb](const net::http::Requester::Result& result) {
                      if (result) {
                        cb(jsend::to_outcome<FlightPlan>(json::parse(result.value().body)));
                      } else {

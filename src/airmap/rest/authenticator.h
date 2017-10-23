@@ -10,7 +10,9 @@ namespace rest {
 
 class Authenticator : public airmap::Authenticator {
  public:
-  explicit Authenticator(Client::Version version, const std::shared_ptr<net::http::Requester>& airmap_requester,
+  static std::string default_route_for_version(Client::Version version);
+
+  explicit Authenticator(const std::shared_ptr<net::http::Requester>& airmap_requester,
                          const std::shared_ptr<net::http::Requester>& sso_requester);
 
   void authenticate_with_password(const AuthenticateWithPassword::Params& params,
@@ -23,7 +25,6 @@ class Authenticator : public airmap::Authenticator {
                             const RenewAuthentication::Callback& cb) override;
 
  private:
-  Client::Version version_;
   std::shared_ptr<net::http::Requester> airmap_requester_;
   std::shared_ptr<net::http::Requester> sso_requester_;
 };

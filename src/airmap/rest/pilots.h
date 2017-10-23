@@ -11,7 +11,9 @@ namespace rest {
 
 class Pilots : public airmap::Pilots {
  public:
-  explicit Pilots(Client::Version version, const std::shared_ptr<net::http::Requester>& requester);
+  static std::string default_route_for_version(Client::Version version);
+
+  explicit Pilots(const std::shared_ptr<net::http::Requester>& requester);
 
   void authenticated(const Authenticated::Parameters& parameters, const Authenticated::Callback& cb) override;
   void for_id(const ForId::Parameters& parameters, const ForId::Callback& cb) override;
@@ -26,7 +28,6 @@ class Pilots : public airmap::Pilots {
   void update_aircraft(const UpdateAircraft::Parameters& parameters, const UpdateAircraft::Callback& cb) override;
 
  private:
-  Client::Version version_;
   std::shared_ptr<net::http::Requester> requester_;
 };
 

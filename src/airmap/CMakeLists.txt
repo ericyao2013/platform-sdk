@@ -131,6 +131,7 @@ add_library(
   codec/json/traffic.cpp
 
   net/http/requester.h
+  net/http/requester.cpp
   net/http/requester_with_api_key.h
   net/http/requester_with_api_key.cpp
   net/http/user_agent.h

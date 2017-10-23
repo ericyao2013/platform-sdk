@@ -10,13 +10,14 @@ namespace rest {
 
 class Airspaces : public airmap::Airspaces {
  public:
-  explicit Airspaces(Client::Version version, const std::shared_ptr<net::http::Requester>& requester);
+  static std::string default_route_for_version(Client::Version version);
+
+  explicit Airspaces(const std::shared_ptr<net::http::Requester>& requester);
 
   void search(const Search::Parameters& parameters, const Search::Callback& cb) override;
   void for_ids(const ForIds::Parameters& parameters, const ForIds::Callback& cb) override;
 
  private:
-  Client::Version version_;
   std::shared_ptr<net::http::Requester> requester_;
 };
 

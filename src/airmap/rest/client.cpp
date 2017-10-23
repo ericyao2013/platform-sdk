@@ -7,21 +7,21 @@ airmap::rest::Client::Client(const Configuration& configuration, const std::shar
       parent_{parent},
       udp_sender_{sender},
       mqtt_broker_{broker},
-      aircrafts_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
-                                             configuration_.credentials.api_key, requesters.aircrafts)},
-      airspaces_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
-                                             configuration_.credentials.api_key, requesters.airspaces)},
-      authenticator_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
-                                                 configuration_.credentials.api_key, requesters.authenticator),
+      aircrafts_{std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
+                                                                          requesters.aircrafts)},
+      airspaces_{std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
+                                                                          requesters.airspaces)},
+      authenticator_{std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
+                                                                              requesters.authenticator),
                      requesters.sso},
-      flight_plans_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
-                                                configuration_.credentials.api_key, requesters.flight_plans)},
-      flights_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
-                                           configuration_.credentials.api_key, requesters.flights)},
-      pilots_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
-                                          configuration_.credentials.api_key, requesters.pilots)},
-      status_{configuration_.version, std::make_shared<airmap::net::http::RequesterWithApiKey>(
-                                          configuration_.credentials.api_key, requesters.status)},
+      flight_plans_{std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
+                                                                             requesters.flight_plans)},
+      flights_{std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
+                                                                        requesters.flights)},
+      pilots_{std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
+                                                                       requesters.pilots)},
+      status_{std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
+                                                                       requesters.status)},
       telemetry_{std::make_shared<detail::OpenSSLAES256Encryptor>(), udp_sender_},
       traffic_{mqtt_broker_} {
 }

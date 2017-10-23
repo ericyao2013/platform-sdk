@@ -8,26 +8,22 @@
 
 using json = nlohmann::json;
 
-namespace {
+std::string airmap::rest::Authenticator::default_route_for_version(Client::Version version) {
+  static constexpr const char* pattern{"/auth/%s"};
 
-template <typename... Args>
-std::string version_to_path(airmap::Client::Version version, const char* pattern, Args&&... args) {
   switch (version) {
     case airmap::Client::Version::production:
-      return fmt::sprintf(pattern, "v1", std::forward<Args>(args)...);
+      return fmt::sprintf(pattern, "v1");
     case airmap::Client::Version::staging:
-      return fmt::sprintf(pattern, "stage", std::forward<Args>(args)...);
+      return fmt::sprintf(pattern, "stage");
   }
 
   throw std::logic_error{"should not reach here"};
 }
 
-}  // namespace
-
-airmap::rest::Authenticator::Authenticator(Client::Version version,
-                                           const std::shared_ptr<net::http::Requester>& airmap_requester,
+airmap::rest::Authenticator::Authenticator(const std::shared_ptr<net::http::Requester>& airmap_requester,
                                            const std::shared_ptr<net::http::Requester>& sso_requester)
-    : version_{version}, airmap_requester_{airmap_requester}, sso_requester_{sso_requester} {
+    : airmap_requester_{airmap_requester}, sso_requester_{sso_requester} {
 }
 
 void airmap::rest::Authenticator::authenticate_with_password(const AuthenticateWithPassword::Params& params,
@@ -53,7 +49,7 @@ void airmap::rest::Authenticator::authenticate_anonymously(const AuthenticateAno
   json j;
   j = params;
 
-  airmap_requester_->post(version_to_path(version_, "/auth/%s/anonymous/token"), std::move(headers), j.dump(),
+  airmap_requester_->post("/anonymous/token", std::move(headers), j.dump(),
                           [cb](const net::http::Requester::Result& result) {
                             if (result) {
                               cb(jsend::to_outcome<Token::Anonymous>(json::parse(result.value().body)));

@@ -10,14 +10,15 @@ namespace rest {
 
 class Status : public airmap::Status {
  public:
-  explicit Status(Client::Version version, const std::shared_ptr<net::http::Requester>& requester);
+  static std::string default_route_for_version(Client::Version version);
+
+  explicit Status(const std::shared_ptr<net::http::Requester>& requester);
 
   void get_status_by_point(const GetStatus::Parameters& parameters, const GetStatus::Callback& cb) override;
   void get_status_by_path(const GetStatus::Parameters& parameters, const GetStatus::Callback& cb) override;
   void get_status_by_polygon(const GetStatus::Parameters& parameters, const GetStatus::Callback& cb) override;
 
  private:
-  Client::Version version_;
   std::shared_ptr<net::http::Requester> requester_;
 };
 

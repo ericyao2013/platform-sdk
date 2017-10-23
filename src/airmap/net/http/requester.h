@@ -33,6 +33,25 @@ class Requester : DoNotCopyOrMove {
   Requester() = default;
 };
 
+// RoutingRequester prefixes incoming paths and hands them off to the next Requester implementation.
+class RoutingRequester : public Requester {
+ public:
+  explicit RoutingRequester(const std::string& route, const std::shared_ptr<Requester>& next);
+
+  void delete_(const std::string& path, std::unordered_map<std::string, std::string>&& query,
+               std::unordered_map<std::string, std::string>&& headers, Callback cb) override;
+  void get(const std::string& path, std::unordered_map<std::string, std::string>&& query,
+           std::unordered_map<std::string, std::string>&& headers, Callback cb) override;
+  void patch(const std::string& path, std::unordered_map<std::string, std::string>&& headers, const std::string& body,
+             Callback cb) override;
+  void post(const std::string& path, std::unordered_map<std::string, std::string>&& headers, const std::string& body,
+            Callback cb) override;
+
+ private:
+  std::string route_;
+  std::shared_ptr<Requester> next_;
+};
+
 }  // namespace http
 }  // namespace net
 }  // namespace airmap

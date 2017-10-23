@@ -11,7 +11,9 @@ namespace rest {
 /// FlightPlans provides functionality for managing flight plans.
 class FlightPlans : public airmap::FlightPlans {
  public:
-  explicit FlightPlans(Client::Version version, const std::shared_ptr<net::http::Requester>& requester);
+  static std::string default_route_for_version(Client::Version version);
+
+  explicit FlightPlans(const std::shared_ptr<net::http::Requester>& requester);
 
   void for_id(const ForId::Parameters& parameters, const ForId::Callback& cb) override;
   void create_by_polygon(const Create::Parameters& parameters, const Create::Callback& cb) override;
@@ -21,7 +23,6 @@ class FlightPlans : public airmap::FlightPlans {
   void submit(const Submit::Parameters& parameters, const Submit::Callback& cb) override;
 
  private:
-  Client::Version version_;
   std::shared_ptr<net::http::Requester> requester_;
 };
 

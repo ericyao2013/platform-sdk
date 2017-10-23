@@ -10,7 +10,9 @@ namespace rest {
 
 class Flights : public airmap::Flights {
  public:
-  explicit Flights(Client::Version version, const std::shared_ptr<net::http::Requester>& requester);
+  static std::string default_route_for_version(Client::Version version);
+
+  explicit Flights(const std::shared_ptr<net::http::Requester>& requester);
 
   void search(const Search::Parameters& parameters, const Search::Callback& cb) override;
   void for_id(const ForId::Parameters& parameters, const ForId::Callback& cb) override;
@@ -25,7 +27,6 @@ class Flights : public airmap::Flights {
                                          const EndFlightCommunications::Callback& cb) override;
 
  private:
-  Client::Version version_;
   std::shared_ptr<net::http::Requester> requester_;
 };
 
