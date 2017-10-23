@@ -5,12 +5,51 @@
 
 #include <fmt/printf.h>
 
+#include <sstream>
+
 namespace airmap {
 namespace util {
 
 class FormattingLogger {
  public:
+  template <Logger::Severity severity>
+  class Record {
+   public:
+    explicit Record(const char* component, const std::shared_ptr<Logger>& logger)
+        : component_{component}, logger_{logger} {
+    }
+
+    Record(Record&& other)
+        : component_{std::move(other.component_)}, logger_{std::move(other.logger_)}, oss_{std::move(other.oss_)} {
+    }
+
+    ~Record() {
+      logger_->log(severity, oss_.str().c_str(), component_);
+    }
+
+    template <typename... Args>
+    inline Record& printf(const char* format, Args... args) {
+      fmt::fprintf(oss_, format, std::forward<Args>(args)...);
+      return *this;
+    }
+
+    template <typename T>
+    inline Record& print(const T& value) {
+      oss_ << value;
+      return *this;
+    }
+
+   private:
+    const char* component_;
+    std::shared_ptr<Logger> logger_;
+    std::stringstream oss_;
+  };
+
   explicit FormattingLogger(const std::shared_ptr<Logger>& logger) : logger_{logger} {
+  }
+
+  Record<Logger::Severity::debug> debug(const char* component) {
+    return Record<Logger::Severity::debug>{component, logger_};
   }
 
   template <typename... Args>
@@ -19,10 +58,18 @@ class FormattingLogger {
       logger_->debug(fmt::sprintf(format, std::forward<Args>(args)...).c_str(), component);
   }
 
+  Record<Logger::Severity::info> info(const char* component) {
+    return Record<Logger::Severity::info>{component, logger_};
+  }
+
   template <typename... Args>
   void infof(const char* component, const char* format, Args... args) {
     if (logger_->should_log(Logger::Severity::info, nullptr, component))
       logger_->info(fmt::sprintf(format, std::forward<Args>(args)...).c_str(), component);
+  }
+
+  Record<Logger::Severity::error> error(const char* component) {
+    return Record<Logger::Severity::error>{component, logger_};
   }
 
   template <typename... Args>
@@ -38,6 +85,11 @@ class FormattingLogger {
  private:
   std::shared_ptr<Logger> logger_;
 };
+
+template <Logger::Severity severity, typename T>
+inline FormattingLogger::Record<severity>& operator<<(FormattingLogger::Record<severity>& record, const T& value) {
+  return record.print(value);
+}
 
 }  // namespace util
 }  // namespace airmap

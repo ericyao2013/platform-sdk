@@ -46,7 +46,13 @@ cmd::Test::Test() : cli::CommandWithFlagsAndAction{"test", "executes runtime tes
     log_ = util::FormattingLogger(create_filtering_logger(log_level_, create_default_logger(ctxt.cout)));
 
     if (!test_suite_ || !test_suite_.get().validate()) {
-      log_.errorf(component, "missing parameter 'test-suite'");
+      auto record = log_.error(component);
+
+      record.print("missing parameter 'test-suite', choose from:\n");
+      for (const auto& pair : test_suite_registry_) {
+        record << "  " << pair.first << "\n";
+      }
+
       return 1;
     }
 
