@@ -20,6 +20,8 @@ airmap::rest::Client::Client(const Configuration& configuration, const std::shar
                                                                         requesters.flights)},
       pilots_{std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
                                                                        requesters.pilots)},
+      rulesets_{std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
+                                                                         requesters.rulesets)},
       status_{std::make_shared<airmap::net::http::RequesterWithApiKey>(configuration_.credentials.api_key,
                                                                        requesters.status)},
       telemetry_{std::make_shared<detail::OpenSSLAES256Encryptor>(), udp_sender_},
@@ -48,6 +50,10 @@ airmap::Flights& airmap::rest::Client::flights() {
 
 airmap::Pilots& airmap::rest::Client::pilots() {
   return pilots_;
+}
+
+airmap::RuleSets& airmap::rest::Client::rulesets() {
+  return rulesets_;
 }
 
 airmap::Status& airmap::rest::Client::status() {

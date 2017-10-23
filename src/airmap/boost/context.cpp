@@ -56,6 +56,7 @@ void airmap::boost::Context::create_client_with_configuration(const Client::Conf
   requesters.flight_plans  = flight_plans(configuration);
   requesters.flights       = flights(configuration);
   requesters.pilots        = pilots(configuration);
+  requesters.rulesets      = rulesets(configuration);
   requesters.status        = status(configuration);
   requesters.sso           = sso(configuration);
 
@@ -186,6 +187,16 @@ std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::pilots(
   auto host  = env::get("AIRMAP_HOST_PILOTS", configuration.host);
   auto port  = env::get("AIRMAP_PORT_PILOTS", ::boost::lexical_cast<std::string>(443));
   auto route = env::get("AIRMAP_ROUTE_PILOTS", rest::Pilots::default_route_for_version(configuration.version));
+  return std::make_shared<net::http::RoutingRequester>(
+      route, net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
+                                                 io_service_));
+}
+
+std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::rulesets(
+    const airmap::Client::Configuration& configuration) {
+  auto host  = env::get("AIRMAP_HOST_RULESETS", configuration.host);
+  auto port  = env::get("AIRMAP_PORT_RULESETS", ::boost::lexical_cast<std::string>(443));
+  auto route = env::get("AIRMAP_ROUTE_RULESETS", rest::RuleSets::default_route_for_version(configuration.version));
   return std::make_shared<net::http::RoutingRequester>(
       route, net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
                                                  io_service_));

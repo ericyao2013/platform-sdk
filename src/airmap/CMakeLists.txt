@@ -52,6 +52,8 @@ add_library(
   ${CMAKE_SOURCE_DIR}/include/airmap/pilot.h
   ${CMAKE_SOURCE_DIR}/include/airmap/outcome.h
   ${CMAKE_SOURCE_DIR}/include/airmap/rule.h
+  ${CMAKE_SOURCE_DIR}/include/airmap/ruleset.h
+  ${CMAKE_SOURCE_DIR}/include/airmap/rulesets.h
   ${CMAKE_SOURCE_DIR}/include/airmap/status.h
   ${CMAKE_SOURCE_DIR}/include/airmap/telemetry.h
   ${CMAKE_SOURCE_DIR}/include/airmap/timestamp.h
@@ -71,6 +73,7 @@ add_library(
   paths.cpp
   pilots.cpp
   rule.cpp
+  ruleset.cpp
   status.cpp
   telemetry.cpp
   token.cpp
@@ -90,6 +93,8 @@ add_library(
   codec/http/query/flights.cpp
   codec/http/query/pilots.h
   codec/http/query/pilots.cpp
+  codec/http/query/rulesets.h
+  codec/http/query/rulesets.cpp
   codec/http/query/status.h
   codec/http/query/status.cpp
 
@@ -123,6 +128,8 @@ add_library(
   codec/json/pilots.cpp
   codec/json/rule.h
   codec/json/rule.cpp
+  codec/json/ruleset.h
+  codec/json/ruleset.cpp
   codec/json/status.h
   codec/json/status.cpp
   codec/json/token.h
@@ -166,6 +173,8 @@ add_library(
   rest/flights.cpp
   rest/pilots.h
   rest/pilots.cpp
+  rest/rulesets.h
+  rest/rulesets.cpp
   rest/status.h
   rest/status.cpp
   rest/telemetry.h
@@ -220,6 +229,10 @@ add_executable(
   cmds/airmap/cmd/create_flight.cpp
   cmds/airmap/cmd/daemon.h
   cmds/airmap/cmd/daemon.cpp
+  cmds/airmap/cmd/evaluate_rulesets.h
+  cmds/airmap/cmd/evaluate_rulesets.cpp
+  cmds/airmap/cmd/fetch_rules.h
+  cmds/airmap/cmd/fetch_rules.cpp
   cmds/airmap/cmd/flags.h
   cmds/airmap/cmd/flags.cpp
   cmds/airmap/cmd/get_status.h
@@ -232,6 +245,8 @@ add_executable(
   cmds/airmap/cmd/pilot.cpp
   cmds/airmap/cmd/plan_flight.h
   cmds/airmap/cmd/plan_flight.cpp
+  cmds/airmap/cmd/query_rulesets.h  
+  cmds/airmap/cmd/query_rulesets.cpp
   cmds/airmap/cmd/render_briefing.h
   cmds/airmap/cmd/render_briefing.cpp
   cmds/airmap/cmd/simulate_scenario.h
