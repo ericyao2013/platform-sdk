@@ -133,90 +133,108 @@ void airmap::boost::Context::dispatch(const std::function<void()>& task) {
 
 std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::aircrafts(
     const airmap::Client::Configuration& configuration) {
-  auto host  = env::get("AIRMAP_HOST_AIRCRAFTS", configuration.host);
-  auto port  = env::get("AIRMAP_PORT_AIRCRAFTS", ::boost::lexical_cast<std::string>(443));
-  auto route = env::get("AIRMAP_ROUTE_AIRCRAFTS", rest::Aircrafts::default_route_for_version(configuration.version));
+  auto protocol = env::get("AIRMAP_PROTOCOL_AIRCRAFTS", "https");
+  auto host     = env::get("AIRMAP_HOST_AIRCRAFTS", configuration.host);
+  auto port     = env::get("AIRMAP_PORT_AIRCRAFTS", ::boost::lexical_cast<std::string>(443));
+  auto route    = env::get("AIRMAP_ROUTE_AIRCRAFTS", rest::Aircrafts::default_route_for_version(configuration.version));
   return std::make_shared<net::http::RoutingRequester>(
-      route, net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
-                                                 io_service_));
+      route,
+      net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(), io_service_,
+                                          net::http::boost::Requester::request_factory_for_protocol(protocol)));
 }
 
 std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::airspaces(
     const airmap::Client::Configuration& configuration) {
-  auto host  = env::get("AIRMAP_HOST_AIRSPACES", configuration.host);
-  auto port  = env::get("AIRMAP_PORT_AIRSPACES", ::boost::lexical_cast<std::string>(443));
-  auto route = env::get("AIRMAP_ROUTE_AIRSPACES", rest::Airspaces::default_route_for_version(configuration.version));
+  auto protocol = env::get("AIRMAP_PROTOCOL_AIRSPACES", "https");
+  auto host     = env::get("AIRMAP_HOST_AIRSPACES", configuration.host);
+  auto port     = env::get("AIRMAP_PORT_AIRSPACES", ::boost::lexical_cast<std::string>(443));
+  auto route    = env::get("AIRMAP_ROUTE_AIRSPACES", rest::Airspaces::default_route_for_version(configuration.version));
   return std::make_shared<net::http::RoutingRequester>(
-      route, net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
-                                                 io_service_));
+      route,
+      net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(), io_service_,
+                                          net::http::boost::Requester::request_factory_for_protocol(protocol)));
 }
 
 std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::authenticator(
     const airmap::Client::Configuration& configuration) {
-  auto host = env::get("AIRMAP_HOST_AUTHENTICATOR", configuration.host);
-  auto port = env::get("AIRMAP_PORT_AUTHENTICATOR", ::boost::lexical_cast<std::string>(443));
+  auto protocol = env::get("AIRMAP_PROTOCOL_AUTHENTICATOR", "https");
+  auto host     = env::get("AIRMAP_HOST_AUTHENTICATOR", configuration.host);
+  auto port     = env::get("AIRMAP_PORT_AUTHENTICATOR", ::boost::lexical_cast<std::string>(443));
   auto route =
       env::get("AIRMAP_ROUTE_AUTHENTICATOR", rest::Authenticator::default_route_for_version(configuration.version));
   return std::make_shared<net::http::RoutingRequester>(
-      route, net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
-                                                 io_service_));
+      route,
+      net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(), io_service_,
+                                          net::http::boost::Requester::request_factory_for_protocol(protocol)));
 }
 
 std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::flights(
     const airmap::Client::Configuration& configuration) {
-  auto host  = env::get("AIRMAP_HOST_FLIGHTS", configuration.host);
-  auto port  = env::get("AIRMAP_PORT_FLIGHTS", ::boost::lexical_cast<std::string>(443));
-  auto route = env::get("AIRMAP_ROUTE_FLIGHTS", rest::Flights::default_route_for_version(configuration.version));
+  auto protocol = env::get("AIRMAP_PROTOCOL_FLIGHTS", "https");
+  auto host     = env::get("AIRMAP_HOST_FLIGHTS", configuration.host);
+  auto port     = env::get("AIRMAP_PORT_FLIGHTS", ::boost::lexical_cast<std::string>(443));
+  auto route    = env::get("AIRMAP_ROUTE_FLIGHTS", rest::Flights::default_route_for_version(configuration.version));
   return std::make_shared<net::http::RoutingRequester>(
-      route, net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
-                                                 io_service_));
+      route,
+      net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(), io_service_,
+                                          net::http::boost::Requester::request_factory_for_protocol(protocol)));
 }
 
 std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::flight_plans(
     const airmap::Client::Configuration& configuration) {
-  auto host  = env::get("AIRMAP_HOST_FLIGHTS", configuration.host);
-  auto port  = env::get("AIRMAP_PORT_FLIGHTS", ::boost::lexical_cast<std::string>(443));
-  auto route = env::get("AIRMAP_ROUTE_FLIGHTS", rest::FlightPlans::default_route_for_version(configuration.version));
+  auto protocol = env::get("AIRMAP_PROTOCOL_FLIGHTS", "https");
+  auto host     = env::get("AIRMAP_HOST_FLIGHTS", configuration.host);
+  auto port     = env::get("AIRMAP_PORT_FLIGHTS", ::boost::lexical_cast<std::string>(443));
+  auto route    = env::get("AIRMAP_ROUTE_FLIGHTS", rest::FlightPlans::default_route_for_version(configuration.version));
   return std::make_shared<net::http::RoutingRequester>(
-      route, net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
-                                                 io_service_));
+      route,
+      net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(), io_service_,
+                                          net::http::boost::Requester::request_factory_for_protocol(protocol)));
 }
 
 std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::pilots(
     const airmap::Client::Configuration& configuration) {
-  auto host  = env::get("AIRMAP_HOST_PILOTS", configuration.host);
-  auto port  = env::get("AIRMAP_PORT_PILOTS", ::boost::lexical_cast<std::string>(443));
-  auto route = env::get("AIRMAP_ROUTE_PILOTS", rest::Pilots::default_route_for_version(configuration.version));
+  auto protocol = env::get("AIRMAP_PROTOCOL_PILOTS", "https");
+  auto host     = env::get("AIRMAP_HOST_PILOTS", configuration.host);
+  auto port     = env::get("AIRMAP_PORT_PILOTS", ::boost::lexical_cast<std::string>(443));
+  auto route    = env::get("AIRMAP_ROUTE_PILOTS", rest::Pilots::default_route_for_version(configuration.version));
   return std::make_shared<net::http::RoutingRequester>(
-      route, net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
-                                                 io_service_));
+      route,
+      net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(), io_service_,
+                                          net::http::boost::Requester::request_factory_for_protocol(protocol)));
 }
 
 std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::rulesets(
     const airmap::Client::Configuration& configuration) {
-  auto host  = env::get("AIRMAP_HOST_RULESETS", configuration.host);
-  auto port  = env::get("AIRMAP_PORT_RULESETS", ::boost::lexical_cast<std::string>(443));
-  auto route = env::get("AIRMAP_ROUTE_RULESETS", rest::RuleSets::default_route_for_version(configuration.version));
+  auto protocol = env::get("AIRMAP_PROTOCOL_RULESETS", "https");
+  auto host     = env::get("AIRMAP_HOST_RULESETS", configuration.host);
+  auto port     = env::get("AIRMAP_PORT_RULESETS", ::boost::lexical_cast<std::string>(443));
+  auto route    = env::get("AIRMAP_ROUTE_RULESETS", rest::RuleSets::default_route_for_version(configuration.version));
   return std::make_shared<net::http::RoutingRequester>(
-      route, net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
-                                                 io_service_));
+      route,
+      net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(), io_service_,
+                                          net::http::boost::Requester::request_factory_for_protocol(protocol)));
 }
 
 std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::status(
     const airmap::Client::Configuration& configuration) {
-  auto host  = env::get("AIRMAP_HOST_STATUS", configuration.host);
-  auto port  = env::get("AIRMAP_PORT_STATUS", ::boost::lexical_cast<std::string>(443));
-  auto route = env::get("AIRMAP_ROUTE_STATUS", rest::Status::default_route_for_version(configuration.version));
+  auto protocol = env::get("AIRMAP_PROTOCOL_STATUS", "https");
+  auto host     = env::get("AIRMAP_HOST_STATUS", configuration.host);
+  auto port     = env::get("AIRMAP_PORT_STATUS", ::boost::lexical_cast<std::string>(443));
+  auto route    = env::get("AIRMAP_ROUTE_STATUS", rest::Status::default_route_for_version(configuration.version));
   return std::make_shared<net::http::RoutingRequester>(
-      route, net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
-                                                 io_service_));
+      route,
+      net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(), io_service_,
+                                          net::http::boost::Requester::request_factory_for_protocol(protocol)));
 }
 
 std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::sso(
     const airmap::Client::Configuration& configuration) {
-  auto host = env::get("AIRMAP_HOST_SSO", configuration.sso.host);
-  auto port = env::get("AIRMAP_PORT_SSO", ::boost::lexical_cast<std::string>(configuration.sso.port));
+  auto protocol = env::get("AIRMAP_PROTOCOL_SSO", "https");
+  auto host     = env::get("AIRMAP_HOST_SSO", configuration.sso.host);
+  auto port     = env::get("AIRMAP_PORT_SSO", ::boost::lexical_cast<std::string>(configuration.sso.port));
 
   return net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
-                                             io_service_);
+                                             io_service_,
+                                             net::http::boost::Requester::request_factory_for_protocol(protocol));
 }
