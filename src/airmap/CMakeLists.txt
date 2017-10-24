@@ -36,6 +36,27 @@ protobuf_generate_cpp(
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(
+  airmap-mavlink
+
+  mavlink/channel.h
+  mavlink/channel.cpp
+  mavlink/global_position_int.h
+  mavlink/global_position_int.cpp
+  mavlink/heartbeat.h
+  mavlink/heartbeat.cpp
+  mavlink/state.h
+  mavlink/state.cpp
+  mavlink/vehicle.h
+  mavlink/vehicle.cpp
+  mavlink/vehicle_tracker.h
+  mavlink/vehicle_tracker.cpp
+  mavlink/boost/serial_channel.h
+  mavlink/boost/serial_channel.cpp
+  mavlink/boost/tcp_channel.h
+  mavlink/boost/tcp_channel.cpp
+)
+
+add_library(
   airmap-client
 
   ${CMAKE_SOURCE_DIR}/include/airmap/aircraft.h
@@ -182,23 +203,6 @@ add_library(
   rest/traffic.h
   rest/traffic.cpp
 
-  mavlink/channel.h
-  mavlink/channel.cpp
-  mavlink/global_position_int.h
-  mavlink/global_position_int.cpp
-  mavlink/heartbeat.h
-  mavlink/heartbeat.cpp
-  mavlink/state.h
-  mavlink/state.cpp
-  mavlink/vehicle.h
-  mavlink/vehicle.cpp
-  mavlink/vehicle_tracker.h
-  mavlink/vehicle_tracker.cpp
-  mavlink/boost/serial_channel.h
-  mavlink/boost/serial_channel.cpp
-  mavlink/boost/tcp_channel.h
-  mavlink/boost/tcp_channel.cpp
-
   platform/interface.h
   platform/interface.cpp
   platform/standard_paths.cpp
@@ -245,7 +249,7 @@ add_executable(
   cmds/airmap/cmd/pilot.cpp
   cmds/airmap/cmd/plan_flight.h
   cmds/airmap/cmd/plan_flight.cpp
-  cmds/airmap/cmd/query_rulesets.h  
+  cmds/airmap/cmd/query_rulesets.h
   cmds/airmap/cmd/query_rulesets.cpp
   cmds/airmap/cmd/render_briefing.h
   cmds/airmap/cmd/render_briefing.cpp
@@ -273,19 +277,23 @@ add_executable(
 )
 
 set_property(TARGET airmap-client PROPERTY CXX_STANDARD 14)
+set_property(TARGET airmap-mavlink PROPERTY CXX_STANDARD 14)
+set_property(TARGET airmap-mavlink PROPERTY COMPILE_OPTIONS "-Wno-pedantic")
 set_property(TARGET airmap PROPERTY CXX_STANDARD 14)
 
 target_link_libraries(
   airmap-client
 
+  ${AIRMAP_PLATFORM_LIBRARIES}
+  airmap-mavlink
+
   fmt
   network-uri
   spdlog
-  ${AIRMAP_PLATFORM_LIBRARIES}
   ${Boost_LIBRARIES}
   ${OPENSSL_LDFLAGS}
   ${PROTOBUF_LIBRARIES})
 
-target_link_libraries(airmap airmap-client )
+target_link_libraries(airmap airmap-client)
 
 install(TARGETS airmap RUNTIME DESTINATION bin)
