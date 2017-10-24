@@ -281,7 +281,7 @@ void laanc::Suite::delete_flight_plan() {
 void laanc::Suite::handle_delete_flight_plan_finished(const FlightPlans::Delete::Result& result) {
   if (result) {
     log_.infof(component, "successfully deleted flight plan");
-    delete_flight();
+    end_flight();
   } else {
     try {
       std::rethrow_exception(result.error());
@@ -289,6 +289,30 @@ void laanc::Suite::handle_delete_flight_plan_finished(const FlightPlans::Delete:
       log_.errorf(component, "failed to delete flight plan: %s", e.what());
     } catch (...) {
       log_.errorf(component, "failed to delete flight plan");
+    }
+    context_->stop(::airmap::Context::ReturnCode::error);
+  }
+}
+
+void laanc::Suite::end_flight() {
+  Flights::EndFlight::Parameters parameters;
+  parameters.id            = flight_id_.get();
+  parameters.authorization = token_.id();
+
+  client_->flights().end_flight(parameters, std::bind(&Suite::handle_end_flight_finished, this, ph::_1));
+}
+
+void laanc::Suite::handle_end_flight_finished(const Flights::EndFlight::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully ended flight");
+    delete_flight();
+  } else {
+    try {
+      std::rethrow_exception(result.error());
+    } catch (const std::exception& e) {
+      log_.errorf(component, "failed to end flight: %s", e.what());
+    } catch (...) {
+      log_.errorf(component, "failed to end flight");
     }
     context_->stop(::airmap::Context::ReturnCode::error);
   }

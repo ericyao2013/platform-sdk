@@ -57,6 +57,9 @@ class Suite : public Test::Suite {
   void delete_flight_plan();
   void handle_delete_flight_plan_finished(const FlightPlans::Delete::Result& result);
 
+  void end_flight();
+  void handle_end_flight_finished(const Flights::EndFlight::Result& result);
+
   void delete_flight();
   void handle_delete_flight_finished(const Flights::DeleteFlight::Result& result);
 
