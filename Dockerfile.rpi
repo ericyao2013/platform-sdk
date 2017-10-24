@@ -1,5 +1,12 @@
 FROM resin/rpi-raspbian:stretch
 
+ARG CIRCLECI
+ARG AIRMAP_CIRCLECI_API_KEY
+ARG AIRMAP_CIRCLECI_CLIENT_ID
+ARG AIRMAP_CIRCLECI_DEVICE_ID
+ARG AIRMAP_CIRCLECI_USERNAME
+ARG AIRMAP_CIRCLECI_PASSWORD
+
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY . /usr/src/app
@@ -9,7 +16,7 @@ RUN mkdir build
 WORKDIR build
 RUN cmake -DCMAKE_INSTALL_PREFIX=/usr -G Ninja ..
 RUN ninja
-RUN ninja test
+RUN ctest -V
 RUN ninja install
 WORKDIR /usr/src/app
 RUN tools/rpi/cleanup.dev.sh
