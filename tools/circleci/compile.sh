@@ -20,8 +20,7 @@ docker build \
     --build-arg AIRMAP_CIRCLECI_CLIENT_ID=${test_pilot_099_client_id} \
     --build-arg AIRMAP_CIRCLECI_DEVICE_ID=${test_pilot_099_device_id} \
     --build-arg AIRMAP_CIRCLECI_USERNAME=${test_pilot_099_username} \
-    --build-arg AIRMAP_CIRCLECI_PASSWORD=${test_pilot_099_password} --force-rm=true -t airmapd.alpine:latest -f Dockerfile.alpine . &
-pid_alpine=$!
+    --build-arg AIRMAP_CIRCLECI_PASSWORD=${test_pilot_099_password} --force-rm=true -t airmapd.alpine:latest -f Dockerfile.alpine .
 
 docker build \
     --build-arg CIRCLECI=true \
@@ -29,7 +28,4 @@ docker build \
     --build-arg AIRMAP_CIRCLECI_CLIENT_ID=${test_pilot_098_client_id} \
     --build-arg AIRMAP_CIRCLECI_DEVICE_ID=${test_pilot_098_device_id} \
     --build-arg AIRMAP_CIRCLECI_USERNAME=${test_pilot_098_username} \
-    --build-arg AIRMAP_CIRCLECI_PASSWORD=${test_pilot_098_password} --force-rm=true -t airmapd.ubuntu:latest -f Dockerfile.ubuntu . &
-pid_ubuntu=$!
-
-wait $pid_alpine $pid_ubuntu
+    --build-arg AIRMAP_CIRCLECI_PASSWORD=${test_pilot_098_password} --force-rm=true -t airmapd.ubuntu:latest -f Dockerfile.ubuntu .
