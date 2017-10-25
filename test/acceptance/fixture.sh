@@ -57,7 +57,9 @@ config_pattern_production="{
 "
 
 fixture_set_up() {
-    printenv
+    if test -z "${AIRMAP_EXECUTABLE}"; then
+        exit 1
+    fi
 
     if test "${CIRCLECI}" = "true"; then
         echo "setting up ci test environment"
