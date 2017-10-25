@@ -10,7 +10,6 @@ namespace codec {
 namespace http {
 namespace query {
 
-void encode(std::unordered_map<std::string, std::string>& query, const RuleSets::Search::Parameters& parameters);
 void encode(std::unordered_map<std::string, std::string>& query, const RuleSets::FetchRules::Parameters& parameters);
 void encode(std::unordered_map<std::string, std::string>& query, const RuleSets::Evaluation::Parameters& parameters);
 

@@ -51,6 +51,11 @@ cmd::FetchRules::FetchRules()
       return 1;
     }
 
+    if (!rulesets_) {
+      log_.errorf(component, "missing parameter 'rulesets'");
+      return 1;
+    }
+
     auto result = ::airmap::Context::create(log_.logger());
 
     if (!result) {

@@ -27,7 +27,7 @@ class FetchRules : public util::cli::CommandWithFlagsAndAction {
   Client::Version version_{Client::Version::production};
   Logger::Severity log_level_{Logger::Severity::info};
   Required<ConfigFile> config_file_;
-  Optional<RuleSetsCSV> rulesets_;
+  Required<RuleSetsCSV> rulesets_;
   RuleSets::FetchRules::Parameters params_;
 };
 

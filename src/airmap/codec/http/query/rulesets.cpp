@@ -9,15 +9,6 @@
 #include <sstream>
 
 void airmap::codec::http::query::encode(std::unordered_map<std::string, std::string>& query,
-                                        const RuleSets::Search::Parameters& parameters) {
-  if (parameters.geometry) {
-    nlohmann::json geometry;
-    geometry          = parameters.geometry.get();
-    query["geometry"] = geometry.dump();
-  }
-}
-
-void airmap::codec::http::query::encode(std::unordered_map<std::string, std::string>& query,
                                         const RuleSets::FetchRules::Parameters& parameters) {
   if (parameters.rulesets)
     query["rulesets"] = parameters.rulesets.get();

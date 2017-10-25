@@ -38,6 +38,7 @@ cmd::EvaluateRuleSets::EvaluateRuleSets()
   flag(flags::config_file(config_file_));
   flag(cli::make_flag("geometry-file", "use the polygon defined in this geojson file", geometry_file_));
   flag(cli::make_flag("rulesets", "comma-separated list of rulesets", rulesets_));
+  flag(cli::make_flag("flight-features", "object with key value pairs indicating flight details", flight_features_));
 
   action([this](const cli::Command::Context& ctxt) {
     log_ = util::FormattingLogger{create_filtering_logger(log_level_, create_default_logger(ctxt.cout))};

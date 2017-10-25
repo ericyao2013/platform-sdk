@@ -151,6 +151,8 @@ add_library(
   codec/json/rule.cpp
   codec/json/ruleset.h
   codec/json/ruleset.cpp
+  codec/json/rulesets.h
+  codec/json/rulesets.cpp
   codec/json/status.h
   codec/json/status.cpp
   codec/json/token.h

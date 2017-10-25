@@ -26,9 +26,10 @@ airmap::rest::RuleSets::RuleSets(const std::shared_ptr<net::http::Requester>& re
 
 void airmap::rest::RuleSets::search(const Search::Parameters& parameters, const Search::Callback& cb) {
   std::unordered_map<std::string, std::string> query, headers;
-  codec::http::query::encode(query, parameters);
 
-  requester_->get("/", std::move(query), std::move(headers), [cb](const net::http::Requester::Result& result) {
+  json j = parameters;
+
+  requester_->post("/", std::move(headers), j.dump(), [cb](const net::http::Requester::Result& result) {
     if (result) {
       cb(jsend::to_outcome<std::vector<RuleSet>>(json::parse(result.value().body)));
     } else {
