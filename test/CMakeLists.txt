@@ -37,3 +37,12 @@ set_tests_properties(
   PROPERTIES
   ENVIRONMENT "AIRMAP_EXECUTABLE=$<TARGET_FILE:airmap>"
   WILL_FAIL "true")
+
+add_test(
+  NAME acceptance.rule_sets
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/acceptance/rule_sets.sh)
+
+set_tests_properties(
+  acceptance.rule_sets
+  PROPERTIES
+  ENVIRONMENT "AIRMAP_EXECUTABLE=$<TARGET_FILE:airmap>")

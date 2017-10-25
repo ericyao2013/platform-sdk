@@ -4,6 +4,8 @@
 # For now, we will *not* error out and the test will always pass.
 # set -e
 
+. "$(dirname $(readlink -f $0))/fixture.sh"
+
 config_pattern_staging="{
   \"credentials\": {
     \"api-key\": \"%s\",
@@ -58,33 +60,8 @@ config_pattern_production="{
 }
 "
 
-set_up() {
-    printenv
-
-    if test "${CIRCLECI}" = "true"; then
-        echo "setting up ci test environment"
-        mkdir -p ~/.config/airmap/production || true
-        mkdir -p ~/.config/airmap/staging || true
-
-        printf "${config_pattern_production}" \
-            "${AIRMAP_CIRCLECI_API_KEY}" \
-            "${AIRMAP_CIRCLECI_CLIENT_ID}" \
-            "${AIRMAP_CIRCLECI_DEVICE_ID}" \
-            "${AIRMAP_CIRCLECI_PASSWORD}" \
-            "${AIRMAP_CIRCLECI_USERNAME}" > ~/.config/airmap/production/config.json || true
-
-        printf "${config_pattern_staging}" \
-            "${AIRMAP_CIRCLECI_API_KEY}" \
-            "${AIRMAP_CIRCLECI_CLIENT_ID}" \
-            "${AIRMAP_CIRCLECI_DEVICE_ID}" \
-            "${AIRMAP_CIRCLECI_PASSWORD}" \
-            "${AIRMAP_CIRCLECI_USERNAME}" > ~/.config/airmap/staging/config.json || true
-    fi
-}
-
 run_all_test_suites() {
     version=$1
-    "${AIRMAP_EXECUTABLE}" login --version=${version}
     "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.arkansas.pinebluff --version=${version}
     "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.kentucky.florence --version=${version}
     "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.nevada.reno --version=${version}
@@ -95,7 +72,7 @@ run_all_test_suites() {
     "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.wyoming.tetonvillage --version=${version}
 }
 
-set_up
+fixture_set_up
 
 # run_all_test_suites production
 run_all_test_suites staging
