@@ -242,7 +242,8 @@ std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::sso(
   auto host     = env::get("AIRMAP_HOST_SSO", configuration.sso.host);
   auto port     = env::get("AIRMAP_PORT_SSO", ::boost::lexical_cast<std::string>(configuration.sso.port));
 
-  return net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(),
-                                             io_service_,
-                                             net::http::boost::Requester::request_factory_for_protocol(protocol));
+  return std::make_shared<net::http::LoggingRequester>(
+      log_.logger(),
+      net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(), io_service_,
+                                          net::http::boost::Requester::request_factory_for_protocol(protocol)));
 }
