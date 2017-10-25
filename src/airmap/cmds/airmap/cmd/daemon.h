@@ -34,6 +34,7 @@ class Daemon : public util::cli::CommandWithFlagsAndAction {
   Required<std::uint16_t> telemetry_port_;
   Required<TcpEndpointIp> tcp_endpoint_ip_;
   Required<std::uint16_t> tcp_endpoint_port_;
+  Required<std::uint16_t> udp_endpoint_port_;
 };
 
 }  // namespace cmd

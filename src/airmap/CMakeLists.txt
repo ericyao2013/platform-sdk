@@ -54,6 +54,8 @@ add_library(
   mavlink/boost/serial_channel.cpp
   mavlink/boost/tcp_channel.h
   mavlink/boost/tcp_channel.cpp
+  mavlink/boost/udp_channel.h
+  mavlink/boost/udp_channel.cpp
 )
 
 add_library(

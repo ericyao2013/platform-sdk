@@ -4,6 +4,7 @@
 #include <airmap/daemon.h>
 #include <airmap/mavlink/boost/serial_channel.h>
 #include <airmap/mavlink/boost/tcp_channel.h>
+#include <airmap/mavlink/boost/udp_channel.h>
 #include <airmap/paths.h>
 
 #include <signal.h>
@@ -26,6 +27,8 @@ cmd::Daemon::Daemon() : cli::CommandWithFlagsAndAction{"daemon", "runs the airma
   flag(cli::make_flag("tcp-endpoint-ip", "the ip of the tcp endpoint to read mavlink messages from", tcp_endpoint_ip_));
   flag(cli::make_flag("tcp-endpoint-port", "the port of the tcp endpoint to read mavlink messages from",
                       tcp_endpoint_port_));
+  flag(cli::make_flag("udp-endpoint-port", "the port of the udp endpoint to read mavlink messages from",
+                      udp_endpoint_port_));
 
   action([this](const cli::Command::Context& ctxt) {
     log_ = util::FormattingLogger{create_filtering_logger(log_level_, create_default_logger(ctxt.cout))};
@@ -57,14 +60,16 @@ cmd::Daemon::Daemon() : cli::CommandWithFlagsAndAction{"daemon", "runs the airma
 
     bool has_valid_serial_device = serial_device_ && serial_device_.get().validate();
     bool has_valid_tcp_endpoint  = tcp_endpoint_ip_ && tcp_endpoint_ip_.get().validate() && tcp_endpoint_port_;
+    bool has_valid_udp_endpoint  = static_cast<bool>(udp_endpoint_port_);
 
-    if (!(has_valid_serial_device || has_valid_tcp_endpoint)) {
-      log_.errorf(component, "neither a valid serial port nor a valid tcp endpoint was specified");
+    if (!(has_valid_serial_device || has_valid_tcp_endpoint || has_valid_udp_endpoint)) {
+      log_.errorf(component,
+                  "neither a valid serial port, a valid tcp endpoint nor a valid udp endpoint was specified");
       return 1;
     }
 
-    if (has_valid_serial_device && has_valid_tcp_endpoint) {
-      log_.errorf(component, "both a serial port and a tcp endpoint were specified");
+    if (has_valid_serial_device && has_valid_tcp_endpoint && has_valid_udp_endpoint) {
+      log_.errorf(component, "multiple mavlink endpoint options have been specified");
       return 1;
     }
 
@@ -85,6 +90,9 @@ cmd::Daemon::Daemon() : cli::CommandWithFlagsAndAction{"daemon", "runs the airma
       channel = std::make_shared<mavlink::boost::TcpChannel>(
           log_.logger(), context->io_service(), ::boost::asio::ip::address::from_string(tcp_endpoint_ip_.get()),
           tcp_endpoint_port_.get());
+    if (has_valid_udp_endpoint)
+      channel =
+          std::make_shared<mavlink::boost::UdpChannel>(log_.logger(), context->io_service(), udp_endpoint_port_.get());
 
     if (telemetry_host_)
       config.telemetry.host = telemetry_host_.get();
