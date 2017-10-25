@@ -4,4 +4,4 @@ set -ex
 
 build_opts="--force-rm=true $@"
 
-sudo docker build ${build_opts} -t airmapd:latest -f Dockerfile.ubuntu .
+sudo docker build ${build_opts} -t airmapd:latest -f ubuntu docker 
