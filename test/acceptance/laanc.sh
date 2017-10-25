@@ -8,14 +8,14 @@
 
 run_all_test_suites() {
     version=$1
-    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.arkansas.pinebluff --version=${version}
-    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.kentucky.florence --version=${version}
-    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.nevada.reno --version=${version}
-    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.phoenix.manual --version=${version}
-    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.phoenix.schwegg --version=${version}
-    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.phoenix.university --version=${version}
-    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.phoenix.zoo --version=${version}
-    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.wyoming.tetonvillage --version=${version}
+    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.arkansas.pinebluff --log-level=debug --version=${version}
+    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.kentucky.florence --log-level=debug --version=${version}
+    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.nevada.reno --log-level=debug --version=${version}
+    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.phoenix.manual --log-level=debug --version=${version}
+    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.phoenix.schwegg --log-level=debug --version=${version}
+    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.phoenix.university --log-level=debug --version=${version}
+    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.phoenix.zoo --log-level=debug --version=${version}
+    "${AIRMAP_EXECUTABLE}" test --test-suite=laanc.wyoming.tetonvillage --log-level=debug --version=${version}
 }
 
 fixture_set_up

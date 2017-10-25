@@ -79,7 +79,7 @@ fixture_set_up() {
             "${AIRMAP_CIRCLECI_USERNAME}" > ~/.config/airmap/staging/config.json || true
     fi
 
-    "${AIRMAP_EXECUTABLE}" login --version=production
-    "${AIRMAP_EXECUTABLE}" login --version=staging
+    "${AIRMAP_EXECUTABLE}" login --log-level=debug --version=production
+    "${AIRMAP_EXECUTABLE}" login --log-level=debug --version=staging
 }
 
