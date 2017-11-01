@@ -40,6 +40,13 @@ class Geometry {
   using MultiPoint         = CoordinateVector<Type::multi_point>;
   using LineString         = CoordinateVector<Type::line_string>;
   using MultiLineString    = std::vector<LineString>;
+  /// Polygon follows the GeoJSON standard, citing from https://tools.ietf.org/html/rfc7946:
+  ///   * For type "Polygon", the "coordinates" member MUST be an array of
+  ///     linear ring coordinate arrays.
+  ///   * For Polygons with more than one of these rings, the first MUST be
+  ///     the exterior ring, and any others MUST be interior rings.  The
+  ///     exterior ring bounds the surface, and the interior rings (if
+  ///     present) bound holes within the surface.
   using Polygon            = std::vector<CoordinateVector<Type::polygon>>;
   using MultiPolygon       = std::vector<Polygon>;
   using GeometryCollection = std::vector<Geometry>;
