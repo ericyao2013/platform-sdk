@@ -32,6 +32,7 @@ enable_testing()
 find_package(Boost REQUIRED date_time filesystem program_options system)
 find_package(PkgConfig)
 find_package(Protobuf REQUIRED)
+find_package(Qt5Core)
 
 pkg_check_modules(OPENSSL REQUIRED openssl)
 
@@ -81,6 +82,7 @@ include_directories(
 
 add_subdirectory(doc)
 add_subdirectory(src/airmap)
+add_subdirectory(examples)
 add_subdirectory(test)
 
 find_program(CLANG_FORMAT_EXECUTABLE

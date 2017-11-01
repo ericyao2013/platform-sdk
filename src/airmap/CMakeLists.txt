@@ -229,6 +229,37 @@ add_library(
   ${TELEMETRY_PROTOBUF_HEADERS}
 )
 
+add_library(
+  airmap-qt
+
+  qt/client.cpp
+  qt/dispatcher.h
+  qt/dispatcher.cpp
+  qt/logger.cpp
+
+  qt/aircrafts.h
+  qt/aircrafts.cpp
+  qt/airspaces.h
+  qt/airspaces.cpp
+  qt/authenticator.h
+  qt/authenticator.cpp
+  qt/flight_plans.h
+  qt/flight_plans.cpp
+  qt/flights.h
+  qt/flights.cpp
+  qt/pilots.h
+  qt/pilots.cpp
+  qt/rulesets.h
+  qt/rulesets.cpp
+  qt/status.h
+  qt/status.cpp
+  qt/telemetry.h
+  qt/telemetry.cpp
+  qt/traffic.h
+  qt/traffic.cpp
+  qt/types.cpp
+)
+
 add_executable(
   airmap
 
@@ -281,6 +312,8 @@ add_executable(
 )
 
 set_property(TARGET airmap-client PROPERTY CXX_STANDARD 14)
+set_property(TARGET airmap-client PROPERTY COMPILE_OPTIONS -fPIC)
+set_property(TARGET airmap-qt PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap-mavlink PROPERTY CXX_STANDARD 14)
 set_property(TARGET airmap-mavlink PROPERTY COMPILE_OPTIONS "-Wno-pedantic")
 set_property(TARGET airmap PROPERTY CXX_STANDARD 14)
@@ -297,6 +330,13 @@ target_link_libraries(
   ${Boost_LIBRARIES}
   ${OPENSSL_LDFLAGS}
   ${PROTOBUF_LIBRARIES})
+
+target_link_libraries(
+  airmap-qt
+
+  airmap-client
+
+  Qt5::Core)
 
 target_link_libraries(airmap airmap-client)
 
