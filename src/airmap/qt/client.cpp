@@ -115,6 +115,8 @@ void airmap::qt::Client::create(const Client::Configuration& configuration, cons
 airmap::qt::Client::Client(std::unique_ptr<Private>&& d, QObject* parent) : QObject{parent}, d_{std::move(d)} {
 }
 
+airmap::qt::Client::~Client() = default;
+
 // From airmap::Client
 airmap::Authenticator& airmap::qt::Client::authenticator() {
   return *d_->authenticator_;
