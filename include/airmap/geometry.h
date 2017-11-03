@@ -36,10 +36,10 @@ class Geometry {
     std::vector<Coordinate> coordinates;  ///< The individual coordinates.
   };
 
-  using Point              = Coordinate;
-  using MultiPoint         = CoordinateVector<Type::multi_point>;
-  using LineString         = CoordinateVector<Type::line_string>;
-  using MultiLineString    = std::vector<LineString>;
+  using Point           = Coordinate;
+  using MultiPoint      = CoordinateVector<Type::multi_point>;
+  using LineString      = CoordinateVector<Type::line_string>;
+  using MultiLineString = std::vector<LineString>;
   /// Polygon follows the GeoJSON standard, citing from https://tools.ietf.org/html/rfc7946:
   ///   * For type "Polygon", the "coordinates" member MUST be an array of
   ///     linear ring coordinate arrays.

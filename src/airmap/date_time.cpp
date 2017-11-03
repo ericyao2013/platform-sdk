@@ -9,6 +9,10 @@ std::uint64_t airmap::milliseconds_since_epoch(const DateTime& dt) {
   return (dt - epoch).total_milliseconds();
 }
 
+std::uint64_t airmap::microseconds_since_epoch(const DateTime& dt) {
+  return (dt - epoch).total_microseconds();
+}
+
 airmap::DateTime airmap::from_seconds_since_epoch(const Seconds& s) {
   return epoch + s;
 }

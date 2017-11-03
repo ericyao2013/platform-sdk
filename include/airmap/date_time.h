@@ -22,6 +22,8 @@ using Microseconds = boost::posix_time::microseconds;
 
 /// milliseconds_since_epoch returns the milliseconds that elapsed since the UNIX epoch.
 std::uint64_t milliseconds_since_epoch(const DateTime& dt);
+/// microseconds_since_epoch returns the microseconds that elapsed since the UNIX epoch.
+std::uint64_t microseconds_since_epoch(const DateTime& dt);
 /// from_seconds_since_epoch returns a DateTime.
 DateTime from_seconds_since_epoch(const Seconds& s);
 /// from_milliseconds_since_epoch returns a DateTime.

@@ -65,6 +65,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-strict-aliasing -pedantic -We
 include_directories(
   include
   src
+  test
 
   vendor/
   vendor/beast/include

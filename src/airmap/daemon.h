@@ -82,6 +82,9 @@ class Daemon : public mavlink::VehicleTracker::Monitor, public std::enable_share
     void handle_request_start_flight_comms_finished(const std::string& key);
 
     State state_{State::inactive};
+    bool authorization_requested_{false};
+    bool create_flight_requested_{false};
+    bool start_flight_comms_requested_{false};
 
     util::FormattingLogger log_;
     std::shared_ptr<Client> client_;

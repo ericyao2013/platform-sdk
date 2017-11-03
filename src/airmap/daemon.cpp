@@ -101,6 +101,10 @@ void airmap::Daemon::TelemetrySubmitter::deactivate() {
     });
   }
 
+  authorization_requested_      = false;
+  create_flight_requested_      = false;
+  start_flight_comms_requested_ = false;
+
   authorization_.reset();
   flight_.reset();
   encryption_key_.reset();
@@ -128,6 +132,11 @@ void airmap::Daemon::TelemetrySubmitter::request_authorization() {
     return;
   }
 
+  if (authorization_requested_)
+    return;
+
+  authorization_requested_ = true;
+
   if (credentials_.oauth) {
     Authenticator::AuthenticateWithPassword::Params params;
     params.oauth = credentials_.oauth.get();
@@ -135,6 +144,7 @@ void airmap::Daemon::TelemetrySubmitter::request_authorization() {
       if (result) {
         sp->handle_request_authorization_finished(result.value().id);
       } else {
+        sp->authorization_requested_ = false;
         try {
           std::rethrow_exception(result.error());
         } catch (const std::exception& e) {
@@ -150,6 +160,7 @@ void airmap::Daemon::TelemetrySubmitter::request_authorization() {
       if (result) {
         sp->handle_request_authorization_finished(result.value().id);
       } else {
+        sp->authorization_requested_ = false;
         try {
           std::rethrow_exception(result.error());
         } catch (const std::exception& e) {
@@ -174,6 +185,11 @@ void airmap::Daemon::TelemetrySubmitter::request_create_flight() {
     return;
   }
 
+  if (create_flight_requested_)
+    return;
+
+  create_flight_requested_ = true;
+
   if (current_position_) {
     Flights::CreateFlight::Parameters params;
     params.authorization = authorization_.get();
@@ -187,6 +203,7 @@ void airmap::Daemon::TelemetrySubmitter::request_create_flight() {
       if (result) {
         sp->handle_request_create_flight_finished(result.value());
       } else {
+        sp->create_flight_requested_ = false;
         try {
           std::rethrow_exception(result.error());
         } catch (const std::exception& e) {
@@ -211,12 +228,18 @@ void airmap::Daemon::TelemetrySubmitter::request_start_flight_comms() {
     return;
   }
 
+  if (start_flight_comms_requested_)
+    return;
+
+  start_flight_comms_requested_ = true;
+
   Flights::StartFlightCommunications::Parameters params{authorization_.get(), flight_.get().id};
 
   client_->flights().start_flight_communications(params, [sp = shared_from_this()](const auto& result) {
     if (result) {
       sp->handle_request_start_flight_comms_finished(result.value().key);
     } else {
+      sp->start_flight_comms_requested_ = false;
       try {
         std::rethrow_exception(result.error());
       } catch (const std::exception& e) {

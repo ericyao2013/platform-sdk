@@ -44,6 +44,8 @@ add_library(
   mavlink/global_position_int.cpp
   mavlink/heartbeat.h
   mavlink/heartbeat.cpp
+  mavlink/router.h
+  mavlink/router.cpp
   mavlink/state.h
   mavlink/state.cpp
   mavlink/vehicle.h
@@ -54,6 +56,8 @@ add_library(
   mavlink/boost/serial_channel.cpp
   mavlink/boost/tcp_channel.h
   mavlink/boost/tcp_channel.cpp
+  mavlink/boost/tcp_route.h
+  mavlink/boost/tcp_route.cpp
   mavlink/boost/udp_channel.h
   mavlink/boost/udp_channel.cpp
 )
