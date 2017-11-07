@@ -13,6 +13,7 @@ apt remove -y \
   libboost-filesystem1.62-dev \
   libboost-program-options1.62-dev \
   libboost-system1.62-dev \
+  libboost-test1.62-dev \
   libprotobuf-dev \
   libssl-dev \
   pkg-config \
