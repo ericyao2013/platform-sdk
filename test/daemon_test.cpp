@@ -1,3 +1,4 @@
+#define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE daemon
 
 #include <airmap/boost/context.h>
@@ -9,7 +10,7 @@
 
 #include <mock/client.h>
 
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
 #include <thread>
 

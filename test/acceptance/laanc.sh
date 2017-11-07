@@ -4,7 +4,9 @@
 # For now, we will *not* error out and the test will always pass.
 # set -e
 
-. "$(dirname $(readlink -f $0))/fixture.sh"
+path=$(cd "$(dirname "$0")" ; pwd -P)
+
+. "${path}/fixture.sh"
 
 run_all_test_suites() {
     version=$1

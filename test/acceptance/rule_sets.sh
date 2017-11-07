@@ -1,9 +1,11 @@
 #!/bin/sh
 set -ex
 
-. "$(dirname $(readlink -f $0))/fixture.sh"
+path=$(cd "$(dirname "$0")" ; pwd -P)
 
-geometry_phoenix="$(dirname $(readlink -f $0))/geometries/phoenix.json"
+. "${path}/fixture.sh"
+
+geometry_phoenix="${path}/geometries/phoenix.json"
 
 run_all_test_suites() {
     version=$1

@@ -29,7 +29,7 @@ message(STATUS "Building in build timestamp ${AIRMAPD_VERSION_BUILD_TIMESTAMP}")
 
 enable_testing()
 
-find_package(Boost REQUIRED date_time filesystem program_options system)
+find_package(Boost REQUIRED date_time filesystem program_options system unit_test_framework)
 find_package(PkgConfig)
 find_package(Protobuf REQUIRED)
 find_package(Qt5Core)

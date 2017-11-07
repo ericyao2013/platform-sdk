@@ -34,7 +34,7 @@ struct Flights : public airmap::Flights {
   MAKE_MOCK2(create_flight_by_polygon, void(const CreateFlight::Parameters&, const CreateFlight::Callback&), override);
   MAKE_MOCK2(end_flight, void(const EndFlight::Parameters&, const EndFlight::Callback&), override);
   MAKE_MOCK2(delete_flight,
-             void(const DeleteFlight::Parameters& parameters, const DeleteFlight::Callback& cb) override);
+             void(const DeleteFlight::Parameters& parameters, const DeleteFlight::Callback& cb), override);
   MAKE_MOCK2(start_flight_communications,
              void(const StartFlightCommunications::Parameters&, const StartFlightCommunications::Callback&), override);
   MAKE_MOCK2(end_flight_communications,
