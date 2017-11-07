@@ -37,6 +37,8 @@ The implementation is structured as followed:
 ```
 # Clone airmapd and all its dependencies
 git clone --recursive https://github.com/airmap/airmapd.git
+# Update Submodules
+git submodule update --init --recursive
 # Please execute these commands at the root of the source tree
 mkdir build
 cd build && cmake .. && make
