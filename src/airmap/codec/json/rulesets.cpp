@@ -5,3 +5,15 @@
 void airmap::codec::json::encode(nlohmann::json& j, const RuleSets::Search::Parameters& p) {
   j["geometry"] = p.geometry;
 }
+
+void airmap::codec::json::encode(nlohmann::json& j, const RuleSets::Evaluation::Parameters& p) {
+  j["geometry"] = p.geometry;
+  if (!p.features.empty()) {
+    nlohmann::json features;
+    for (const auto& pair : p.features) {
+      features[pair.first] = pair.second;
+    }
+    j["flight_features"] = features;
+  }
+  j["rulesets"] = p.rulesets;
+}

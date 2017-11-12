@@ -25,7 +25,7 @@ airmap::rest::RuleSets::RuleSets(const std::shared_ptr<net::http::Requester>& re
 }
 
 void airmap::rest::RuleSets::search(const Search::Parameters& parameters, const Search::Callback& cb) {
-  std::unordered_map<std::string, std::string> query, headers;
+  std::unordered_map<std::string, std::string> headers;
 
   json j = parameters;
 
@@ -66,15 +66,15 @@ void airmap::rest::RuleSets::fetch_rules(const FetchRules::Parameters& parameter
 
 void airmap::rest::RuleSets::evaluate_rulesets(const Evaluation::Parameters& parameters,
                                                const Evaluation::Callback& cb) {
-  std::unordered_map<std::string, std::string> query, headers;
-  codec::http::query::encode(query, parameters);
+  std::unordered_map<std::string, std::string> headers;
 
-  requester_->get("/evaluation", std::move(query), std::move(headers),
-                  [cb](const net::http::Requester::Result& result) {
-                    if (result) {
-                      cb(jsend::to_outcome<std::vector<RuleSet>>(json::parse(result.value().body)));
-                    } else {
-                      cb(Evaluation::Result{result.error()});
-                    }
-                  });
+  json j = parameters;
+
+  requester_->post("/evaluation", std::move(headers), j.dump(), [cb](const net::http::Requester::Result& result) {
+    if (result) {
+      cb(jsend::to_outcome<std::vector<RuleSet>>(json::parse(result.value().body)));
+    } else {
+      cb(Evaluation::Result{result.error()});
+    }
+  });
 }
