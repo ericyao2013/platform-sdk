@@ -9,8 +9,22 @@
 namespace airmap {
 namespace monitor {
 
+/// SubmittingVehicleMonitor monitors a mavlink::Vehicle.
+///
+/// SubmittingVehicleMonitor translates state changes and carries out
+/// the following actions:
+///   - vehicle becomes active
+///     - create flight
+///     - start flight comms
+///   - new position estimate
+///     - if vehicle active:
+///       - submit telemetry
+///   - vehicle becomes inactive
+///     - end flight comms
+///     - end flight
 class SubmittingVehicleMonitor : public mavlink::Vehicle::Monitor {
  public:
+  /// SubmittingVehicleMonitor initializes a new instance with 'submitter'.
   explicit SubmittingVehicleMonitor(const std::shared_ptr<TelemetrySubmitter>& submitter);
 
   // From Vehicle::Monitor
@@ -19,7 +33,9 @@ class SubmittingVehicleMonitor : public mavlink::Vehicle::Monitor {
                            const mavlink::GlobalPositionInt& new_position) override;
 
  private:
+  /// @cond
   std::shared_ptr<TelemetrySubmitter> submitter_;
+  /// @endcond
 };
 
 }  // namespace monitor

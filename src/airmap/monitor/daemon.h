@@ -14,6 +14,7 @@
 #include <memory>
 
 namespace airmap {
+/// namespace monitor bundles up all types and functions used in running AirMap's monitor daemon.
 namespace monitor {
 
 /// Daemon respresents AirMap and all of its services within

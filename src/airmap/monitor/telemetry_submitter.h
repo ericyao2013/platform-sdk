@@ -19,27 +19,44 @@
 namespace airmap {
 namespace monitor {
 
-// TelemetrySubmitter implements a state machine that handles:
-//  - authorization
-//  - flight creation
-//  - flight comms startup
-//  - telemetry submission
-// whenever it becomes active and as soon as a current position of the
-// vehicle is known.
-//
-// TODO(tvoss): Replace the custom state machine implementation presented here with
-// a formal model expresses via boost::msm.
+/// TelemetrySubmitter implements a state machine that handles:
+///  - authorization
+///  - flight creation
+///  - flight comms startup
+///  - telemetry submission
+/// whenever it becomes active and as soon as a current position of the
+/// vehicle is known.
+///
+/// TODO(tvoss): Replace the custom state machine implementation presented here with
+/// a formal model expresses via boost::msm.
 class TelemetrySubmitter : public std::enable_shared_from_this<TelemetrySubmitter> {
  public:
-  enum class State { active, inactive };
+  /// State models all known states of the state machine.
+  enum class State {
+    active,   ///< active and processing telemetry submissions
+    inactive  ///< inactive, dropping all telemetry submissions
+  };
 
+  /// create returns a new TelemetrySubmitter instance.
   static std::shared_ptr<TelemetrySubmitter> create(const Credentials& credentials, const std::string& aircraft_id,
                                                     const std::shared_ptr<Logger>& logger,
                                                     const std::shared_ptr<Client>& client);
-
+  /// activate transitions an instance to State::active.
+  ///
+  /// The following sequence of actions is triggered:
+  ///   * request authorization
+  ///   * request flight creation
+  ///   * request to start flight communications
   void activate();
+
+  /// deactivate transitions an instance to State::inactive.
+  ///
+  /// The following sequence of actions is triggered:
+  ///   * request to end flight communications
+  ///   * request to end the flight
   void deactivate();
 
+  /// submit requests an instance to submit a telemetry update.
   void submit(const mavlink::GlobalPositionInt&);
 
  private:
