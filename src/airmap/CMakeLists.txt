@@ -288,6 +288,8 @@ add_executable(
   cmds/airmap/cmd/daemon.cpp
   cmds/airmap/cmd/end_flight.h
   cmds/airmap/cmd/end_flight.cpp
+  cmds/airmap/cmd/end_flight_comms.h
+  cmds/airmap/cmd/end_flight_comms.cpp
   cmds/airmap/cmd/evaluate_rulesets.h
   cmds/airmap/cmd/evaluate_rulesets.cpp
   cmds/airmap/cmd/fetch_rules.h
