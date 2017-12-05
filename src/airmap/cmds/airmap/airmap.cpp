@@ -1,5 +1,6 @@
 #include <airmap/cmds/airmap/cmd/create_flight.h>
 #include <airmap/cmds/airmap/cmd/daemon.h>
+#include <airmap/cmds/airmap/cmd/end_flight.h>
 #include <airmap/cmds/airmap/cmd/evaluate_rulesets.h>
 #include <airmap/cmds/airmap/cmd/fetch_rules.h>
 #include <airmap/cmds/airmap/cmd/get_status.h>
@@ -33,6 +34,7 @@ class Airmap : airmap::DoNotCopyOrMove {
              cli::Description{"interacts with AirMap services"}} {
     cmd_.command(std::make_shared<cmd::CreateFlight>());
     cmd_.command(std::make_shared<cmd::Daemon>());
+    cmd_.command(std::make_shared<cmd::EndFlight>());
     cmd_.command(std::make_shared<cmd::FetchRules>());
     cmd_.command(std::make_shared<cmd::GetStatus>());
     cmd_.command(std::make_shared<cmd::EvaluateRuleSets>());
