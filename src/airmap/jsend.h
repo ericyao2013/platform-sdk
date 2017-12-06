@@ -22,6 +22,7 @@ namespace key {
 
 static constexpr const char* status{"status"};
 static constexpr const char* data{"data"};
+static constexpr const char* msg{"msg"};
 static constexpr const char* message{"message"};
 
 }  // namespace key
@@ -79,6 +80,8 @@ inline Outcome<T, Error> to_outcome(const nlohmann::json& j) {
   } else {
     if (j.count(status::error) > 0) {
       return Result{Error{j.at(status::error).get<std::string>()}};
+    } else if (j.count(key::msg) > 0) {
+      return Result{Error{j.at(key::msg).get<std::string>()}};
     } else if (j.count(key::message) > 0) {
       return Result{Error{j.at(key::message).get<std::string>()}};
     }
