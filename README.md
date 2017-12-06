@@ -64,7 +64,7 @@ Run the following commands from the top-level `airmapd` folder:
 
 ```
 docker run -v $(PWD):/airmapd -it ubuntu:17.04 bash
-then once inside the container run these commands inside the top-level airmapd folder...
+####then once inside the container run these commands inside the top-level airmapd folder...
 tools/ubuntu/setup.dev.sh
 mkdir build
 cd build
