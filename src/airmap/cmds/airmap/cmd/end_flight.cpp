@@ -20,8 +20,7 @@ namespace {
 constexpr const char* component{"end-flight"};
 }
 
-cmd::EndFlight::EndFlight()
-    : cli::CommandWithFlagsAndAction{"end-flight", "end a flight", "end a flight"} {
+cmd::EndFlight::EndFlight() : cli::CommandWithFlagsAndAction{"end-flight", "end a flight", "end a flight"} {
   flag(flags::version(params_.version));
   flag(flags::log_level(params_.log_level));
   flag(flags::config_file(params_.config_file));
@@ -92,18 +91,18 @@ cmd::EndFlight::EndFlight()
 
           auto client = result.value();
 
-          client->flights().end_flight(
-              Flights::EndFlight::Parameters{token.id(), params_.flight_id.get()},
-              [this, &ctxt, context, client](const Flights::EndFlight::Result& result) {
-                if (!result) {
-                  log_.errorf(component, "failed to end flight: %s", result.error());
-                  context->stop(::airmap::Context::ReturnCode::error);
-                  return;
-                }
+          client->flights().end_flight(Flights::EndFlight::Parameters{token.id(), params_.flight_id.get()},
+                                       [this, &ctxt, context, client](const Flights::EndFlight::Result& result) {
+                                         if (!result) {
+                                           log_.errorf(component, "failed to end flight: %s", result.error());
+                                           context->stop(::airmap::Context::ReturnCode::error);
+                                           return;
+                                         }
 
-                log_.infof(component, "successfully ended flight: %s", iso8601::generate(result.value().end_time));
-                context->stop();
-              });
+                                         log_.infof(component, "successfully ended flight: %s",
+                                                    iso8601::generate(result.value().end_time));
+                                         context->stop();
+                                       });
         });
 
     return context->exec({SIGINT, SIGQUIT},

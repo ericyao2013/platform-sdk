@@ -17,49 +17,19 @@ namespace {
 
 constexpr const char* component{"pilot"};
 
-std::string print_aircrafts(const std::vector<airmap::Pilot::Aircraft>& v) {
-  std::ostringstream ss;
-  for (const auto& a : v) {
-    ss << fmt::sprintf(
-        "    id:           %s\n"
-        "    nick:         %s\n"
-        "    model:\n"
-        "      id:         %s\n"
-        "      name:       %s\n"
-        "    manufacturer:\n"
-        "      id:         %s\n"
-        "      name:       %s",
-        a.id, a.nick_name, a.model.model.id, a.model.model.name, a.model.manufacturer.id, a.model.manufacturer.name);
-  }
-  return ss.str();
-}
-
-std::string print_pilot_and_aircrafts(const airmap::Pilot& pilot, const std::vector<airmap::Pilot::Aircraft>& v) {
-  return fmt::sprintf(
-      "pilot:\n"
-      "  id:                 %s\n"
-      "  first name:         %s\n"
-      "  last name:          %s\n"
-      "  user name:          %s\n"
-      "  picture:            %s\n"
-      "  email verified:     %s\n"
-      "  phone verified:     %s\n"
-      "  statistics:\n"
-      "    total flights:    %s\n"
-      "    last flight time: %s\n"
-      "    total aircrafts:  %d\n"
-      "  created at:         %s\n"
-      "  aircrafts:\n"
-      "%s",
-      pilot.id, pilot.first_name, pilot.last_name, pilot.user_name, pilot.picture_url,
-      pilot.verification_status.email ? "true" : "false", pilot.verification_status.phone ? "true" : "false",
-      pilot.statistics.flight.total, airmap::iso8601::generate(pilot.statistics.flight.last_flight_time),
-      pilot.statistics.aircraft.total, airmap::iso8601::generate(pilot.created_at), print_aircrafts(v));
-}
-
 void print_pilot_and_aircrafts(airmap::util::FormattingLogger& log, const airmap::Pilot& pilot,
                                const std::vector<airmap::Pilot::Aircraft>& aircrafts) {
-  log.infof(component, "%s", print_pilot_and_aircrafts(pilot, aircrafts));
+  std::cout << pilot.id << " " << pilot.first_name << " " << pilot.last_name << " " << pilot.user_name << " "
+            << pilot.picture_url << " " << std::boolalpha << pilot.verification_status.email << " " << std::boolalpha
+            << pilot.verification_status.phone << " " << pilot.statistics.flight.total << " "
+            << airmap::iso8601::generate(pilot.statistics.flight.last_flight_time) << " "
+            << pilot.statistics.aircraft.total << " " << airmap::iso8601::generate(pilot.created_at) << std::endl;
+
+  for (const auto& aircraft : aircrafts) {
+    std::cout << aircraft.id << " " << aircraft.nick_name << " " << aircraft.model.model.id << " "
+              << aircraft.model.model.name << " " << aircraft.model.manufacturer.id << " "
+              << aircraft.model.manufacturer.name << std::endl;
+  }
 }
 
 }  // namespace

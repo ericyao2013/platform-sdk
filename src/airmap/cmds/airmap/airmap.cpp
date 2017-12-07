@@ -1,3 +1,5 @@
+#include <airmap/cmds/airmap/cmd/add_aircraft.h>
+#include <airmap/cmds/airmap/cmd/aircraft_models.h>
 #include <airmap/cmds/airmap/cmd/create_flight.h>
 #include <airmap/cmds/airmap/cmd/daemon.h>
 #include <airmap/cmds/airmap/cmd/end_flight.h>
@@ -32,6 +34,8 @@ class Airmap : airmap::DoNotCopyOrMove {
   Airmap()
       : cmd_{cli::Name{"airmap"}, cli::Usage{"interacts with AirMap services"},
              cli::Description{"interacts with AirMap services"}} {
+    cmd_.command(std::make_shared<cmd::AddAircraft>());
+    cmd_.command(std::make_shared<cmd::AircraftModels>());
     cmd_.command(std::make_shared<cmd::CreateFlight>());
     cmd_.command(std::make_shared<cmd::Daemon>());
     cmd_.command(std::make_shared<cmd::EndFlight>());

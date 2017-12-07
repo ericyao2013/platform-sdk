@@ -1,0 +1,151 @@
+#include <airmap/cmds/airmap/cmd/add_aircraft.h>
+
+#include <airmap/client.h>
+#include <airmap/codec.h>
+#include <airmap/context.h>
+#include <airmap/date_time.h>
+#include <airmap/paths.h>
+
+#include <signal.h>
+
+namespace cli = airmap::util::cli;
+namespace cmd = airmap::cmds::airmap::cmd;
+
+using json = nlohmann::json;
+
+namespace {
+
+constexpr const char* component{"add-aircraft"};
+
+}  // namespace
+
+cmd::AddAircraft::AddAircraft()
+    : cli::CommandWithFlagsAndAction{"add-aircraft", "add an aircraft owned by a pilot",
+                                     "add an aircraft owned by a pilot"} {
+  flag(flags::version(version_));
+  flag(flags::log_level(log_level_));
+  flag(flags::config_file(config_file_));
+  flag(flags::token_file(token_file_));
+  flag(cli::make_flag("model-id", "id of the aircraft model", model_id_));
+  flag(cli::make_flag("pilot-id", "id of pilot", pilot_id_));
+  flag(cli::make_flag("nick-name", "nick-name of the aircraft", nick_name_));
+
+  action([this](const cli::Command::Context& ctxt) {
+    log_ = util::FormattingLogger(create_filtering_logger(log_level_, create_default_logger(ctxt.cout)));
+
+    if (!config_file_) {
+      config_file_ = ConfigFile{paths::config_file(version_).string()};
+    }
+
+    if (!token_file_) {
+      token_file_ = TokenFile{paths::token_file(version_).string()};
+    }
+
+    std::ifstream in_config{config_file_.get()};
+    if (!in_config) {
+      log_.errorf(component, "failed to open configuration file %s for reading", config_file_);
+      return 1;
+    }
+
+    std::ifstream in_token{token_file_.get()};
+    if (!in_token) {
+      log_.errorf(component, "failed to open token file %s for reading", token_file_);
+      return 1;
+    }
+
+    token_ = Token::load_from_json(in_token);
+
+    if (!model_id_) {
+      log_.errorf(component, "missing parameter 'model-id'");
+      return 1;
+    }
+
+    if (!model_id_.get().validate()) {
+      log_.errorf(component, "parameter 'model-id' must not be empty");
+      return 1;
+    }
+
+    if (!nick_name_) {
+      log_.errorf(component, "missing parameter 'nick-name'");
+      return 1;
+    }
+
+    if (!nick_name_.get().validate()) {
+      log_.errorf(component, "parameter 'nick-name' must not be empty");
+      return 1;
+    }
+
+    if (!pilot_id_) {
+      log_.errorf(component, "missing parameter 'pilot-id'");
+      return 1;
+    }
+
+    if (!pilot_id_.get().validate()) {
+      log_.errorf(component, "parameter 'pilot-id' must not be empty");
+      return 1;
+    }
+
+    auto result = ::airmap::Context::create(log_.logger());
+
+    if (!result) {
+      log_.errorf(component, "Could not acquire resources for accessing AirMap services");
+      return 1;
+    }
+
+    context_    = result.value();
+    auto config = Client::load_configuration_from_json(in_config);
+
+    log_.infof(component,
+               "client configuration:\n"
+               "  host:                %s\n"
+               "  version:             %s\n"
+               "  telemetry.host:      %s\n"
+               "  telemetry.port:      %d\n"
+               "  credentials.api_key: %s\n",
+               config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key);
+
+    context_->create_client_with_configuration(config, [this](const ::airmap::Context::ClientCreateResult& result) {
+      if (not result) {
+        log_.errorf(component, "failed to create AirMap client instance: %s", result.error());
+        context_->stop(::airmap::Context::ReturnCode::error);
+        return;
+      }
+
+      client_ = result.value();
+
+      Pilots::AddAircraft::Parameters params;
+      params.authorization = token_.get().id();
+      params.id            = pilot_id_.get();
+      params.model_id      = model_id_.get();
+      params.nick_name     = nick_name_.get();
+
+      client_->pilots().add_aircraft(params,
+                                     std::bind(&AddAircraft::handle_add_aircraft_result, this, std::placeholders::_1));
+    });
+
+    return context_->exec({SIGINT, SIGQUIT},
+                          [this](int sig) {
+                            log_.infof(component, "received [%s], shutting down", ::strsignal(sig));
+                            context_->stop();
+                          }) == ::airmap::Context::ReturnCode::success
+               ? 0
+               : 1;
+  });
+}
+
+void cmd::AddAircraft::handle_add_aircraft_result(const Pilots::AddAircraft::Result& result) {
+  if (result) {
+    log_.infof(component,
+               "successfully added aircraft to pilot profile:\n"
+               "  id:         %s\n"
+               "  nick-name:  %s\n"
+               "  model-id:   %s\n"
+               "  created-at: %s",
+               result.value().id, result.value().nick_name, result.value().model.model.id,
+               iso8601::generate(result.value().created_at));
+    context_->stop();
+  } else {
+    log_.errorf(component, "failed to query information about pilot: %s", result.error());
+    context_->stop(::airmap::Context::ReturnCode::error);
+  }
+}

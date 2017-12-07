@@ -282,6 +282,10 @@ add_executable(
   airmap
 
   cmds/airmap/airmap.cpp
+  cmds/airmap/cmd/add_aircraft.h
+  cmds/airmap/cmd/add_aircraft.cpp
+  cmds/airmap/cmd/aircraft_models.h
+  cmds/airmap/cmd/aircraft_models.cpp
   cmds/airmap/cmd/create_flight.h
   cmds/airmap/cmd/create_flight.cpp
   cmds/airmap/cmd/daemon.h
