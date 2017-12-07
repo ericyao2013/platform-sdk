@@ -27,7 +27,6 @@ cmd::AddAircraft::AddAircraft()
   flag(flags::config_file(config_file_));
   flag(flags::token_file(token_file_));
   flag(cli::make_flag("model-id", "id of the aircraft model", model_id_));
-  flag(cli::make_flag("pilot-id", "id of pilot", pilot_id_));
   flag(cli::make_flag("nick-name", "nick-name of the aircraft", nick_name_));
 
   action([this](const cli::Command::Context& ctxt) {
@@ -75,16 +74,6 @@ cmd::AddAircraft::AddAircraft()
       return 1;
     }
 
-    if (!pilot_id_) {
-      log_.errorf(component, "missing parameter 'pilot-id'");
-      return 1;
-    }
-
-    if (!pilot_id_.get().validate()) {
-      log_.errorf(component, "parameter 'pilot-id' must not be empty");
-      return 1;
-    }
-
     auto result = ::airmap::Context::create(log_.logger());
 
     if (!result) {
@@ -113,14 +102,11 @@ cmd::AddAircraft::AddAircraft()
 
       client_ = result.value();
 
-      Pilots::AddAircraft::Parameters params;
-      params.authorization = token_.get().id();
-      params.id            = pilot_id_.get();
-      params.model_id      = model_id_.get();
-      params.nick_name     = nick_name_.get();
-
-      client_->pilots().add_aircraft(params,
-                                     std::bind(&AddAircraft::handle_add_aircraft_result, this, std::placeholders::_1));
+      Pilots::Authenticated::Parameters params;
+      params.authorization       = token_.get().id();
+      params.retrieve_statistics = false;
+      client_->pilots().authenticated(
+          params, std::bind(&AddAircraft::handle_authenticated_pilot_result, this, std::placeholders::_1));
     });
 
     return context_->exec({SIGINT, SIGQUIT},
@@ -131,6 +117,23 @@ cmd::AddAircraft::AddAircraft()
                ? 0
                : 1;
   });
+}
+
+void cmd::AddAircraft::handle_authenticated_pilot_result(const Pilots::Authenticated::Result& result) {
+  if (result) {
+    log_.infof(component, "successfully queried information about pilot");
+    Pilots::AddAircraft::Parameters params;
+    params.authorization = token_.get().id();
+    params.id            = result.value().id;
+    params.model_id      = model_id_.get();
+    params.nick_name     = nick_name_.get();
+
+    client_->pilots().add_aircraft(params,
+                                    std::bind(&AddAircraft::handle_add_aircraft_result, this, std::placeholders::_1));
+  } else {
+    log_.errorf(component, "failed to query information about pilot: %s", result.error());
+    context_->stop(::airmap::Context::ReturnCode::error);
+  }
 }
 
 void cmd::AddAircraft::handle_add_aircraft_result(const Pilots::AddAircraft::Result& result) {
@@ -145,7 +148,7 @@ void cmd::AddAircraft::handle_add_aircraft_result(const Pilots::AddAircraft::Res
                iso8601::generate(result.value().created_at));
     context_->stop();
   } else {
-    log_.errorf(component, "failed to query information about pilot: %s", result.error());
+    log_.errorf(component, "failed to add aircraft: %s", result.error());
     context_->stop(::airmap::Context::ReturnCode::error);
   }
 }

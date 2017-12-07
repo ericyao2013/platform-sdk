@@ -24,9 +24,9 @@ class AddAircraft : public util::cli::CommandWithFlagsAndAction {
 
  private:
   using ModelId  = util::TaggedString<util::tags::MustNotBeEmpty>;
-  using PilotId  = util::TaggedString<util::tags::MustNotBeEmpty>;
   using NickName = util::TaggedString<util::tags::MustNotBeEmpty>;
 
+  void handle_authenticated_pilot_result(const Pilots::Authenticated::Result& result);
   void handle_add_aircraft_result(const Pilots::AddAircraft::Result& result);
 
   util::FormattingLogger log_{create_null_logger()};
@@ -37,7 +37,6 @@ class AddAircraft : public util::cli::CommandWithFlagsAndAction {
   Required<ConfigFile> config_file_;
   Required<TokenFile> token_file_;
   Optional<Token> token_;
-  Required<PilotId> pilot_id_;
   Required<ModelId> model_id_;
   Required<NickName> nick_name_;
 };
