@@ -97,7 +97,6 @@ add_library(
   evaluation.cpp
   geometry.cpp
   jsend.h
-  jsend.cpp
   logger.cpp
   paths.cpp
   pilots.cpp
