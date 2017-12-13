@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:edge
 
 ARG CIRCLECI
 ARG AIRMAP_CIRCLECI_API_KEY
