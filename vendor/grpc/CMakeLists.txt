@@ -18,6 +18,7 @@ ExternalProject_add(
         -DgRPC_PROTOBUF_PROVIDER=package
         -DgRPC_PROTOBUF_PACKAGE_TYPE=CONFIG
         -DgRPC_INSTALL_default=ON
+    CMAKE_GENERATOR ${CMAKE_GENERATOR}
     UPDATE_COMMAND ""
 )
 
