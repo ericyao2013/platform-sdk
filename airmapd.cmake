@@ -7,7 +7,7 @@ option(AIRMAP_ENABLE_NETWORK_TESTS "enable tests requiring network access" ON)
 
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 
-find_package(Boost 1.65.1 QUIET REQUIRED date_time filesystem program_options system)
+find_package(Boost 1.65.1 QUIET REQUIRED date_time filesystem log program_options system thread)
 find_package(OpenSSL QUIET REQUIRED)
 find_package(Qt5Core QUIET)
 
@@ -26,7 +26,6 @@ include_directories(
   vendor/beast/include
   vendor/fmt
   vendor/mavlink
-  vendor/spdlog/include
   vendor/uri/include
   vendor/mqtt_client_cpp/include
 
