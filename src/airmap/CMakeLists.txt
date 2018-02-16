@@ -94,6 +94,7 @@ add_library(
 add_library(
   airmap-client OBJECT
 
+  ${CMAKE_SOURCE_DIR}/include/airmap/advisory.h
   ${CMAKE_SOURCE_DIR}/include/airmap/aircraft.h
   ${CMAKE_SOURCE_DIR}/include/airmap/aircrafts.h
   ${CMAKE_SOURCE_DIR}/include/airmap/airspace.h
@@ -139,6 +140,8 @@ add_library(
   boost/context.h
   boost/context.cpp
 
+  codec/http/query/advisories.h
+  codec/http/query/advisories.cpp
   codec/http/query/aircrafts.h
   codec/http/query/aircrafts.cpp
   codec/http/query/airspaces.h
@@ -157,6 +160,10 @@ add_library(
   codec/grpc/traffic.h
   codec/grpc/traffic.cpp
 
+  codec/json/advisory.h
+  codec/json/advisory.cpp
+  codec/json/advisories.h
+  codec/json/advisories.cpp
   codec/json/aircraft.h
   codec/json/aircraft.cpp
   codec/json/airspace.h
@@ -226,6 +233,8 @@ add_library(
   rest/client.h
   rest/client.cpp
 
+  rest/advisory.h
+  rest/advisory.cpp
   rest/aircrafts.h
   rest/aircrafts.cpp
   rest/airspaces.h
@@ -320,6 +329,8 @@ add_library(
   qt/dispatcher.cpp
   qt/logger.cpp
 
+  qt/advisory.h
+  qt/advisory.cpp
   qt/aircrafts.h
   qt/aircrafts.cpp
   qt/airspaces.h
@@ -367,6 +378,8 @@ add_executable(
   cmds/airmap/cmd/fetch_rules.cpp
   cmds/airmap/cmd/flags.h
   cmds/airmap/cmd/flags.cpp
+  cmds/airmap/cmd/get_advisories.h
+  cmds/airmap/cmd/get_advisories.cpp
   cmds/airmap/cmd/get_status.h
   cmds/airmap/cmd/get_status.cpp
   cmds/airmap/cmd/init.h
@@ -381,6 +394,8 @@ add_executable(
   cmds/airmap/cmd/query_rulesets.cpp
   cmds/airmap/cmd/render_briefing.h
   cmds/airmap/cmd/render_briefing.cpp
+  cmds/airmap/cmd/report_weather.h
+  cmds/airmap/cmd/report_weather.cpp
   cmds/airmap/cmd/simulate_scenario.h
   cmds/airmap/cmd/simulate_scenario.cpp
   cmds/airmap/cmd/simulate_telemetry.h

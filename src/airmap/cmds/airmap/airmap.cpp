@@ -5,6 +5,7 @@
 #include <airmap/cmds/airmap/cmd/end_flight.h>
 #include <airmap/cmds/airmap/cmd/evaluate_rulesets.h>
 #include <airmap/cmds/airmap/cmd/fetch_rules.h>
+#include <airmap/cmds/airmap/cmd/get_advisories.h>
 #include <airmap/cmds/airmap/cmd/get_status.h>
 #include <airmap/cmds/airmap/cmd/init.h>
 #include <airmap/cmds/airmap/cmd/login.h>
@@ -14,6 +15,7 @@
 #include <airmap/cmds/airmap/cmd/plan_flight.h>
 #include <airmap/cmds/airmap/cmd/query_rulesets.h>
 #include <airmap/cmds/airmap/cmd/render_briefing.h>
+#include <airmap/cmds/airmap/cmd/report_weather.h>
 #include <airmap/cmds/airmap/cmd/simulate_scenario.h>
 #include <airmap/cmds/airmap/cmd/simulate_telemetry.h>
 #include <airmap/cmds/airmap/cmd/start_flight_comms.h>
@@ -40,6 +42,7 @@ class Airmap : airmap::DoNotCopyOrMove {
     cmd_.command(std::make_shared<cmd::Daemon>());
     cmd_.command(std::make_shared<cmd::EndFlight>());
     cmd_.command(std::make_shared<cmd::FetchRules>());
+    cmd_.command(std::make_shared<cmd::GetAdvisories>());
     cmd_.command(std::make_shared<cmd::GetStatus>());
     cmd_.command(std::make_shared<cmd::EvaluateRuleSets>());
     cmd_.command(std::make_shared<cmd::Init>());
@@ -50,6 +53,7 @@ class Airmap : airmap::DoNotCopyOrMove {
     cmd_.command(std::make_shared<cmd::PlanFlight>());
     cmd_.command(std::make_shared<cmd::QueryRuleSets>());
     cmd_.command(std::make_shared<cmd::RenderBriefing>());
+    cmd_.command(std::make_shared<cmd::ReportWeather>());
     cmd_.command(std::make_shared<cmd::StartFlightComms>());
     cmd_.command(std::make_shared<cmd::SimulateScenario>());
     cmd_.command(std::make_shared<cmd::SimulateTelemetry>());
