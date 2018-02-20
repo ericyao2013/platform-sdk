@@ -61,7 +61,7 @@ cmd::GetAdvisories::GetAdvisories()
       return 1;
     }
 
-    if (!flight_plan_id_ && !geometry_file_ && !rulesets_) {
+    if (!flight_plan_id_ && (!geometry_file_ || !rulesets_)) {
       log_.errorf(component, "missing parameter 'flight-plan-id' or 'geometry-file' or 'rulesets'");
       return 1;
     }
