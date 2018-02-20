@@ -95,6 +95,7 @@ Run the following commands from the top-level `airmapd` folder:
 
 ```
 docker run -v $(pwd):/airmapd -it ubuntu:17.10 bash
+cd airmapd
 tools/ubuntu/setup.dev.sh
 mkdir build
 cd build
