@@ -8,7 +8,6 @@
 
 void airmap::codec::json::decode(const nlohmann::json& j, Airspace& airspace) {
   airspace.set_id(j["id"].get<std::string>());
-
   if (j.count("name") > 0 && !j["name"].is_null())
     airspace.set_name(j["name"].get<std::string>());
   if (j.count("country") > 0 && !j["country"].is_null())
@@ -134,7 +133,12 @@ void airmap::codec::json::decode(const nlohmann::json& j, Airspace::Airport& air
 
 void airmap::codec::json::decode(const nlohmann::json& j, Airspace::Airport::Runway& runway) {
   get(runway.name, j, "name");
-  get(runway.length, j, "length");
+  auto l = j["length"];
+  if (l.is_number()) {
+    runway.length = l.get<float>();
+  } else if (l.is_string()) {
+    runway.length = boost::lexical_cast<float>(l.get<std::string>());
+  }
   get(runway.bearing, j, "bearing");
 }
 
