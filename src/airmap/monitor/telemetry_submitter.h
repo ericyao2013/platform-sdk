@@ -5,6 +5,8 @@
 #include <airmap/client.h>
 #include <airmap/credentials.h>
 #include <airmap/flight.h>
+#include <airmap/flight_plan.h>
+#include <airmap/flight_plans.h>
 #include <airmap/flights.h>
 #include <airmap/logger.h>
 #include <airmap/optional.h>
@@ -61,6 +63,14 @@ class TelemetrySubmitter : public std::enable_shared_from_this<TelemetrySubmitte
   /// submit requests an instance to submit a telemetry update.
   void submit(const mavlink::GlobalPositionInt&);
 
+  /// execute_mission accepts a geometry and begins a mavlink mission.
+  ///
+  /// The following sequence of actions is triggered:
+  ///   * request authorization
+  ///   * request flight creation
+  ///   * request to start flight communications
+  void execute_mission(const Geometry& geometry);
+
  private:
   explicit TelemetrySubmitter(const Credentials& credentials, const std::string& aircraft_id,
                               const std::shared_ptr<Logger>& logger, const std::shared_ptr<airmap::Client>& client,
@@ -77,6 +87,8 @@ class TelemetrySubmitter : public std::enable_shared_from_this<TelemetrySubmitte
 
   void request_start_flight_comms();
   void handle_request_start_flight_comms_finished(std::string key);
+
+  void request_end_flight();
 
   State state_{State::inactive};
   bool authorization_requested_{false};
@@ -95,6 +107,7 @@ class TelemetrySubmitter : public std::enable_shared_from_this<TelemetrySubmitte
   Optional<std::string> authorization_;
   Optional<std::shared_ptr<Traffic::Monitor>> traffic_monitor_;
   Optional<std::string> encryption_key_;
+  Optional<Geometry> geometry_;
 };
 
 }  // namespace monitor

@@ -18,6 +18,11 @@ void airmap::mavlink::Vehicle::update(const mavlink_message_t& msg) {
     case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
       handle_msg_global_position_int(msg);
       break;
+    case MAVLINK_MSG_ID_MISSION_CLEAR_ALL:
+    case MAVLINK_MSG_ID_MISSION_COUNT:
+    case MAVLINK_MSG_ID_MISSION_ITEM:
+      handle_msg_mission(msg);
+      break;
   }
 }
 
@@ -51,6 +56,15 @@ void airmap::mavlink::Vehicle::handle_msg_global_position_int(const mavlink_mess
   global_position_int_ = gpi;
 }
 
+void airmap::mavlink::Vehicle::handle_msg_mission(const mavlink_message_t& msg) {
+  if (mission_.update(msg)) {
+    Geometry geometry = Geometry::polygon(mission_.coordinates());
+    for (const auto& monitor : monitors_) {
+      monitor->on_mission_received(geometry);
+    }
+  }
+}
+
 airmap::mavlink::LoggingVehicleMonitor::LoggingVehicleMonitor(const char* component,
                                                               const std::shared_ptr<Logger>& logger,
                                                               const std::shared_ptr<Vehicle::Monitor>& next)
@@ -68,4 +82,9 @@ void airmap::mavlink::LoggingVehicleMonitor::on_position_changed(const Optional<
                                                                  const GlobalPositionInt& new_position) {
   log_.debugf(component_, "position changed: %s -> %s", old_position, new_position);
   next_->on_position_changed(old_position, new_position);
+}
+
+void airmap::mavlink::LoggingVehicleMonitor::on_mission_received(const airmap::Geometry& geometry) {
+  log_.infof(component_, "mission received with geometry");
+  next_->on_mission_received(geometry);
 }
