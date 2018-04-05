@@ -26,7 +26,7 @@ class Elevation : DoNotCopyOrMove {
   struct GetElevation {
     /// Parameters bundles up input parameters.
     struct Parameters {
-      Required<std::vector<float>> points; ///< Array of latitude/longitude points.
+      std::vector<float> points; ///< Array of latitude/longitude points.
     };
     /// Result models the outcome of calling Status::get_status*.
     using Result = Outcome<std::vector<float>, Error>;

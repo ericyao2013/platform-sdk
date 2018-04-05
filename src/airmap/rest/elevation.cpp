@@ -31,5 +31,5 @@ void airmap::rest::Elevation::get_elevation_points(const GetElevation::Parameter
   codec::http::query::encode(query, parameters);
 
   requester_->get("/ele/", std::move(query), std::move(headers),
-                  net::http::jsend_parsing_request_callback<Report>(cb));
+                  net::http::jsend_parsing_request_callback<std::vector<float>>(cb));
 }
