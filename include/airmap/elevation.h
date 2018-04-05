@@ -20,13 +20,12 @@ namespace airmap {
 /// Elevation provides elevation data for all locations on the surface of the earth at a resolution of 10 meters.
 class Elevation : DoNotCopyOrMove {
  public:
-
   /// GetElevation bundles up types to ease interaction
   /// with Elevation::get_elevation*.
   struct GetElevation {
     /// Parameters bundles up input parameters.
     struct Parameters {
-      std::vector<float> points; ///< Array of latitude/longitude points.
+      Required<std::string> points;  ///< Array of latitude/longitude points.
     };
     /// Result models the outcome of calling Status::get_status*.
     using Result = Outcome<std::vector<float>, Error>;

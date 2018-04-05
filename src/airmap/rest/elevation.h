@@ -2,8 +2,8 @@
 #define AIRMAP_REST_ELEVATION_H_
 
 #include <airmap/client.h>
-#include <airmap/net/http/requester.h>
 #include <airmap/elevation.h>
+#include <airmap/net/http/requester.h>
 
 namespace airmap {
 namespace rest {

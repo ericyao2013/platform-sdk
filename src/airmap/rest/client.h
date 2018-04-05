@@ -11,6 +11,7 @@
 #include <airmap/rest/aircrafts.h>
 #include <airmap/rest/airspaces.h>
 #include <airmap/rest/authenticator.h>
+#include <airmap/rest/elevation.h>
 #include <airmap/rest/flight_plans.h>
 #include <airmap/rest/flights.h>
 #include <airmap/rest/pilots.h>
@@ -31,6 +32,7 @@ class Client : public airmap::Client {
     std::shared_ptr<net::http::Requester> aircrafts;
     std::shared_ptr<net::http::Requester> airspaces;
     std::shared_ptr<net::http::Requester> authenticator;
+    std::shared_ptr<net::http::Requester> elevation;
     std::shared_ptr<net::http::Requester> flight_plans;
     std::shared_ptr<net::http::Requester> flights;
     std::shared_ptr<net::http::Requester> pilots;
@@ -48,6 +50,7 @@ class Client : public airmap::Client {
   airmap::Aircrafts& aircrafts() override;
   airmap::Airspaces& airspaces() override;
   airmap::Authenticator& authenticator() override;
+  airmap::Elevation& elevation() override;
   airmap::FlightPlans& flight_plans() override;
   airmap::Flights& flights() override;
   airmap::Pilots& pilots() override;
@@ -70,6 +73,7 @@ class Client : public airmap::Client {
   rest::Aircrafts aircrafts_;
   rest::Airspaces airspaces_;
   rest::Authenticator authenticator_;
+  rest::Elevation elevation_;
   rest::FlightPlans flight_plans_;
   rest::Flights flights_;
   rest::Pilots pilots_;

@@ -19,6 +19,7 @@ class Advisory;
 class Aircrafts;
 class Airspaces;
 class Authenticator;
+class Elevation;
 class FlightPlans;
 class Flights;
 class Pilots;
@@ -111,6 +112,9 @@ class Client : DoNotCopyOrMove {
 
   /// airspaces returns the Airspaces implementation provided by the client.
   virtual Airspaces& airspaces() = 0;
+
+  /// elevation returns the Elevation implementation provided by the client.
+  virtual Elevation& elevation() = 0;
 
   /// flight_plans returns the FlightPlans implementation provided by the client.
   virtual FlightPlans& flight_plans() = 0;

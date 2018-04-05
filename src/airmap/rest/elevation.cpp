@@ -26,7 +26,8 @@ std::string airmap::rest::Elevation::default_route_for_version(Client::Version v
 airmap::rest::Elevation::Elevation(const std::shared_ptr<net::http::Requester>& requester) : requester_{requester} {
 }
 
-void airmap::rest::Elevation::get_elevation_points(const GetElevation::Parameters& parameters, const GetElevation::Callback& cb) {
+void airmap::rest::Elevation::get_elevation_points(const GetElevation::Parameters& parameters,
+                                                   const GetElevation::Callback& cb) {
   std::unordered_map<std::string, std::string> query, headers;
   codec::http::query::encode(query, parameters);
 

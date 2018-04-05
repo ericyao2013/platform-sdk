@@ -5,6 +5,7 @@
 #include <airmap/cmds/airmap/cmd/end_flight.h>
 #include <airmap/cmds/airmap/cmd/evaluate_rulesets.h>
 #include <airmap/cmds/airmap/cmd/fetch_rules.h>
+#include <airmap/cmds/airmap/cmd/find_elevation.h>
 #include <airmap/cmds/airmap/cmd/get_advisories.h>
 #include <airmap/cmds/airmap/cmd/get_status.h>
 #include <airmap/cmds/airmap/cmd/init.h>
@@ -41,6 +42,7 @@ class Airmap : airmap::DoNotCopyOrMove {
     cmd_.command(std::make_shared<cmd::CreateFlight>());
     cmd_.command(std::make_shared<cmd::Daemon>());
     cmd_.command(std::make_shared<cmd::EndFlight>());
+    cmd_.command(std::make_shared<cmd::FindElevation>());
     cmd_.command(std::make_shared<cmd::FetchRules>());
     cmd_.command(std::make_shared<cmd::GetAdvisories>());
     cmd_.command(std::make_shared<cmd::GetStatus>());

@@ -342,6 +342,8 @@ add_library(
   qt/airspaces.cpp
   qt/authenticator.h
   qt/authenticator.cpp
+  qt/elevation.h
+  qt/elevation.cpp
   qt/flight_plans.h
   qt/flight_plans.cpp
   qt/flights.h
@@ -381,6 +383,8 @@ add_executable(
   cmds/airmap/cmd/evaluate_rulesets.cpp
   cmds/airmap/cmd/fetch_rules.h
   cmds/airmap/cmd/fetch_rules.cpp
+  cmds/airmap/cmd/find_elevation.h
+  cmds/airmap/cmd/find_elevation.cpp
   cmds/airmap/cmd/flags.h
   cmds/airmap/cmd/flags.cpp
   cmds/airmap/cmd/get_advisories.h
