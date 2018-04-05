@@ -103,6 +103,7 @@ add_library(
   ${CMAKE_SOURCE_DIR}/include/airmap/client.h
   ${CMAKE_SOURCE_DIR}/include/airmap/credentials.h
   ${CMAKE_SOURCE_DIR}/include/airmap/date_time.h
+  ${CMAKE_SOURCE_DIR}/include/airmap/elevation.h
   ${CMAKE_SOURCE_DIR}/include/airmap/evaluation.h
   ${CMAKE_SOURCE_DIR}/include/airmap/flight.h
   ${CMAKE_SOURCE_DIR}/include/airmap/flights.h
@@ -146,6 +147,8 @@ add_library(
   codec/http/query/aircrafts.cpp
   codec/http/query/airspaces.h
   codec/http/query/airspaces.cpp
+  codec/http/query/elevation.h
+  codec/http/query/elevation.cpp
   codec/http/query/flights.h
   codec/http/query/flights.cpp
   codec/http/query/pilots.h
@@ -241,6 +244,8 @@ add_library(
   rest/airspaces.cpp
   rest/authenticator.h
   rest/authenticator.cpp
+  rest/elevation.h
+  rest/elevation.cpp
   rest/flight_plans.h
   rest/flight_plans.cpp
   rest/flights.h

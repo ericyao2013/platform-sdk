@@ -4,6 +4,7 @@
 #include <airmap/codec/http/query/advisories.h>
 #include <airmap/codec/http/query/aircrafts.h>
 #include <airmap/codec/http/query/airspaces.h>
+#include <airmap/codec/http/query/elevation.h>
 #include <airmap/codec/http/query/flights.h>
 #include <airmap/codec/http/query/pilots.h>
 #include <airmap/codec/http/query/rulesets.h>
