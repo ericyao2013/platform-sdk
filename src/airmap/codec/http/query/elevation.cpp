@@ -9,7 +9,7 @@
 #include <sstream>
 
 void airmap::codec::http::query::encode(std::unordered_map<std::string, std::string>& query,
-                                        const Elevation::GetElevation::Parameters& parameters) {
+                                        const Elevation::GetElevationPoints::Parameters& parameters) {
   // if (!parameters.points.empty()) {
   //   std::ostringstream oss;
   //   std::copy(parameters.points.begin(), parameters.points.end()-1, std::ostream_iterator<float>(oss, ","));

@@ -28,7 +28,7 @@ class FindElevation : public util::cli::CommandWithFlagsAndAction {
   Logger::Severity log_level_{Logger::Severity::info};
   Required<ConfigFile> config_file_;
   Required<PointsCSV> points_;
-  Elevation::GetElevation::Parameters params_;
+  Elevation::GetElevationPoints::Parameters params_;
 };
 
 }  // namespace cmd

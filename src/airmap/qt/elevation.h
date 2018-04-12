@@ -15,7 +15,7 @@ class Elevation : public airmap::Elevation, public std::enable_shared_from_this<
   static std::shared_ptr<Elevation> create(const std::shared_ptr<Dispatcher>& dispatcher,
                                            const std::shared_ptr<airmap::Client>& client);
 
-  void get_elevation_points(const GetElevation::Parameters& parameters, const GetElevation::Callback& cb) override;
+  void get_elevation_points(const GetElevationPoints::Parameters& parameters, const GetElevationPoints::Callback& cb) override;
 
  private:
   explicit Elevation(const std::shared_ptr<Dispatcher>& dispatcher, const std::shared_ptr<airmap::Client>& client);

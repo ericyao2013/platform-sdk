@@ -17,7 +17,7 @@ namespace {
 
 constexpr const char* component{"find-elevation"};
 
-void print_elevation(std::ostream& out, const std::vector<float>& v) {
+void print_elevation(std::ostream& out, const std::vector<std::int32_t>& v) {
   cli::TabWriter tw;
   tw << "elevation" << cli::TabWriter::NewLine{};
   for (const auto& e : v)
@@ -82,7 +82,7 @@ cmd::FindElevation::FindElevation()
 
           auto client = result.value();
 
-          auto handler = [this, &ctxt, context, client](const Elevation::GetElevation::Result& result) {
+          auto handler = [this, &ctxt, context, client](const Elevation::GetElevationPoints::Result& result) {
             if (result) {
               log_.infof(component, "succesfully obtained elevation for list of coordinates\n");
               print_elevation(ctxt.cout, result.value());

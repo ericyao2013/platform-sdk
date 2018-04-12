@@ -26,11 +26,11 @@ std::string airmap::rest::Elevation::default_route_for_version(Client::Version v
 airmap::rest::Elevation::Elevation(const std::shared_ptr<net::http::Requester>& requester) : requester_{requester} {
 }
 
-void airmap::rest::Elevation::get_elevation_points(const GetElevation::Parameters& parameters,
-                                                   const GetElevation::Callback& cb) {
+void airmap::rest::Elevation::get_elevation_points(const GetElevationPoints::Parameters& parameters,
+                                                   const GetElevationPoints::Callback& cb) {
   std::unordered_map<std::string, std::string> query, headers;
   codec::http::query::encode(query, parameters);
 
   requester_->get("/ele/", std::move(query), std::move(headers),
-                  net::http::jsend_parsing_request_callback<std::vector<float>>(cb));
+                  net::http::jsend_parsing_request_callback<std::vector<std::int32_t>>(cb));
 }

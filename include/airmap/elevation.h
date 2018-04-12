@@ -20,23 +20,88 @@ namespace airmap {
 /// Elevation provides elevation data for all locations on the surface of the earth at a resolution of 10 meters.
 class Elevation : DoNotCopyOrMove {
  public:
-  /// GetElevation bundles up types to ease interaction
+  /// Bounds.
+  struct Bounds {
+    std::vector<float> sw;
+    std::vector<float> ne;
+  };
+
+  /// Stats.
+  struct Stats {
+    std::int32_t max;
+    std::int32_t min;
+    float avg;
+  };
+
+  /// Carpet.
+  struct Carpet {
+    Bounds bounds;
+    Stats stats;
+    std::vector<std::vector<float>> carpet;
+  };
+
+  /// Path.
+  struct Path {
+    std::vector<float> from;
+    std::vector<float> to;
+    std::vector<float> step;
+    std::vector<std::int32_t> profile;
+  };
+
+  /// GetElevationPoints bundles up types to ease interaction
   /// with Elevation::get_elevation*.
-  struct GetElevation {
+  struct GetElevationPoints {
     /// Parameters bundles up input parameters.
     struct Parameters {
       Required<std::string> points;  ///< Array of latitude/longitude points.
     };
-    /// Result models the outcome of calling Status::get_status*.
-    using Result = Outcome<std::vector<float>, Error>;
+    /// Result models the outcome of calling Elevation::get_elevation*.
+    using Result = Outcome<std::vector<std::int32_t>, Error>;
     /// Callback describes the function signature of the callback that is
-    /// invoked when a call to Status::get_status* finishes.
+    /// invoked when a call to Elevation::get_elevation* finishes.
     using Callback = std::function<void(const Result&)>;
   };
 
-  /// get_elevation searches elevations for 'parameters' and reports
+  /// GetElevationCarpet bundles up types to ease interaction
+  /// with Elevation::get_elevation*.
+  struct GetElevationCarpet {
+    /// Parameters bundles up input parameters.
+    struct Parameters {
+      Required<std::string> points;  ///< Array of latitude/longitude points.
+    };
+    /// Result models the outcome of calling Elevation::get_elevation*.
+    using Result = Outcome<Carpet, Error>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Elevation::get_elevation* finishes.
+    using Callback = std::function<void(const Result&)>;
+  };
+
+  /// GetElevationPath bundles up types to ease interaction
+  /// with Elevation::get_elevation*.
+  struct GetElevationPath {
+    /// Parameters bundles up input parameters.
+    struct Parameters {
+      Required<std::string> points;  ///< Array of latitude/longitude points.
+    };
+    /// Result models the outcome of calling Elevation::get_elevation*.
+    using Result = Outcome<std::vector<Path>, Error>;
+    /// Callback describes the function signature of the callback that is
+    /// invoked when a call to Elevation::get_elevation* finishes.
+    using Callback = std::function<void(const Result&)>;
+  };
+
+
+  /// get_elevation_points searches elevations for 'parameters' and reports
   /// results back to 'cb'.
-  virtual void get_elevation_points(const GetElevation::Parameters& parameters, const GetElevation::Callback& cb) = 0;
+  virtual void get_elevation_points(const GetElevationPoints::Parameters& parameters, const GetElevationPoints::Callback& cb) = 0;
+
+  /// get_elevation_carpet searches elevations for 'parameters' and reports
+  /// results back to 'cb'.
+  //virtual void get_elevation_carpet(const GetElevationCarpet::Parameters& parameters, const GetElevationCarpet::Callback& cb) = 0;
+
+  /// get_elevation_path searches elevations for 'parameters' and reports
+  /// results back to 'cb'.
+  //virtual void get_elevation_path(const GetElevationPath::Parameters& parameters, const GetElevationPath::Callback& cb) = 0;
 
  protected:
   /// @cond

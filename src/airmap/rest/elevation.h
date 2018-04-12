@@ -14,7 +14,7 @@ class Elevation : public airmap::Elevation {
 
   explicit Elevation(const std::shared_ptr<net::http::Requester>& requester);
 
-  void get_elevation_points(const GetElevation::Parameters& parameters, const GetElevation::Callback& cb) override;
+  void get_elevation_points(const GetElevationPoints::Parameters& parameters, const GetElevationPoints::Callback& cb) override;
 
  private:
   std::shared_ptr<net::http::Requester> requester_;
