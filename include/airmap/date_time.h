@@ -1,24 +1,19 @@
 #ifndef AIRMAP_DATE_TIME_H_
 #define AIRMAP_DATE_TIME_H_
 
-#include <boost/date_time.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
-#include <cstdint>
 #include <memory>
 #include <string>
 
 namespace airmap {
 
-/// Clock marks the reference for time measurements.
-using Clock = boost::posix_time::microsec_clock;
-/// DateTime marks a specific point in time, in reference to Clock.
-using DateTime     = boost::posix_time::ptime;
-using Hours        = boost::posix_time::hours;
-using Minutes      = boost::posix_time::minutes;
-using Seconds      = boost::posix_time::seconds;
-using Milliseconds = boost::posix_time::milliseconds;
-using Microseconds = boost::posix_time::microseconds;
+class Clock;
+class DateTime;
+class TimeDuration;
+class Hours;
+class Minutes;
+class Seconds;
+class Milliseconds;
+class Microseconds;
 
 /// milliseconds_since_epoch returns the milliseconds that elapsed since the UNIX epoch.
 std::uint64_t milliseconds_since_epoch(const DateTime& dt);
@@ -33,6 +28,86 @@ DateTime from_microseconds_since_epoch(const Microseconds& us);
 
 // moves the datetime forward to the specified hour
 DateTime move_to_hour(const DateTime& dt, int hour);
+
+/// Clock marks the reference for time measurements.
+class Clock {
+ public:
+  static DateTime universal_time();
+  static DateTime local_time();
+};
+
+/// DateTime marks a specific point in time, in reference to Clock.
+class DateTime {
+ public:
+  DateTime();
+  DateTime(const std::string& time_iso);
+  ~DateTime();
+  DateTime(DateTime const& old);
+  DateTime &operator=(const DateTime &);
+  DateTime &operator=(DateTime &&);
+
+  DateTime operator+(const Hours &) const;
+  DateTime operator+(const Minutes &) const;
+  DateTime operator+(const Seconds &) const;
+  DateTime operator+(const Milliseconds &) const;
+  DateTime operator+(const Microseconds &) const;
+  TimeDuration operator-(const DateTime &) const;
+  bool operator==(const DateTime &) const;
+  bool operator!=(const DateTime &) const;
+
+  friend std::istream &operator>>(std::istream &, DateTime &);
+  friend std::ostream &operator<<(std::ostream &, const DateTime &);
+
+  std::string to_iso_string() const;
+
+  DateTime date() const;
+  TimeDuration time_of_day() const;
+
+ private:
+  struct Impl;
+  std::unique_ptr<Impl> impl;
+};
+
+class TimeDuration {
+ public:
+  TimeDuration();
+  ~TimeDuration();
+  TimeDuration(TimeDuration const& old);
+  TimeDuration &operator=(const TimeDuration &);
+ 
+  long total_seconds() const;
+  long total_milliseconds() const;
+  long total_microseconds() const;
+
+  long hours() const;
+
+private:
+  struct Impl;
+  std::unique_ptr<Impl> impl;
+
+  friend TimeDuration DateTime::operator-(const DateTime &) const;
+  friend TimeDuration DateTime::time_of_day() const;
+};
+
+struct Hours {
+    long hours;
+};
+
+struct Minutes {
+    long minutes;
+};
+
+struct Seconds {
+    long seconds;
+};
+
+struct Milliseconds {
+    long milliseconds;
+};
+
+struct Microseconds {
+    long microseconds;
+};
 
 namespace iso8601 {
 

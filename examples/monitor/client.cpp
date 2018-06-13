@@ -3,6 +3,7 @@
 #include <airmap/util/formatting_logger.h>
 
 #include <signal.h>
+#include <string.h>
 
 #include <iostream>
 

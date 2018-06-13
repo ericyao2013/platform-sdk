@@ -268,7 +268,7 @@ cmd::SimulateScenario::SimulateScenario()
 }
 
 void cmd::SimulateScenario::deactivate(util::Scenario::Participants::iterator participant) {
-  context_->schedule_in(Microseconds(1000 * 1000 * 10), [this, participant]() {
+  context_->schedule_in(Microseconds{1000 * 1000 * 10}, [this, participant]() {
     mavlink_message_t msg;
     mavlink_msg_heartbeat_pack(participant->id, ::mavlink::component_id, &msg, MAV_TYPE_HELICOPTER,
                                MAV_AUTOPILOT_GENERIC, MAV_MODE_GUIDED_DISARMED, ::mavlink::custom_mode,
