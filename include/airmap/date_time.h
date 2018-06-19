@@ -42,7 +42,8 @@ class DateTime {
   DateTime();
   DateTime(const std::string& time_iso);
   ~DateTime();
-  DateTime(DateTime const& old);
+  DateTime(DateTime const&);
+  DateTime(DateTime &&);
   DateTime &operator=(const DateTime &);
   DateTime &operator=(DateTime &&);
 

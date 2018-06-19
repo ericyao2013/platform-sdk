@@ -52,6 +52,8 @@ DateTime::DateTime()
     : impl(std::unique_ptr<Impl>(new Impl())) {} 
 DateTime::DateTime(DateTime const& old)
     : impl(std::unique_ptr<Impl>(new Impl{old.impl->ptime})) {}
+DateTime::DateTime(DateTime && old)
+    : impl(std::move(old.impl)) {}
 DateTime::DateTime(const std::string& iso_time)
     : impl(std::unique_ptr<Impl>(new Impl{boost::posix_time::from_iso_string(iso_time)})) {}
 
