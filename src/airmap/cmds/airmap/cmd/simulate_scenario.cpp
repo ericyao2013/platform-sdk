@@ -254,7 +254,6 @@ cmd::SimulateScenario::SimulateScenario()
         // this->deactivate(it);
         ++it;
       }
-
     });
 
     return context_->exec({SIGINT, SIGQUIT},
