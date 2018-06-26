@@ -5,29 +5,29 @@
 #include <string>
 
 namespace airmap {
-
-class Clock;
 class DateTime;
-class TimeDuration;
-class Hours;
-class Minutes;
-class Seconds;
-class Milliseconds;
-class Microseconds;
+template <typename Tag>
+class Duration;
 
-/// milliseconds_since_epoch returns the milliseconds that elapsed since the UNIX epoch.
-std::uint64_t milliseconds_since_epoch(const DateTime &dt);
-/// microseconds_since_epoch returns the microseconds that elapsed since the UNIX epoch.
-std::uint64_t microseconds_since_epoch(const DateTime &dt);
-/// from_seconds_since_epoch returns a DateTime.
-DateTime from_seconds_since_epoch(const Seconds &s);
-/// from_milliseconds_since_epoch returns a DateTime.
-DateTime from_milliseconds_since_epoch(const Milliseconds &ms);
-/// from_microseconds_since_epoch returns a DateTime.
-DateTime from_microseconds_since_epoch(const Microseconds &us);
+namespace detail {
+class Duration;
+}  // namespace detail
 
-// moves the datetime forward to the specified hour
-DateTime move_to_hour(const DateTime &dt, int hour);
+namespace tag {
+
+struct Hours {};
+struct Minutes {};
+struct Seconds {};
+struct Milliseconds {};
+struct Microseconds {};
+
+}  // namespace tag
+
+using Hours        = Duration<tag::Hours>;
+using Minutes      = Duration<tag::Minutes>;
+using Seconds      = Duration<tag::Seconds>;
+using Milliseconds = Duration<tag::Milliseconds>;
+using Microseconds = Duration<tag::Microseconds>;
 
 /// Clock marks the reference for time measurements.
 class Clock {
@@ -36,79 +36,99 @@ class Clock {
   static DateTime local_time();
 };
 
+namespace boost_iso {
+
+DateTime datetime(const std::string &iso_time);
+std::string to_iso_string(const DateTime &);
+
+}  // namespace boost_iso
+
 /// DateTime marks a specific point in time, in reference to Clock.
 class DateTime {
  public:
   DateTime();
-  DateTime(const std::string &time_iso);
   ~DateTime();
   DateTime(DateTime const &);
   DateTime(DateTime &&);
   DateTime &operator=(const DateTime &);
   DateTime &operator=(DateTime &&);
 
-  DateTime operator+(const Hours &) const;
-  DateTime operator+(const Minutes &) const;
-  DateTime operator+(const Seconds &) const;
-  DateTime operator+(const Milliseconds &) const;
-  DateTime operator+(const Microseconds &) const;
-  TimeDuration operator-(const DateTime &) const;
+  DateTime operator+(const detail::Duration &) const;
+  Microseconds operator-(const DateTime &) const;
   bool operator==(const DateTime &) const;
   bool operator!=(const DateTime &) const;
 
   friend std::istream &operator>>(std::istream &, DateTime &);
   friend std::ostream &operator<<(std::ostream &, const DateTime &);
 
-  std::string to_iso_string() const;
-
   DateTime date() const;
-  TimeDuration time_of_day() const;
+  Microseconds time_of_day() const;
 
  private:
   struct Impl;
   std::unique_ptr<Impl> impl;
+
+  explicit DateTime(std::unique_ptr<Impl> &&);
+  friend DateTime Clock::universal_time();
+  friend DateTime Clock::local_time();
+  friend DateTime boost_iso::datetime(const std::string &iso_time);
+  friend std::string boost_iso::to_iso_string(const DateTime &datetime);
 };
 
-class TimeDuration {
+Hours hours(int64_t raw);
+Minutes minutes(int64_t raw);
+Seconds seconds(int64_t raw);
+Milliseconds milliseconds(int64_t raw);
+Microseconds microseconds(int64_t raw);
+
+namespace detail {
+
+class Duration {
  public:
-  TimeDuration();
-  ~TimeDuration();
-  TimeDuration(TimeDuration const &old);
-  TimeDuration &operator=(const TimeDuration &);
+  Duration();
+  ~Duration();
+  Duration(Duration const &old);
+  Duration &operator=(const Duration &);
 
-  long total_seconds() const;
-  long total_milliseconds() const;
-  long total_microseconds() const;
+  uint64_t total_seconds() const;
+  uint64_t total_milliseconds() const;
+  uint64_t total_microseconds() const;
 
-  long hours() const;
+  uint64_t hours() const;
 
  private:
   struct Impl;
   std::unique_ptr<Impl> impl;
 
-  friend TimeDuration DateTime::operator-(const DateTime &) const;
-  friend TimeDuration DateTime::time_of_day() const;
+  friend DateTime DateTime::operator+(const detail::Duration &) const;
+  friend Microseconds DateTime::operator-(const DateTime &) const;
+  friend Microseconds DateTime::time_of_day() const;
+
+  friend Hours airmap::hours(int64_t raw);
+  friend Minutes airmap::minutes(int64_t raw);
+  friend Seconds airmap::seconds(int64_t raw);
+  friend Milliseconds airmap::milliseconds(int64_t raw);
+  friend Microseconds airmap::microseconds(int64_t raw);
 };
 
-struct Hours {
-  long hours;
-};
+}  // namespace detail
 
-struct Minutes {
-  long minutes;
-};
+template <typename Tag>
+class Duration : public detail::Duration {};
 
-struct Seconds {
-  long seconds;
-};
+/// milliseconds_since_epoch returns the milliseconds that elapsed since the UNIX epoch.
+uint64_t milliseconds_since_epoch(const DateTime &dt);
+/// microseconds_since_epoch returns the microseconds that elapsed since the UNIX epoch.
+uint64_t microseconds_since_epoch(const DateTime &dt);
+/// from_seconds_since_epoch returns a DateTime.
+DateTime from_seconds_since_epoch(const Seconds &s);
+/// from_milliseconds_since_epoch returns a DateTime.
+DateTime from_milliseconds_since_epoch(const Milliseconds &ms);
+/// from_microseconds_since_epoch returns a DateTime.
+DateTime from_microseconds_since_epoch(const Microseconds &us);
 
-struct Milliseconds {
-  long milliseconds;
-};
-
-struct Microseconds {
-  long microseconds;
-};
+// moves the datetime forward to the specified hour
+DateTime move_to_hour(const DateTime &dt, uint64_t hour);
 
 namespace iso8601 {
 

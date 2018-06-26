@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
   config.logger   = logger;
 
   if (run_under_testing) {
-    context->schedule_in(::airmap::Microseconds{5 * 1000 * 1000}, [&]() {
+    context->schedule_in(::airmap::microseconds(5 * 1000 * 1000), [&]() {
       log.infof(component, "stopping execution");
       context->stop();
     });
