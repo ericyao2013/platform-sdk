@@ -136,7 +136,7 @@ void airmap::monitor::TelemetrySubmitter::request_create_flight() {
     params.longitude     = current_position_.get().lon / 1E7;
     params.aircraft_id   = aircraft_id_;
     params.start_time    = Clock::universal_time();
-    params.end_time      = params.start_time + Hours{1};
+    params.end_time      = params.start_time + hours(1);
 
     if (geometry_) {
       params.geometry = geometry_.get();
