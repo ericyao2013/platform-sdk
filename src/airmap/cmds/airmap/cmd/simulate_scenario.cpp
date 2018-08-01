@@ -35,7 +35,7 @@ constexpr float altitude_msl              = 100.;
 constexpr float altitude_gl               = 100.;
 constexpr float vx                        = 0.;
 constexpr float vy                        = 0.;
-constexpr float vz                        = 0.;
+constexpr float vz                        = 100.;
 constexpr float heading                   = 180.;
 constexpr std::uint8_t mission_type       = 0;
 constexpr std::uint8_t target_system      = 0;
@@ -80,13 +80,6 @@ class TcpRouteMonitor : public airmap::mavlink::boost::TcpRoute::Monitor {
 
       {
         mavlink_message_t msg;
-        mavlink_msg_heartbeat_pack(p.id, mavlink::component_id, &msg, MAV_TYPE_HELICOPTER, MAV_AUTOPILOT_GENERIC,
-                                   MAV_MODE_GUIDED_ARMED, mavlink::custom_mode, MAV_STATE_ACTIVE);
-        session->process(msg);
-      }
-
-      {
-        mavlink_message_t msg;
         mavlink_msg_mission_count_pack(p.id, mavlink::component_id, &msg, mavlink::target_system,
                                        mavlink::target_component, outer_ring.coordinates.size(), mavlink::mission_type);
         session->process(msg);
@@ -100,10 +93,17 @@ class TcpRouteMonitor : public airmap::mavlink::boost::TcpRoute::Monitor {
           mavlink_msg_mission_item_pack(p.id, mavlink::component_id, &msg, mavlink::target_system,
                                         mavlink::target_component, seq, mavlink::frame, mavlink::command,
                                         mavlink::current, mavlink::autocontinue, mavlink::p1, mavlink::p2, mavlink::p3,
-                                        mavlink::p4, c.longitude, c.latitude, mavlink::vz, MAV_CMD_NAV_WAYPOINT);
+                                        mavlink::p4, c.latitude, c.longitude, mavlink::vz, MAV_CMD_NAV_WAYPOINT);
           session->process(msg);
           seq++;
         }
+      }
+
+      {
+        mavlink_message_t msg;
+        mavlink_msg_heartbeat_pack(p.id, mavlink::component_id, &msg, MAV_TYPE_HELICOPTER, MAV_AUTOPILOT_GENERIC,
+                                   MAV_MODE_GUIDED_ARMED, mavlink::custom_mode, MAV_STATE_ACTIVE);
+        session->process(msg);
       }
     }
   }
