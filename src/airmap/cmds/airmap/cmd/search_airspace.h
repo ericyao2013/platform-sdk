@@ -26,10 +26,10 @@ class SearchAirspace : public util::cli::CommandWithFlagsAndAction {
  private:
   using ConstContextRef = std::reference_wrapper<const util::cli::Command::Context>;
   using GeometryFile    = util::TaggedString<util::tags::MustNotBeEmpty>;
-  using Full            = util::TaggedString<util::tags::MustNotBeEmpty>;
-  using DateTime       = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using AirspaceId      = util::TaggedString<util::tags::MustNotBeEmpty>;
+  using Date_Time       = util::TaggedString<util::tags::MustNotBeEmpty>;
 
-  //void handle_advisory_for_id_result(const Advisory::ForId::Result& result, ConstContextRef context);
+  void handle_airspace_for_ids_result(const Airspaces::ForIds::Result& result, ConstContextRef context);
   void handle_airspace_search_result(const Airspaces::Search::Result& result, ConstContextRef context);
 
   util::FormattingLogger log_{create_null_logger()};
@@ -39,8 +39,9 @@ class SearchAirspace : public util::cli::CommandWithFlagsAndAction {
   std::shared_ptr<::airmap::Client> client_;
   Required<ConfigFile> config_file_;
   Optional<GeometryFile> geometry_file_;
-  Optional<Full> full_;
-  Optional<DateTime> date_time_;
+  Optional<AirspaceId> airspace_id_;
+  Optional<Date_Time> date_time_;
+  Optional<bool> full_;
 };
 
 }  // namespace cmd
