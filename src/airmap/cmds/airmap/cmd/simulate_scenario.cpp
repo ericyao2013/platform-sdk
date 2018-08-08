@@ -35,12 +35,23 @@ constexpr float altitude_msl              = 100.;
 constexpr float altitude_gl               = 100.;
 constexpr float vx                        = 0.;
 constexpr float vy                        = 0.;
-constexpr float vz                        = 0.;
+constexpr float vz                        = 100.;
 constexpr float heading                   = 180.;
+constexpr std::uint8_t mission_type       = 0;
+constexpr std::uint8_t target_system      = 0;
+constexpr std::uint8_t target_component   = 0;
+constexpr std::uint8_t frame              = 0;
+constexpr std::uint16_t command           = 0;
+constexpr std::uint8_t current            = 0;
+constexpr std::uint8_t autocontinue       = 0;
+constexpr float p1                        = 0.;
+constexpr float p2                        = 0.;
+constexpr float p3                        = 0.;
+constexpr float p4                        = 0.;
 }  // namespace mavlink
 
 const std::string device_name = boost::asio::ip::host_name();
-const airmap::Microseconds duration{60 * 1000 * 1000};
+const airmap::Microseconds duration(airmap::microseconds(60 * 1000 * 1000));
 constexpr const char* component{"simulate-scenario-cli"};
 
 class TcpRouteMonitor : public airmap::mavlink::boost::TcpRoute::Monitor {
@@ -65,6 +76,27 @@ class TcpRouteMonitor : public airmap::mavlink::boost::TcpRoute::Monitor {
                                              mavlink::altitude_gl * 1E3, mavlink::vx, mavlink::vy, mavlink::vz,
                                              mavlink::heading * 1E2);
         session->process(msg);
+      }
+
+      {
+        mavlink_message_t msg;
+        mavlink_msg_mission_count_pack(p.id, mavlink::component_id, &msg, mavlink::target_system,
+                                       mavlink::target_component, outer_ring.coordinates.size(), mavlink::mission_type);
+        session->process(msg);
+      }
+
+      // Send geometry as sequence of waypoints as part of mavlink mission
+      uint16_t seq = 0;
+      for (const auto& c : outer_ring.coordinates) {
+        {
+          mavlink_message_t msg;
+          mavlink_msg_mission_item_pack(p.id, mavlink::component_id, &msg, mavlink::target_system,
+                                        mavlink::target_component, seq, mavlink::frame, mavlink::command,
+                                        mavlink::current, mavlink::autocontinue, mavlink::p1, mavlink::p2, mavlink::p3,
+                                        mavlink::p4, c.latitude, c.longitude, mavlink::vz, MAV_CMD_NAV_WAYPOINT);
+          session->process(msg);
+          seq++;
+        }
       }
 
       {
@@ -219,6 +251,7 @@ cmd::SimulateScenario::SimulateScenario()
 
       while (it != itE) {
         this->request_authentication_for(it);
+        // this->deactivate(it);
         ++it;
       }
     });
@@ -230,6 +263,16 @@ cmd::SimulateScenario::SimulateScenario()
                           }) == ::airmap::Context::ReturnCode::success
                ? 0
                : 1;
+  });
+}
+
+void cmd::SimulateScenario::deactivate(util::Scenario::Participants::iterator participant) {
+  context_->schedule_in(microseconds(1000 * 1000 * 10), [this, participant]() {
+    mavlink_message_t msg;
+    mavlink_msg_heartbeat_pack(participant->id, ::mavlink::component_id, &msg, MAV_TYPE_HELICOPTER,
+                               MAV_AUTOPILOT_GENERIC, MAV_MODE_GUIDED_DISARMED, ::mavlink::custom_mode,
+                               MAV_STATE_STANDBY);
+    router_->route(msg);
   });
 }
 

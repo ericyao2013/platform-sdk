@@ -7,7 +7,7 @@
 #include <airmap/codec/json/rule.h>
 
 void airmap::codec::json::decode(const nlohmann::json& j, Airspace& airspace) {
-  airspace.set_id(j["id"].get<std::string>());
+  airspace.set_id(j["airspace_uuid"].get<std::string>());
   if (j.count("name") > 0 && !j["name"].is_null())
     airspace.set_name(j["name"].get<std::string>());
   if (j.count("country") > 0 && !j["country"].is_null())
@@ -151,8 +151,10 @@ void airmap::codec::json::decode(const nlohmann::json& j, std::vector<Airspace::
 
 void airmap::codec::json::decode(const nlohmann::json&, Airspace::Airport::Use&) {
 }
-void airmap::codec::json::decode(const nlohmann::json&, Airspace::ControlledAirspace&) {
+void airmap::codec::json::decode(const nlohmann::json& j, Airspace::ControlledAirspace& ca) {
+  get(ca.airspace_classification, j, "airspace_classification");
 }
+
 void airmap::codec::json::decode(const nlohmann::json& j, Airspace::SpecialUseAirspace& sua) {
   sua.type = j["type"].get<Airspace::SpecialUseAirspace::Type>();
 }

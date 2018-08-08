@@ -1,4 +1,4 @@
-#include <airmap/cmds/airmap/cmd/get_advisories.h>
+#include <airmap/cmds/airmap/cmd/search_airspace.h>
 
 #include <airmap/client.h>
 #include <airmap/codec.h>
@@ -15,19 +15,28 @@ using json = nlohmann::json;
 
 namespace {
 
-constexpr const char* component{"get-advisories"};
+constexpr const char* component{"search-airspace"};
 
-void print_advisories(std::ostream& out, const std::vector<airmap::Advisory::AirspaceAdvisory>& v) {
+void print_airspace(std::ostream& out, const airmap::Airspace& a) {
   cli::TabWriter tw;
 
   tw << "id"
      << "name"
-     << "type"
-     << "color";
+     << "type" << cli::TabWriter::NewLine{} << a.id() << a.name() << a.type() << cli::TabWriter::NewLine{};
+
+  tw.flush(out);
+}
+
+void print_airspaces(std::ostream& out, const std::vector<airmap::Airspace>& v) {
+  cli::TabWriter tw;
+
+  tw << "id"
+     << "name"
+     << "type";
 
   for (const auto& a : v) {
     tw << cli::TabWriter::NewLine{};
-    tw << a.advisory.airspace.id() << a.advisory.airspace.name() << a.advisory.airspace.type() << a.advisory.color;
+    tw << a.id() << a.name() << a.type();
   }
 
   tw << cli::TabWriter::NewLine{};
@@ -36,18 +45,17 @@ void print_advisories(std::ostream& out, const std::vector<airmap::Advisory::Air
 
 }  // namespace
 
-cmd::GetAdvisories::GetAdvisories()
-    : cli::CommandWithFlagsAndAction{"get-advisories",
-                                     "searches for advisories by geometry or flight plan id from the AirMap services",
-                                     "searches for advisories by geometry or flight plan id from the AirMap services"} {
+cmd::SearchAirspace::SearchAirspace()
+    : cli::CommandWithFlagsAndAction{"search-airspace",
+                                     "searches for airspace objects by geometry or id from the AirMap services",
+                                     "searches for airspace objects by geometry or id from the AirMap services"} {
   flag(flags::version(version_));
   flag(flags::log_level(log_level_));
   flag(flags::config_file(config_file_));
   flag(cli::make_flag("geometry-file", "use the polygon defined in this geojson file", geometry_file_));
-  flag(cli::make_flag("flight-plan-id", "id of flight plan", flight_plan_id_));
-  flag(cli::make_flag("rulesets", "comma-separated list of rulesets", rulesets_));
-  flag(cli::make_flag("start", "planned start time of flight", start_));
-  flag(cli::make_flag("end", "planned end time of flight", end_));
+  flag(cli::make_flag("id", "id of airspace", airspace_id_));
+  flag(cli::make_flag("full", "return full airspace object", full_));
+  flag(cli::make_flag("date_time", "search for airspace that was active at this time", date_time_));
 
   action([this](const cli::Command::Context& ctxt) {
     log_ = util::FormattingLogger{create_filtering_logger(log_level_, create_default_logger(ctxt.cerr))};
@@ -62,8 +70,8 @@ cmd::GetAdvisories::GetAdvisories()
       return 1;
     }
 
-    if (!flight_plan_id_ && (!geometry_file_ || !rulesets_)) {
-      log_.errorf(component, "missing parameter 'flight-plan-id' or 'geometry-file' or 'rulesets'");
+    if (!geometry_file_ && !airspace_id_) {
+      log_.errorf(component, "missing parameter 'geometry-file' or 'id'");
       return 1;
     }
 
@@ -96,37 +104,30 @@ cmd::GetAdvisories::GetAdvisories()
 
           client_ = result.value();
 
-          if (flight_plan_id_) {
-            Advisory::ForId::Parameters params;
-            params.id = flight_plan_id_.get();
-            if (start_ && end_) {
-              params.start = iso8601::parse(start_.get());
-              params.end   = iso8601::parse(end_.get());
-            } else {
-              params.start = DateTime(Clock::universal_time().date());
-              params.end   = params.start;
-            }
-            client_->advisory().for_id(params, std::bind(&GetAdvisories::handle_advisory_for_id_result, this,
-                                                         std::placeholders::_1, std::ref(ctxt)));
-          } else if (geometry_file_ && rulesets_) {
+          if (airspace_id_) {
+            Airspaces::ForIds::Parameters params;
+            params.id = airspace_id_.get();
+            client_->airspaces().for_ids(params, std::bind(&SearchAirspace::handle_airspace_for_ids_result, this,
+                                                           std::placeholders::_1, std::ref(ctxt)));
+          } else if (geometry_file_) {
             std::ifstream in{geometry_file_.get()};
             if (!in) {
               log_.errorf(component, "failed to open %s for reading", geometry_file_.get());
               return;
             }
             Geometry geometry = json::parse(in);
-            Advisory::Search::Parameters params;
+            Airspaces::Search::Parameters params;
             params.geometry = geometry;
-            params.rulesets = rulesets_.get();
-            if (start_ && end_) {
-              params.start = iso8601::parse(start_.get());
-              params.end   = iso8601::parse(end_.get());
+            if (date_time_) {
+              params.date_time = iso8601::parse(date_time_.get());
             } else {
-              params.start = DateTime(Clock::universal_time().date());
-              params.end   = params.start;
+              params.date_time = DateTime(Clock::universal_time().date());
             }
-            client_->advisory().search(params, std::bind(&GetAdvisories::handle_advisory_search_result, this,
-                                                         std::placeholders::_1, std::ref(ctxt)));
+            if (full_) {
+              params.full = full_.get();
+            }
+            client_->airspaces().search(params, std::bind(&SearchAirspace::handle_airspace_search_result, this,
+                                                          std::placeholders::_1, std::ref(ctxt)));
           }
         });
 
@@ -140,26 +141,27 @@ cmd::GetAdvisories::GetAdvisories()
   });
 }
 
-void cmd::GetAdvisories::handle_advisory_for_id_result(const Advisory::ForId::Result& result, ConstContextRef context) {
+void cmd::SearchAirspace::handle_airspace_search_result(const Airspaces::Search::Result& result,
+                                                        ConstContextRef context) {
   if (result) {
-    log_.infof(component, "successfully obtained advisories");
-    print_advisories(context.get().cout, result.value());
+    log_.infof(component, "successfully obtained airspaces");
+    print_airspaces(context.get().cout, result.value());
     context_->stop();
   } else {
-    log_.errorf(component, "failed to obtain advisories: %s", result.error());
+    log_.errorf(component, "failed to obtain airspaces: %s", result.error());
     context_->stop(::airmap::Context::ReturnCode::error);
     return;
   }
 }
 
-void cmd::GetAdvisories::handle_advisory_search_result(const Advisory::Search::Result& result,
-                                                       ConstContextRef context) {
+void cmd::SearchAirspace::handle_airspace_for_ids_result(const Airspaces::ForIds::Result& result,
+                                                         ConstContextRef context) {
   if (result) {
-    log_.infof(component, "successfully obtained advisories");
-    print_advisories(context.get().cout, result.value());
+    log_.infof(component, "successfully obtained airspaces");
+    print_airspace(context.get().cout, result.value());
     context_->stop();
   } else {
-    log_.errorf(component, "failed to obtain advisories: %s", result.error());
+    log_.errorf(component, "failed to obtain airspaces: %s", result.error());
     context_->stop(::airmap::Context::ReturnCode::error);
     return;
   }
