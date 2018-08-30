@@ -180,8 +180,3 @@ If you have a proper AirMap account and authenticated previously, you can renew 
 ```
 airmap login --renew=true
 ```
-
-## Running the `AirMap Platform SDK` on Intel Aero
-Please refer to
- * https://airmap.atlassian.net/wiki/spaces/AIRMAP/pages/69992501/Intel+Aero for Intel Aero setup instructions.
- * https://github.com/airmap/intel-aero for scripts and identities that help in provisioning Intel.
