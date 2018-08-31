@@ -28,7 +28,7 @@ Please note that our primary development and deployment targets are Linux and Ma
 
 The following steps provide you with a set of libraries and headers ready for consumption in your project:
  * Install build dependencies following the guidelines in section 'Setup & Dependencies'
- * Clone the `airmap-platform-sdk` repo: `git clone https://github.com/airmap/airmap-platform-sdk.git`
+ * Clone the `airmap-platform-sdk` repo: `git clone https://github.com/airmap/platform-sdk.git`
  * Build & install the `AirMap Platform SDK`: `mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=/choose/the/install/path .. && make && make doc && make install`
  * Find the API documentation in `build/doc/html/index.html`
 
@@ -70,7 +70,7 @@ The implementation is structured as followed:
 The `AirMap Platform SDK` uses CMake for building and testing. We envision the following development workflow:
 
 ```# Clone airmapd and all its dependencies
-git clone --recursive https://github.com/airmap/airmap-platform-sdk.git
+git clone --recursive https://github.com/airmap/platform-sdk.git
 # Update Submodules
 git submodule update --init --recursive
 # Please execute these commands at the root of the source tree (DON'T FOLLOW the commands below if you intend to build the AirMap Platform SDK in Ubuntu/Docker)
@@ -115,7 +115,7 @@ tools/rpi/build-docker-image.sh
 ### macOS - homebrew
 Run the following commands:
 ```
-brew tap airmap/airmapd https://github.com/airmap/airmap-platform-sdk.git
+brew tap airmap/airmapd https://github.com/airmap/platform-sdk.git
 brew install airmapd
 ```
 Please note that the recent updates to macOS and XCode (in 9.2017) break the cmake brew formula in version 3.9.3 (see https://gitlab.kitware.com/cmake/cmake/issues/17101 for the details). Please downgrade your brew cmake installation to 3.9.2 or 3.9.1 (whichever is available). This can be accomplished with `brew switch`.
