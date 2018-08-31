@@ -1,6 +1,6 @@
 class Airmapd < Formula
-  homepage "https://github.com/airmap/airmapd"
-  url "https://github.com/airmap/airmapd.git"
+  homepage "https://github.com/airmap/platform-sdk"
+  url "https://github.com/airmap/AirMap-Platform-SDK.git"
   version "0.0.1"
 
   depends_on "cmake" => :build
