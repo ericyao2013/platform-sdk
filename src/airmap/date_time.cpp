@@ -238,7 +238,7 @@ std::string airmap::iso8601::generate(const DateTime& dt) {
   return oss.str();
 }
 
-std::ostream& airmap::operator<<(std::ostream& to, const airmap::detail::Duration &from) {
+std::ostream& airmap::operator<<(std::ostream& to, const airmap::detail::Duration& from) {
   to << from.total_seconds();
   return to;
 }

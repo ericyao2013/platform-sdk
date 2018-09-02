@@ -5,7 +5,6 @@
 //  Copyright © 2018 AirMap, Inc. All rights reserved.
 //
 
-
 #ifndef AIRMAP_CODEC_JSON_AIRSPACE_H_
 #define AIRMAP_CODEC_JSON_AIRSPACE_H_
 

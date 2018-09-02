@@ -69,8 +69,8 @@ airmap::monitor::Daemon::~Daemon() {
 }
 
 void airmap::monitor::Daemon::start() {
-  mavlink_channel_subscription_ = configuration_.channel->subscribe([sp = shared_from_this()](
-      const mavlink_message_t& msg) { sp->handle_mavlink_message(msg); });
+  mavlink_channel_subscription_ = configuration_.channel->subscribe(
+      [sp = shared_from_this()](const mavlink_message_t& msg) { sp->handle_mavlink_message(msg); });
   configuration_.channel->start();
 }
 

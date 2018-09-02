@@ -33,7 +33,7 @@ void airmap::net::mqtt::boost::Broker::connect(const Credentials& credentials, c
   client->set_password(credentials.password);
 
   client->set_connack_handler(
-      [ logger = logger_, io_service = io_service_, host = host_, port = port_, cb, client ](auto, auto rc) {
+      [logger = logger_, io_service = io_service_, host = host_, port = port_, cb, client](auto, auto rc) {
         if (::mqtt::connect_return_code::accepted == rc) {
           cb(ConnectResult(Client::create(logger, io_service, client)));
         } else {

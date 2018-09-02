@@ -392,12 +392,12 @@ void cmd::SimulateScenario::handle_create_flight_result_for(util::Scenario::Part
     request_traffic_monitoring_for(participant);
     request_start_flight_comms_for(participant);
 
-    context_->schedule_in(microseconds(collector_->scenario().duration.get().total_microseconds()), 
-[this, participant]() {
-      client_->flights().end_flight_communications(
-          {participant->authentication.get(), participant->flight.get().id},
-          std::bind(&SimulateScenario::handle_end_flight_comms, this, participant, ph::_1));
-    });
+    context_->schedule_in(microseconds(collector_->scenario().duration.get().total_microseconds()),
+                          [this, participant]() {
+                            client_->flights().end_flight_communications(
+                                {participant->authentication.get(), participant->flight.get().id},
+                                std::bind(&SimulateScenario::handle_end_flight_comms, this, participant, ph::_1));
+                          });
 
   } else {
     log_.errorf(component, "failed to create flight for polygon: %s", result.error());

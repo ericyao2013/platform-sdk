@@ -67,7 +67,7 @@ void airmap::net::http::LoggingRequester::delete_(const std::string& path,
     r << "  " << pair.first << "=" << pair.second << "\n";
   }
 
-  next_->delete_(path, std::move(query), std::move(headers), [ this, uuid, cb = std::move(cb) ](const auto& result) {
+  next_->delete_(path, std::move(query), std::move(headers), [this, uuid, cb = std::move(cb)](const auto& result) {
     auto it       = request_start_timestamps_.find(uuid);
     auto duration = Clock::universal_time() - it->second;
     request_start_timestamps_.erase(it);
@@ -108,7 +108,7 @@ void airmap::net::http::LoggingRequester::get(const std::string& path,
     r << "  " << pair.first << "=" << pair.second << "\n";
   }
 
-  next_->get(path, std::move(query), std::move(headers), [ this, uuid, cb = std::move(cb) ](const auto& result) {
+  next_->get(path, std::move(query), std::move(headers), [this, uuid, cb = std::move(cb)](const auto& result) {
     auto it       = request_start_timestamps_.find(uuid);
     auto duration = Clock::universal_time() - it->second;
     request_start_timestamps_.erase(it);
@@ -147,7 +147,7 @@ void airmap::net::http::LoggingRequester::patch(const std::string& path,
   r << "body:\n"
     << "  " << body;
 
-  next_->patch(path, std::move(headers), std::move(body), [ this, uuid, cb = std::move(cb) ](const auto& result) {
+  next_->patch(path, std::move(headers), std::move(body), [this, uuid, cb = std::move(cb)](const auto& result) {
     auto it       = request_start_timestamps_.find(uuid);
     auto duration = Clock::universal_time() - it->second;
     request_start_timestamps_.erase(it);
@@ -186,7 +186,7 @@ void airmap::net::http::LoggingRequester::post(const std::string& path,
   r << "body:\n"
     << "  " << body;
 
-  next_->post(path, std::move(headers), std::move(body), [ this, uuid, cb = std::move(cb) ](const auto& result) {
+  next_->post(path, std::move(headers), std::move(body), [this, uuid, cb = std::move(cb)](const auto& result) {
     auto it       = request_start_timestamps_.find(uuid);
     auto duration = Clock::universal_time() - it->second;
     request_start_timestamps_.erase(it);

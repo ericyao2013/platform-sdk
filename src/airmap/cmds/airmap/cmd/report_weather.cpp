@@ -114,7 +114,6 @@ cmd::ReportWeather::ReportWeather()
           };
 
           client->advisory().report_weather(params_, handler);
-
         });
 
     return context->exec({SIGINT, SIGQUIT},

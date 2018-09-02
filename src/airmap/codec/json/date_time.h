@@ -5,7 +5,6 @@
 //  Copyright © 2018 AirMap, Inc. All rights reserved.
 //
 
-
 #ifndef AIRMAP_CODEC_JSON_DATE_TIME_H_
 #define AIRMAP_CODEC_JSON_DATE_TIME_H_
 
@@ -37,8 +36,8 @@ void to_json(nlohmann::json& j, const ptime& dt);
 namespace nlohmann {
 template <>
 struct adl_serializer<airmap::Seconds> {
-    static airmap::Seconds from_json(const json& j);
+  static airmap::Seconds from_json(const json& j);
 };
-}
+}  // namespace nlohmann
 
 #endif  // AIRMAP_CODEC_JSON_DATE_TIME_H_

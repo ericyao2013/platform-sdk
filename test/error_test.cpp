@@ -313,8 +313,10 @@ BOOST_AUTO_TEST_CASE(error_insertion_operator_outputs_correct_string) {
                  }})
           .value(airmap::Error::Value{std::string{"vector"}},
                  airmap::Error::Value{std::vector<airmap::Error::Value>{
-                     airmap::Error::Value{false}, airmap::Error::Value{std::int64_t{42}},
-                     airmap::Error::Value{double{42.}}, airmap::Error::Value{std::string{"42"}},
+                     airmap::Error::Value{false},
+                     airmap::Error::Value{std::int64_t{42}},
+                     airmap::Error::Value{double{42.}},
+                     airmap::Error::Value{std::string{"42"}},
                      airmap::Error::Value{std::vector<std::uint8_t>{'4', '2'}},
                  }});
 
