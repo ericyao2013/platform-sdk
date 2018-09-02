@@ -146,6 +146,8 @@ std::string generate(const DateTime &dt);
 
 }  // namespace iso8601
 
+std::ostream &operator<<(std::ostream &to, const detail::Duration &from);
+
 }  // namespace airmap
 
 #endif  // AIRMAP_DATE_TIME_H_

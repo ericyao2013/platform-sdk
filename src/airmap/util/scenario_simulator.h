@@ -56,6 +56,7 @@ struct Scenario {
   std::string name;
   std::string description;
   Participants participants;
+  Optional<Seconds> duration;
 };
 
 class ScenarioSimulator {
