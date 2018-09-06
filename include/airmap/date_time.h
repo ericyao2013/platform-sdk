@@ -8,6 +8,7 @@
 #ifndef AIRMAP_DATE_TIME_H_
 #define AIRMAP_DATE_TIME_H_
 
+#include <cstdint>
 #include <airmap/visibility.h>
 
 #include <memory>
@@ -85,11 +86,11 @@ class AIRMAP_EXPORT DateTime {
   friend std::string boost_iso::to_iso_string(const DateTime &datetime);
 };
 
-AIRMAP_EXPORT Hours hours(int64_t raw);
-AIRMAP_EXPORT Minutes minutes(int64_t raw);
-AIRMAP_EXPORT Seconds seconds(int64_t raw);
-AIRMAP_EXPORT Milliseconds milliseconds(int64_t raw);
-AIRMAP_EXPORT Microseconds microseconds(int64_t raw);
+AIRMAP_EXPORT Hours hours(std::int32_t raw);
+AIRMAP_EXPORT Minutes minutes(std::int32_t raw);
+AIRMAP_EXPORT Seconds seconds(std::int32_t raw);
+AIRMAP_EXPORT Milliseconds milliseconds(std::int32_t raw);
+AIRMAP_EXPORT Microseconds microseconds(std::int32_t raw);
 
 namespace detail {
 
@@ -114,11 +115,11 @@ class AIRMAP_EXPORT Duration {
   friend Microseconds DateTime::operator-(const DateTime &) const;
   friend Microseconds DateTime::time_of_day() const;
 
-  friend Hours airmap::hours(int64_t raw);
-  friend Minutes airmap::minutes(int64_t raw);
-  friend Seconds airmap::seconds(int64_t raw);
-  friend Milliseconds airmap::milliseconds(int64_t raw);
-  friend Microseconds airmap::microseconds(int64_t raw);
+  friend Hours airmap::hours(std::int32_t raw);
+  friend Minutes airmap::minutes(std::int32_t raw);
+  friend Seconds airmap::seconds(std::int32_t raw);
+  friend Milliseconds airmap::milliseconds(std::int32_t raw);
+  friend Microseconds airmap::microseconds(std::int32_t raw);
 };
 
 }  // namespace detail
