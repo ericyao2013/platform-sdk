@@ -14,7 +14,7 @@ class Airmapd < Formula
   def install
     Dir.mkdir("build")
     Dir.chdir("build")
-    system "cmake","-DCMAKE_INSTALL_PREFIX=#{prefix}","-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.11.1",".."
+    system "cmake","-DCMAKE_INSTALL_PREFIX=#{prefix}","-DCMAKE_PREFIX_PATH=/usr/local/opt/qt",".."
     system "make"
     system "make", "install"
   end
