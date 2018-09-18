@@ -1,15 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(external-grpc C CXX)
-
-include(ExternalProject)
+include(FetchContent)
 
 list(
     APPEND CMAKE_FIND_ROOT_PATH
     $ENV{AIRMAP_EXTERNAL_DEPENDENCIES_OUTPUT_PATH}
 )
 
-ExternalProject_add(
+FetchContent_Declare(
     grpc
     GIT_REPOSITORY https://github.com/airmap/grpc.git
     PREFIX grpc
@@ -35,6 +33,15 @@ ExternalProject_add(
     CMAKE_GENERATOR ${CMAKE_GENERATOR}
     UPDATE_COMMAND ""
 )
+#ExternalProject_add_step( grpc touchFile
+#    COMMAND ${CMAKE_COMMAND} -E make_directory $ENV{AIRMAP_GRPC_OUTPUT_PATH}/lib/cmake/grpc/
+#    COMMAND ${CMAKE_COMMAND} -E touch file $ENV{AIRMAP_GRPC_OUTPUT_PATH}/lib/cmake/grpc/gRPCTargets.cmake
+#    DEPENDEES build
+#)
 
-add_custom_target(trigger-grpc)
-add_dependencies(trigger-grpc grpc)
+
+FetchContent_GetProperties(grpc)
+if(NOT grpc_POPULATED)
+    FetchContent_Populate(grpc)
+    add_subdirectory(${grpc_SOURCE_DIR} ${grpc_BINARY_DIR})
+endif()

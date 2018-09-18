@@ -1,5 +1,6 @@
 set(AIRMAP_EXTERNAL_DEPENDENCIES_OUTPUT_PATH "${CMAKE_BINARY_DIR}/external")
 set(ENV{AIRMAP_EXTERNAL_DEPENDENCIES_OUTPUT_PATH} "${CMAKE_BINARY_DIR}/external")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
 
 function (build_boost)
   set(trigger_build_dir ${CMAKE_BINARY_DIR}/force_boost)
@@ -9,22 +10,7 @@ function (build_boost)
 
   file(MAKE_DIRECTORY ${trigger_build_dir} ${trigger_build_dir}/build)
 
-  execute_process(
-    COMMAND ${CMAKE_COMMAND}
-      -G${CMAKE_GENERATOR}
-      -DANDROID_ABI=${ANDROID_ABI}
-      -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-      -DANDROID_STL=${ANDROID_STL}
-      -DANDROID_CPP_FEATURES=${ANDROID_CPP_FEATURES}
-      -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-      ${CMAKE_SOURCE_DIR}/vendor/boost
-    WORKING_DIRECTORY ${trigger_build_dir}/build
-  )
-
-  execute_process(COMMAND ${CMAKE_COMMAND} --build .
-    WORKING_DIRECTORY ${trigger_build_dir}/build
-  )
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/boost ${trigger_build_dir}/build)
 endfunction()
 
 function (build_boringssl)
@@ -34,24 +20,7 @@ function (build_boringssl)
   endif()
 
   file(MAKE_DIRECTORY ${trigger_build_dir} ${trigger_build_dir}/build)
-
-  execute_process(
-    COMMAND ${CMAKE_COMMAND}
-      -G${CMAKE_GENERATOR}
-      -DANDROID_ABI=${ANDROID_ABI}
-      -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-      -DANDROID_STL=${ANDROID_STL}
-      -DANDROID_CPP_FEATURES=${ANDROID_CPP_FEATURES}
-      -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
-      -DCMAKE_FIND_ROOT_PATH:PATH="${CMAKE_FIND_ROOT_PATH}"
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-      ${CMAKE_SOURCE_DIR}/vendor/boringssl
-    WORKING_DIRECTORY ${trigger_build_dir}/build
-  )
-
-  execute_process(COMMAND ${CMAKE_COMMAND} --build .
-    WORKING_DIRECTORY ${trigger_build_dir}/build
-  )
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/boringssl ${trigger_build_dir}/build)
 endfunction()
 
 function (build_protobuf)
@@ -62,23 +31,8 @@ function (build_protobuf)
 
   file(MAKE_DIRECTORY ${trigger_build_dir} ${trigger_build_dir}/build)
 
-  execute_process(
-    COMMAND ${CMAKE_COMMAND}
-      -G${CMAKE_GENERATOR}
-      -DANDROID_ABI=${ANDROID_ABI}
-      -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-      -DANDROID_STL=${ANDROID_STL}
-      -DANDROID_CPP_FEATURES=${ANDROID_CPP_FEATURES}
-      -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
-      -DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-      ${CMAKE_SOURCE_DIR}/vendor/protobuf
-    WORKING_DIRECTORY ${trigger_build_dir}/build
-  )
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/protobuf ${trigger_build_dir}/build)
 
-  execute_process(COMMAND ${CMAKE_COMMAND} --build .
-    WORKING_DIRECTORY ${trigger_build_dir}/build
-  )
 endfunction()
 
 function (build_cares)
@@ -94,23 +48,8 @@ function (build_cares)
 
   file(MAKE_DIRECTORY ${trigger_build_dir} ${trigger_build_dir}/build)
 
-  execute_process(
-    COMMAND ${CMAKE_COMMAND}
-      -G${CMAKE_GENERATOR}
-      -DANDROID_ABI=${ANDROID_ABI}
-      -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-      -DANDROID_STL=${ANDROID_STL}
-      -DANDROID_CPP_FEATURES=${ANDROID_CPP_FEATURES}
-      -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
-      -DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-      ${CMAKE_SOURCE_DIR}/vendor/cares
-    WORKING_DIRECTORY ${trigger_build_dir}/build
-  )
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/cares ${trigger_build_dir}/build)
 
-  execute_process(COMMAND ${CMAKE_COMMAND} --build .
-    WORKING_DIRECTORY ${trigger_build_dir}/build
-  )
 endfunction()
 
 function (build_grpc)
@@ -130,25 +69,7 @@ function (build_grpc)
 
   file(MAKE_DIRECTORY ${trigger_build_dir} ${trigger_build_dir}/build)
 
-  execute_process(
-    COMMAND ${CMAKE_COMMAND}
-      -G${CMAKE_GENERATOR}
-      -DANDROID_ABI=${ANDROID_ABI}
-      -DANDROID_PLATFORM=${ANDROID_PLATFORM}
-      -DANDROID_STL=${ANDROID_STL}
-      -DANDROID_CPP_FEATURES=${ANDROID_CPP_FEATURES}
-      -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
-      -DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-      -DOPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}
-      -DOPENSSL_USE_STATIC_LIBS=${OPENSSL_USE_STATIC_LIBS}
-      ${CMAKE_SOURCE_DIR}/vendor/grpc
-    WORKING_DIRECTORY ${trigger_build_dir}/build
-  )
-
-  execute_process(COMMAND ${CMAKE_COMMAND} --build .
-    WORKING_DIRECTORY ${trigger_build_dir}/build
-  )
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/grpc ${trigger_build_dir}/build)
 
   find_file(
     AIRMAP_GRPC_CMAKE_CONFIG gRPCConfig.cmake

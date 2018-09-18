@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(external-cares C)
+include(FetchContent)
 
-include(ExternalProject)
-
-ExternalProject_add(
+FetchContent_Declare(
     cares
     URL https://github.com/c-ares/c-ares/archive/cares-1_13_0.tar.gz
     PREFIX cares
@@ -23,5 +21,8 @@ ExternalProject_add(
     UPDATE_COMMAND ""
 )
 
-add_custom_target(trigger-cares)
-add_dependencies(trigger-cares cares)
+FetchContent_GetProperties(cares)
+if(NOT cares_POPULATED)
+    FetchContent_Populate(cares)
+    add_subdirectory(${cares_SOURCE_DIR} ${cares_BINARY_DIR})
+endif()

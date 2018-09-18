@@ -97,13 +97,18 @@ target_link_libraries(
 
   ${CONDITIONAL_LIBRARIES}
 
-  ${Boost_LIBRARIES}
+  Boost::date_time
+  Boost::filesystem
+  Boost::log
+  Boost::program_options
+  Boost::system
+  Boost::thread
 
-  OpenSSL::Crypto
-  OpenSSL::SSL
-  ${WE_NEED_BORINGSSLS_LIB_DECREPIT}
+  crypto
+  ssl
+  decrepit
 
-  protobuf::libprotobuf
+  libprotobuf
 )
 
 install(

@@ -1,8 +1,6 @@
 add_library(
   airmap-qt SHARED
 
-  $<TARGET_OBJECTS:airmap-client>
-
   client.cpp
   dispatcher.h
   dispatcher.cpp
@@ -53,6 +51,7 @@ endif ()
 target_link_libraries(
   airmap-qt
   airmap-mavlink
+  airmap-cpp
 
   ${CONDITIONAL_LIBRARIES}
 

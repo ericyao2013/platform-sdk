@@ -10,6 +10,7 @@ set(AIRMAPD_VERSION_MINOR 0)
 set(AIRMAPD_VERSION_PATCH 1)
 
 option(AIRMAP_ENABLE_NETWORK_TESTS "enable tests requiring network access"       ON)
+option(AIRMAP_ENABLE_EXECUTABLE    "Enable executable target"                    ON)
 option(AIRMAP_ENABLE_GRPC          "Enable libraries/executables requiring gRPC" OFF)
 option(AIRMAP_ENABLE_QT            "Enable libraries/executables requiring Qt5"  OFF)
 
@@ -22,7 +23,7 @@ find_package(Git)
 if (GIT_FOUND)
   execute_process(
     COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     OUTPUT_VARIABLE AIRMAPD_VERSION_GIT_REVISION
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 

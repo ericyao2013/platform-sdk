@@ -34,12 +34,17 @@ function(airmap_add_test name source)
 
     ${CONDITIONAL_LIBRARIES}
 
-    ${Boost_LIBRARIES}
-    OpenSSL::Crypto
-    OpenSSL::SSL
-    ${WE_NEED_BORINGSSLS_LIB_DECREPIT}
+    Boost::date_time
+    Boost::filesystem
+    Boost::log
+    Boost::program_options
+    Boost::system
+    Boost::thread
+    crypto
+    ssl
+    decrepit
 
-    protobuf::libprotobuf
+    libprotobuf
   )
 
   add_test(${name} ${name} --color_output=false --logger=XML,all,${AIRMAP_TEST_OUTPUT_DIRECTORY}/${name}.xml)

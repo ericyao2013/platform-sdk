@@ -10,9 +10,7 @@ cmake_minimum_required(VERSION 3.5)
 #
 # To this end, we translate CMake variables and cross-compilation facilities
 # to boost.build.
-project(external-boost C CXX)
-
-include(ExternalProject)
+include(FetchContent)
 
 set(
   AIRMAP_BOOST_COMPONENTS
@@ -82,49 +80,15 @@ else()
   endif()
 endif()
 
-ExternalProject_Add(boost
-  URL https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.bz2
-  URL_HASH SHA256=5721818253e6a0989583192f96782c4a98eb6204965316df9f5ad75819225ca9
-  BUILD_IN_SOURCE 1
-  UPDATE_COMMAND ""
-  PATCH_COMMAND
-    patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/patches/libressl.patch
-  CONFIGURE_COMMAND ${AIRMAP_BOOST_BOOTSTRAP_COMMAND}
-  BUILD_COMMAND
-    ${AIRMAP_BOOST_B2_COMMAND}
-      -d +2
-      ${AIRMAP_BOOST_B2_COMMAND_FLAGS_USER_CONFIG}
-      --with-date_time 
-      --with-filesystem
-      --with-log 
-      --with-program_options 
-      --with-system 
-      --with-test 
-      --with-thread
-      --disable-icu 
-      --prefix=$ENV{AIRMAP_BOOST_OUTPUT_PATH}
-      define=BOOST_LOG_WITHOUT_IPC
-      ${AIRMAP_BOOST_CXX_FLAGS} 
-      ${AIRMAP_BOOST_B2_COMMAND_FLAGS_TOOLSET} 
-      ${AIRMAP_BOOST_B2_COMMAND_FLAGS_ARCHITECTURE} 
-      ${AIRMAP_BOOST_B2_COMMAND_FLAGS_TARGET_OS} 
-      threading=multi link=static variant=release
-  INSTALL_COMMAND
-    ${AIRMAP_BOOST_B2_COMMAND} 
-      ${AIRMAP_BOOST_B2_COMMAND_FLAGS_USER_CONFIG} 
-      --with-date_time 
-      --with-filesystem 
-      --with-log 
-      --with-program_options 
-      --with-system 
-      --with-test 
-      --with-thread
-      --disable-icu 
-      --prefix=$ENV{AIRMAP_BOOST_OUTPUT_PATH}
-      define=BOOST_LOG_WITHOUT_IPC 
-      ${AIRMAP_BOOST_CXX_FLAGS} 
-      ${AIRMAP_BOOST_B2_COMMAND_FLAGS_TOOLSET} 
-      ${AIRMAP_BOOST_B2_COMMAND_FLAGS_ARCHITECTURE} 
-      ${AIRMAP_BOOST_B2_COMMAND_FLAGS_TARGET_OS} 
-      threading=multi link=static variant=release install
+FetchContent_Declare(boost
+    GIT_REPOSITORY https://github.com/Orphis/boost-cmake.git
+    BUILD_IN_SOURCE 0
 )
+
+FetchContent_GetProperties(boost)
+if(NOT boost_POPULATED)
+    FetchContent_Populate(boost)
+    set(BOOST_URL https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.bz2)
+    set(BOOST_URL_SHA256 5721818253e6a0989583192f96782c4a98eb6204965316df9f5ad75819225ca9)
+    add_subdirectory(${boost_SOURCE_DIR} ${boost_BINARY_DIR})
+endif()
