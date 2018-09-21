@@ -85,6 +85,7 @@ FetchContent_Declare(boost
     BUILD_IN_SOURCE 0
 )
 
+set(BOOST_THREAD_USES_DATETIME 1)
 FetchContent_GetProperties(boost)
 if(NOT boost_POPULATED)
     FetchContent_Populate(boost)

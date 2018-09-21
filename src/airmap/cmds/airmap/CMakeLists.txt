@@ -1,3 +1,5 @@
+include(../../../../vendor/boost/CMakeLists.txt)
+include(../../../../vendor/boringssl/CMakeLists.txt)
 if (AIRMAP_ENABLE_GRPC)
   list(
     APPEND CONDITIONAL_SOURCES

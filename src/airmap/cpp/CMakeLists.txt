@@ -27,12 +27,12 @@ target_link_libraries(
 
   ${CONDITIONAL_LIBRARIES}
 
-  Boost::date_time
-  Boost::filesystem
-  Boost::log
-  Boost::program_options
-  Boost::system
-  Boost::thread
+  date_time
+  filesystem
+  log
+  program_options
+  system
+  thread
 
   crypto
   ssl

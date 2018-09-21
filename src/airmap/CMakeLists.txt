@@ -1,3 +1,5 @@
+include(../../vendor/boost/CMakeLists.txt)
+include(../../vendor/boringssl/CMakeLists.txt)
 set(
   AIRMAP_PLATFORM_SRCS
   platform/null/interface.h
@@ -28,28 +30,28 @@ configure_file(version.cpp.in version.cpp)
 add_library(
   airmap-client OBJECT
 
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/advisory.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/aircraft.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/aircrafts.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/airspace.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/airspaces.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/authenticator.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/client.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/credentials.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/date_time.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/evaluation.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/flight.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/flights.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/optional.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/pilot.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/outcome.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/rule.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/ruleset.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/rulesets.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/status.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/telemetry.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/timestamp.h
-  ${CMAKE_CURRENT_LIST_DIR}/include/airmap/traffic.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/advisory.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/aircraft.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/aircrafts.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/airspace.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/airspaces.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/authenticator.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/client.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/credentials.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/date_time.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/evaluation.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/flight.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/flights.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/optional.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/pilot.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/outcome.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/rule.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/ruleset.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/rulesets.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/status.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/telemetry.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/timestamp.h
+  ${CMAKE_CURRENT_LIST_DIR}/../../include/airmap/traffic.h
 
   airspace.cpp
   client.cpp
@@ -244,7 +246,7 @@ if (AIRMAP_ENABLE_GRPC)
   )
 endif ()
 
-target_link_libraries( airmap-client PUBLIC ssl crypto )
+target_link_libraries( airmap-client PUBLIC ssl crypto Boost::date_time Boost::filesystem Boost::log Boost::program_options Boost::system Boost::thread )
 
 if (AIRMAP_ENABLE_QT)
   add_subdirectory(qt)

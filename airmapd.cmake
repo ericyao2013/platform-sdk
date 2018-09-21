@@ -30,7 +30,7 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}/src
 
-  ${Boost_INCLUDE_DIRS}
+  ${boost_SOURCE_DIR}
   ${OPENSSL_INCLUDE_DIRS})
 
 add_subdirectory(doc)
