@@ -5,6 +5,7 @@ jobs:
       xcode: "10.0.0"
     steps:
       - checkout
+      - run: tools/osx/setup.sh
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: mkdir build && cd build && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/ios.cmake ..
