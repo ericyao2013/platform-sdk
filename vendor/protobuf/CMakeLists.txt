@@ -19,4 +19,5 @@ FetchContent_GetProperties(protobuf)
 if(NOT protobuf_POPULATED)
     FetchContent_Populate(protobuf)
     add_subdirectory(${protobuf_SOURCE_DIR}/cmake ${protobuf_BINARY_DIR})
+    target_include_directories(libprotobuf INTERFACE ${protobuf_SOURCE_DIR}/src
 endif()
