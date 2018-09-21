@@ -244,7 +244,16 @@ if (AIRMAP_ENABLE_GRPC)
   )
 endif ()
 
-target_link_libraries( airmap-client PUBLIC crypto Boost::filesystem Boost::log Boost::program_options Boost::system Boost::thread Boost::date_time ssl )
+target_include_directories(
+    airmap-client PUBLIC
+    $<TARGET_PROPERTY:Boost::filesystem,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost::log,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost::program_options,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost::system,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost::thread,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost::date_time,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:ssl,INCLUDE_DIRECTORIES>
+)
 
 if (AIRMAP_ENABLE_QT)
   add_subdirectory(qt)
