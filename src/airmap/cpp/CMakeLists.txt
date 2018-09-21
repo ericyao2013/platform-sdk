@@ -22,23 +22,10 @@ if (AIRMAP_ENABLE_GRPC)
 endif ()
 
 target_link_libraries(
-  airmap-cpp
+  airmap-cpp PUBLIC
   airmap-mavlink
 
   ${CONDITIONAL_LIBRARIES}
-
-  date_time
-  filesystem
-  log
-  program_options
-  system
-  thread
-
-  crypto
-  ssl
-  decrepit
-
-  libprotobuf
 )
 
 install(

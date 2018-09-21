@@ -1,5 +1,3 @@
-include(../../vendor/boost/CMakeLists.txt)
-include(../../vendor/boringssl/CMakeLists.txt)
 set(
   AIRMAP_PLATFORM_SRCS
   platform/null/interface.h
@@ -246,7 +244,7 @@ if (AIRMAP_ENABLE_GRPC)
   )
 endif ()
 
-target_link_libraries( airmap-client PUBLIC ssl crypto Boost::date_time Boost::filesystem Boost::log Boost::program_options Boost::system Boost::thread )
+target_link_libraries( airmap-client PUBLIC crypto Boost::filesystem Boost::log Boost::program_options Boost::system Boost::thread Boost::date_time ssl )
 
 if (AIRMAP_ENABLE_QT)
   add_subdirectory(qt)

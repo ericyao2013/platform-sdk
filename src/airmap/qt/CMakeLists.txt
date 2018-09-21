@@ -49,19 +49,11 @@ if (AIRMAP_ENABLE_GRPC)
 endif ()
 
 target_link_libraries(
-  airmap-qt
+  airmap-qt PUBLIC
   airmap-mavlink
   airmap-cpp
 
   ${CONDITIONAL_LIBRARIES}
-
-  ${Boost_LIBRARIES}
-
-  OpenSSL::Crypto
-  OpenSSL::SSL
-  ${WE_NEED_BORINGSSLS_LIB_DECREPIT}
-
-  protobuf::libprotobuf
 
   Qt5::Core
 )

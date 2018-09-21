@@ -32,7 +32,7 @@ target_include_directories(
 )
 
 target_link_libraries(
-  airmap-monitor
+  airmap-monitor PUBLIC
 
   airmap-grpc
   airmap-codec-grpc

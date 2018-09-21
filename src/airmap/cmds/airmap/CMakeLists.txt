@@ -1,5 +1,6 @@
 include(../../../../vendor/boost/CMakeLists.txt)
 include(../../../../vendor/boringssl/CMakeLists.txt)
+include(../../../../vendor/protobuf/CMakeLists.txt)
 if (AIRMAP_ENABLE_GRPC)
   list(
     APPEND CONDITIONAL_SOURCES
@@ -94,23 +95,10 @@ if (AIRMAP_ENABLE_GRPC)
 endif()
 
 target_link_libraries(
-  airmap
+  airmap PUBLIC
   airmap-mavlink
 
   ${CONDITIONAL_LIBRARIES}
-
-  Boost::date_time
-  Boost::filesystem
-  Boost::log
-  Boost::program_options
-  Boost::system
-  Boost::thread
-
-  crypto
-  ssl
-  decrepit
-
-  libprotobuf
 )
 
 install(

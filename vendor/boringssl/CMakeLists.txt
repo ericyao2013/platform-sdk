@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.5)
 project(external-boringssl)
 
 include(FetchContent)
-include(ExternalProject)
 
 FetchContent_Declare(
     boringssl
@@ -20,4 +19,5 @@ if(NOT boringssl_POPULATED)
     set(CMAKE_CXX_FLAGS "-Wno-unused-parameter")
     set(CMAKE_C_FLAGS "-Wno-unused-parameter")
     add_subdirectory(${boringssl_SOURCE_DIR} ${boringssl_BINARY_DIR})
+    target_include_directories( ssl INTERFACE ${boringssl_SOURCE_DIR}/include )
 endif()

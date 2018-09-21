@@ -27,6 +27,21 @@ add_library(
   boost/udp_channel.cpp
 )
 
+target_link_libraries(airmap-mavlink PUBLIC
+  Boost::date_time
+  Boost::filesystem
+  Boost::log
+  Boost::program_options
+  Boost::system
+  Boost::thread
+
+  crypto
+  ssl
+  decrepit
+
+  libprotobuf
+)
+
 set_property(
   TARGET airmap-mavlink
   PROPERTY CXX_STANDARD 14)
