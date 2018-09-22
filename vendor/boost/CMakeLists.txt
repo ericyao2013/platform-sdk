@@ -14,7 +14,7 @@ include(FetchContent)
 
 set(
   AIRMAP_BOOST_COMPONENTS
-  "--with-date_time --with-filesystem --with-log --with-program_options --with-system --with-test --with-thread"
+  "--with-date_time --with-filesystem --with-log --with-program_options --with-test --with-system --with-thread"
 )
 
 if (${ANDROID})

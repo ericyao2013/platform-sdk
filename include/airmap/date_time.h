@@ -1,10 +1,15 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
 //
-//  date_time.h
-//  AirMap Platform SDK
-//
-//  Copyright © 2018 AirMap, Inc. All rights reserved.
-//
-
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #ifndef AIRMAP_DATE_TIME_H_
 #define AIRMAP_DATE_TIME_H_
 
@@ -86,11 +91,11 @@ class AIRMAP_EXPORT DateTime {
   friend std::string boost_iso::to_iso_string(const DateTime &datetime);
 };
 
-AIRMAP_EXPORT Hours hours(std::int32_t raw);
-AIRMAP_EXPORT Minutes minutes(std::int32_t raw);
-AIRMAP_EXPORT Seconds seconds(std::int32_t raw);
-AIRMAP_EXPORT Milliseconds milliseconds(std::int32_t raw);
-AIRMAP_EXPORT Microseconds microseconds(std::int32_t raw);
+AIRMAP_EXPORT Hours hours(std::int64_t raw);
+AIRMAP_EXPORT Minutes minutes(std::int64_t raw);
+AIRMAP_EXPORT Seconds seconds(std::int64_t raw);
+AIRMAP_EXPORT Milliseconds milliseconds(std::int64_t raw);
+AIRMAP_EXPORT Microseconds microseconds(std::int64_t raw);
 
 namespace detail {
 
@@ -115,11 +120,11 @@ class AIRMAP_EXPORT Duration {
   friend Microseconds DateTime::operator-(const DateTime &) const;
   friend Microseconds DateTime::time_of_day() const;
 
-  friend Hours airmap::hours(std::int32_t raw);
-  friend Minutes airmap::minutes(std::int32_t raw);
-  friend Seconds airmap::seconds(std::int32_t raw);
-  friend Milliseconds airmap::milliseconds(std::int32_t raw);
-  friend Microseconds airmap::microseconds(std::int32_t raw);
+  friend Hours airmap::hours(std::int64_t raw);
+  friend Minutes airmap::minutes(std::int64_t raw);
+  friend Seconds airmap::seconds(std::int64_t raw);
+  friend Milliseconds airmap::milliseconds(std::int64_t raw);
+  friend Microseconds airmap::microseconds(std::int64_t raw);
 };
 
 }  // namespace detail
