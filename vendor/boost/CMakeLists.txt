@@ -29,7 +29,7 @@ if (${ANDROID})
   endforeach ()
 
   configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/android/user-config.jam.in 
+    ${CMAKE_CURRENT_LIST_DIR}/android/user-config.jam.in 
     ${CMAKE_CURRENT_BINARY_DIR}/android/user-config.jam
   )
 

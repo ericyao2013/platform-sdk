@@ -19,6 +19,11 @@
 
 #include <fstream>
 
+
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#endif
+
 namespace cli = airmap::util::cli;
 namespace cmd = airmap::cmds::airmap::cmd;
 namespace fmt = airmap::util::fmt;
@@ -83,7 +88,9 @@ cmd::Init::Init()
         editor = le;
       }
 
+#if !defined(__ANDROID__) && !defined(TARGET_OS_IPHONE)
       std::system(fmt::sprintf("%s %s", editor, config_file_.get()).c_str());
+#endif
     }
 
     return 0;
