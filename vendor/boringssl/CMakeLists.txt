@@ -12,12 +12,14 @@ FetchContent_Declare(
     PREFIX boringssl
 )
 
+if(ANDROID)
 if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
     include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
 elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
     include_directories(${ANDROID_SYSROOT}/usr/include/aarch64-linux-android)
 else()
     include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
+endif()
 endif()
 
 FetchContent_GetProperties(boringssl)
