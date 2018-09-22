@@ -19,6 +19,7 @@ if (AIRMAP_ENABLE_GRPC)
 endif ()
 
 find_package(Git)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if (GIT_FOUND)
   execute_process(
