@@ -11,6 +11,7 @@ brew install \
   pkgconfig \
   openssl \
   qt \
+  protobuf \
   zlib || true
 
 ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/ || true
