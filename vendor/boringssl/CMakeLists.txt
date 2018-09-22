@@ -6,13 +6,15 @@ include(FetchContent)
 
 FetchContent_Declare(
     boringssl
-    GIT_REPOSITORY 	https://boringssl.googlesource.com/boringssl
-    GIT_TAG		fips-20180730
+#    GIT_REPOSITORY 	https://boringssl.googlesource.com/boringssl
+#    GIT_TAG		fips-20180730
     # URL https://boringssl.googlesource.com/boringssl/+archive/66005f41fbc3529ffe8d007708756720529da20d.tar.gz
+    URL file://${CMAKE_CURRENT_SOURCE_DIR}/boringssl-fips-20180730.tar.gz
     PREFIX boringssl
 )
 
 if(ANDROID)
+set(no-stdio ON)
 if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
     include_directories(${ANDROID_SYSROOT}/usr/include/arm-linux-androideabi)
 elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
