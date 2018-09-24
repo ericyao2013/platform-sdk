@@ -21,6 +21,9 @@ function(airmap_add_test name source)
       airmap-grpc airmap-monitor
     )
   endif ()
+  if (${ANDROID})
+    list( APPEND CONDITIONAL_LIBRARIES android log )
+  endif()
 
   add_executable(
     ${name}
@@ -29,7 +32,7 @@ function(airmap_add_test name source)
 
     ${source})
 
-  set_property(TARGET ${name} PROPERTY CXX_STANDARD 14)
+  set_property(TARGET ${name} PROPERTY CXX_STANDARD 17)
   target_link_libraries(
     ${name}
 
