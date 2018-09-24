@@ -209,10 +209,17 @@ add_library(
   pregenerated/telemetry.pb.cc
 )
 
+if(${ANDROID})
 set_property(
   TARGET airmap-client
   PROPERTY CXX_STANDARD 17
 )
+else()
+set_property(
+  TARGET airmap-client
+  PROPERTY CXX_STANDARD 14
+)
+endif()
 
 set_property(
   TARGET airmap-client

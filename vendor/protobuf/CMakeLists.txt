@@ -15,7 +15,9 @@ FetchContent_Declare(
     PATCH_COMMAND patch -p1 < ${CMAKE_CURRENT_LIST_DIR}/patches/fix-linking-for-android.patch
 )
 
+if(${ANDROID})
 set(protobuf_BUILD_TESTS OFF)
+endif()
 FetchContent_GetProperties(protobuf)
 if(NOT protobuf_POPULATED)
     FetchContent_Populate(protobuf)

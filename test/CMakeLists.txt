@@ -32,7 +32,12 @@ function(airmap_add_test name source)
 
     ${source})
 
+if(${ANDROID})
   set_property(TARGET ${name} PROPERTY CXX_STANDARD 17)
+else()
+  set_property(TARGET ${name} PROPERTY CXX_STANDARD 14)
+endif()
+
   target_link_libraries(
     ${name}
 
