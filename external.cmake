@@ -1,6 +1,6 @@
 set(AIRMAP_EXTERNAL_DEPENDENCIES_OUTPUT_PATH "${CMAKE_BINARY_DIR}/external")
 set(ENV{AIRMAP_EXTERNAL_DEPENDENCIES_OUTPUT_PATH} "${CMAKE_BINARY_DIR}/external")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 function (build_boost)
   set(trigger_build_dir ${CMAKE_BINARY_DIR}/force_boost)
