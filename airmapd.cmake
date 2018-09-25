@@ -3,19 +3,6 @@ include(CTest)
 # Cmake find modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-find_package(Boost 1.65.1 QUIET REQUIRED date_time filesystem log program_options system thread)
-find_package(OpenSSL REQUIRED)
-find_package(protobuf CONFIG REQUIRED)
-
-find_library(
-  WE_NEED_BORINGSSLS_LIB_DECREPIT libdecrepit.a
-  PATHS ${AIRMAP_EXTERNAL_DEPENDENCIES_OUTPUT_PATH}
-)
-
-if (NOT WE_NEED_BORINGSSLS_LIB_DECREPIT)
-  message(FATAL_ERROR "Failed to find libdecrepit.a")
-endif ()
-
 if (AIRMAP_ENABLE_GRPC)
   find_package(gRPC CONFIG REQUIRED)
 endif ()
@@ -43,12 +30,14 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}/src
 
-  ${Boost_INCLUDE_DIRS}
+  ${boost_SOURCE_DIR}
   ${OPENSSL_INCLUDE_DIRS})
 
 add_subdirectory(doc)
 add_subdirectory(interfaces)
-add_subdirectory(examples)
+if( AIRMAP_BUILD_EXAMPLES )
+    add_subdirectory(examples)
+endif ()
 add_subdirectory(src/airmap)
 add_subdirectory(test)
 
