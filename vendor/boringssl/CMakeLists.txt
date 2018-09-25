@@ -6,9 +6,6 @@ include(FetchContent)
 
 FetchContent_Declare(
     boringssl
-#    GIT_REPOSITORY 	https://boringssl.googlesource.com/boringssl
-#    GIT_TAG		fips-20180730
-    # URL https://boringssl.googlesource.com/boringssl/+archive/66005f41fbc3529ffe8d007708756720529da20d.tar.gz
     URL file://${CMAKE_CURRENT_LIST_DIR}/boringssl-fips-20180730.tar.gz
     PREFIX boringssl
 )

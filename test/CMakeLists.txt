@@ -1,6 +1,6 @@
-include(../vendor/boost/CMakeLists.txt)
-include(../vendor/protobuf/CMakeLists.txt)
-include(../vendor/boringssl/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/../vendor/boost/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/../vendor/protobuf/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/../vendor/boringssl/CMakeLists.txt)
 set(AIRMAP_TEST_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE PATH "place test logs in this directory")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} 3rd_party)
