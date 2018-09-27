@@ -1,0 +1,12 @@
+import os ;
+import toolset ;
+
+using darwin : 6.0~iphone : @CMAKE_CXX_COMPILER@ :
+    <cflags>-target <cflags>@CMAKE_C_COMPILER_TARGET@
+    @AIRMAP_BOOST_IOS_STANDARD_C_FLAGS@ <cflags>-fPIC
+    <cxxflags>-target <cxxflags>@CMAKE_CXX_COMPILER_TARGET@
+    @AIRMAP_BOOST_IOS_STANDARD_INCLUDE_DIRECTORIES@ 
+    @AIRMAP_BOOST_IOS_STANDARD_CXX_FLAGS@ 
+    <cxxflags>-std=c++14 <cxxflags>-fPIC
+    @AIRMAP_BOOST_IOS_STANDARD_CXX_LIBRARIES@
+    : @AIRMAP_BOOST_B2_COMMAND_SDK_LOC@ ;

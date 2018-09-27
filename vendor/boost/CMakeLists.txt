@@ -74,8 +74,32 @@ if (${ANDROID})
     set(AIRMAP_BOOST_B2_COMMAND_FLAGS_ARCHITECTURE architecture=ia64)
   endif ()
 else ()
-  set(AIRMAP_BOOST_CXX_FLAGS "cxxflags=-fPIC")
-endif ()
+  if (IOS_PLATFORM)
+    message(STATUS "Enabling ${IOS_PLATFORM} build for Boost - ${IOS_ARCH}")
+
+    string(REPLACE " " " <cflags>"    AIRMAP_BOOST_IOS_STANDARD_C_FLAGS       "<cflags>${CMAKE_C_FLAGS}")
+    string(REPLACE " " " <cxxflags>"  AIRMAP_BOOST_IOS_STANDARD_CXX_FLAGS     "<cxxflags>${CMAKE_CXX_FLAGS}")
+    string(REPLACE " " " <linkflags>" AIRMAP_BOOST_IOS_STANDARD_CXX_LIBRARIES "<linkflags>${CMAKE_CXX_STANDARD_LIBRARIES}")
+
+    configure_file(
+      ${CMAKE_CURRENT_LIST_DIR}/ios/user-config.jam.in
+      ${CMAKE_CURRENT_BINARY_DIR}/ios/user-config.jam
+    )
+
+    set(AIRMAP_BOOST_B2_COMMAND_FLAGS_USER_CONFIG --user-config=${CMAKE_CURRENT_BINARY_DIR}/ios/user-config.jam)
+    set(AIRMAP_BOOST_B2_COMMAND_FLAGS_TARGET_OS target-os=iphone)
+    set(AIRMAP_BOOST_B2_COMMAND_FLAGS_TOOLSET toolset=darwin)
+    set(AIRMAP_BOOST_B2_COMMAND_SDK_LOC <root>${CMAKE_IOS_SDK_ROOT})
+
+    if (IOS_PLATFORM STREQUAL "OS")
+      set(AIRMAP_BOOST_B2_COMMAND_FLAGS_ARCHITECTURE architecture=arm)
+    else ()
+      set(AIRMAP_BOOST_B2_COMMAND_FLAGS_ARCHITECTURE architecture=x86)
+    endif ()
+  else ()
+    set(AIRMAP_BOOST_CXX_FLAGS "cxxflags=-fPIC")
+  endif ()
+endif()
 
 if (AIRMAP_BOOST_B2_COMMAND_FLAGS_USER_CONFIG)
   message(STATUS "  user config: ${AIRMAP_BOOST_B2_COMMAND_FLAGS_USER_CONFIG}")
