@@ -45,12 +45,12 @@ endif()
 
     ${CONDITIONAL_LIBRARIES}
 
-    Boost::date_time
-    Boost::filesystem
-    Boost::log
-    Boost::program_options
-    Boost::system
-    Boost::thread
+    Boost_date_time
+    Boost_filesystem
+    Boost_log
+    Boost_program_options
+    Boost_system
+    Boost_thread
     crypto
     ssl
     decrepit

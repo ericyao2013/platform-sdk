@@ -1,3 +1,6 @@
+include( ${CMAKE_CURRENT_LIST_DIR}/../../vendor/boost/CMakeLists.txt )
+include( ${CMAKE_CURRENT_LIST_DIR}/../../vendor/boringssl/CMakeLists.txt )
+include( ${CMAKE_CURRENT_LIST_DIR}/../../vendor/protobuf/CMakeLists.txt )
 set(
   AIRMAP_PLATFORM_SRCS
   platform/null/interface.h
@@ -253,12 +256,12 @@ endif ()
 
 target_include_directories(
     airmap-client PUBLIC
-    $<TARGET_PROPERTY:Boost::filesystem,INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:Boost::log,INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:Boost::program_options,INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:Boost::system,INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:Boost::thread,INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:Boost::date_time,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost_filesystem,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost_log,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost_program_options,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost_system,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost_thread,INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Boost_date_time,INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:ssl,INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:libprotobuf,INCLUDE_DIRECTORIES>
 )
