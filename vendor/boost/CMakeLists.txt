@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.5)
-
 # This cmake setup builds boost in a way suitable for linking with
 # the AirMap platform SDK. 
 #
