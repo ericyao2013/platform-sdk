@@ -19,7 +19,7 @@ function(add_boost_libs)
   foreach(COMPONENT ${AIRMAP_BOOST_COMPONENTS})
    if(NOT (TARGET Boost_${COMPONENT} ) )
 	message("Creating Boost_${COMPONENT}")
-  	add_library( Boost_${COMPONENT} STATIC IMPORTED GLOBAL )
+  	add_library( Boost_${COMPONENT} STATIC IMPORTED)
 	add_dependencies( Boost_${COMPONENT} boost-build )
 	set_target_properties( Boost_${COMPONENT} PROPERTIES
 			IMPORTED_LOCATION ${boost_BINARY_DIR}/lib/libboost_${COMPONENT}.a
