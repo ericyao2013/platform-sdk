@@ -33,6 +33,7 @@ function(add_boost_libs)
   endforeach()
 endfunction()
 
+
 function(PREFIX_AND_SUFFIX var prefix suffix)
   set(listVar "")
   foreach(f ${ARGN})
@@ -154,4 +155,5 @@ if(NOT boost_POPULATED)
 	message(ERROR "Failed building boost. error: ${err}")
   endif()
 endif()
+include_directories( ${boost_BINARY_DIR}/include )
 add_boost_libs()
