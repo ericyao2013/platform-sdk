@@ -25,6 +25,8 @@ add_executable(
   cmd/end_flight_comms.cpp
   cmd/evaluate_rulesets.h
   cmd/evaluate_rulesets.cpp
+  cmd/find_elevation.h
+  cmd/find_elevation.cpp
   cmd/fetch_rules.h
   cmd/fetch_rules.cpp
   cmd/flags.h

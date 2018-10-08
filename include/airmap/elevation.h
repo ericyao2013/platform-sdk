@@ -8,6 +8,7 @@
 #include <airmap/geometry.h>
 #include <airmap/optional.h>
 #include <airmap/outcome.h>
+#include <airmap/visibility.h>
 
 #include <cstdint>
 #include <functional>
@@ -18,30 +19,30 @@
 namespace airmap {
 
 /// Elevation provides elevation data for all locations on the surface of the earth at a resolution of 10 meters.
-class Elevation : DoNotCopyOrMove {
+class AIRMAP_EXPORT Elevation : DoNotCopyOrMove {
  public:
   /// Bounds.
-  struct Bounds {
+  struct AIRMAP_EXPORT Bounds {
     std::vector<float> sw;
     std::vector<float> ne;
   };
 
   /// Stats.
-  struct Stats {
+  struct AIRMAP_EXPORT Stats {
     std::int32_t max;
     std::int32_t min;
     float avg;
   };
 
   /// Carpet.
-  struct Carpet {
+  struct AIRMAP_EXPORT Carpet {
     Bounds bounds;
     Stats stats;
     std::vector<std::vector<float>> carpet;
   };
 
   /// Path.
-  struct Path {
+  struct AIRMAP_EXPORT Path {
     std::vector<float> from;
     std::vector<float> to;
     std::vector<float> step;
@@ -50,7 +51,7 @@ class Elevation : DoNotCopyOrMove {
 
   /// GetElevationPoints bundles up types to ease interaction
   /// with Elevation::get_elevation*.
-  struct GetElevationPoints {
+  struct AIRMAP_EXPORT GetElevationPoints {
     /// Parameters bundles up input parameters.
     struct Parameters {
       Required<std::string> points;  ///< Array of latitude/longitude points.
@@ -64,7 +65,7 @@ class Elevation : DoNotCopyOrMove {
 
   /// GetElevationCarpet bundles up types to ease interaction
   /// with Elevation::get_elevation*.
-  struct GetElevationCarpet {
+  struct AIRMAP_EXPORT GetElevationCarpet {
     /// Parameters bundles up input parameters.
     struct Parameters {
       Required<std::string> points;  ///< Array of latitude/longitude points.
@@ -78,7 +79,7 @@ class Elevation : DoNotCopyOrMove {
 
   /// GetElevationPath bundles up types to ease interaction
   /// with Elevation::get_elevation*.
-  struct GetElevationPath {
+  struct AIRMAP_EXPORT GetElevationPath {
     /// Parameters bundles up input parameters.
     struct Parameters {
       Required<std::string> points;  ///< Array of latitude/longitude points.
