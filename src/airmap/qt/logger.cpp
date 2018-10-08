@@ -1,3 +1,15 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include <airmap/qt/logger.h>
 
 #include <airmap/qt/dispatcher.h>
@@ -24,13 +36,13 @@ QLoggingCategory& airmap::qt::Logger::logging_category() {
 void airmap::qt::Logger::log(Severity severity, const char* message, const char*) {
   switch (severity) {
     case Severity::debug:
-      qCDebug(logging_category(), message);
+      qCDebug(logging_category(), "%s", message);
       break;
     case Severity::info:
-      qCInfo(logging_category(), message);
+      qCInfo(logging_category(), "%s", message);
       break;
     case Severity::error:
-      qCWarning(logging_category(), message);
+      qCWarning(logging_category(), "%s", message);
       break;
     default:
       break;

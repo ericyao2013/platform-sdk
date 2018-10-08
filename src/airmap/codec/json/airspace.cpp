@@ -1,3 +1,15 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include <airmap/codec/json/airspace.h>
 
 #include <airmap/codec.h>
@@ -7,7 +19,7 @@
 #include <airmap/codec/json/rule.h>
 
 void airmap::codec::json::decode(const nlohmann::json& j, Airspace& airspace) {
-  airspace.set_id(j["airspace_uuid"].get<std::string>());
+  airspace.set_id(j["id"].get<std::string>());
   if (j.count("name") > 0 && !j["name"].is_null())
     airspace.set_name(j["name"].get<std::string>());
   if (j.count("country") > 0 && !j["country"].is_null())

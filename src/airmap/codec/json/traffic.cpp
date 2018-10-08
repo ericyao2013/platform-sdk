@@ -1,3 +1,15 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include <airmap/codec/json/traffic.h>
 
 #include <airmap/codec.h>
@@ -22,13 +34,13 @@ void airmap::codec::json::decode(const nlohmann::json& j, Traffic::Update& updat
     update.longitude = boost::lexical_cast<double>(numeric_value_as_string);
 
     get(numeric_value_as_string, j, "altitude");
-    update.altitude = boost::lexical_cast<double>(numeric_value_as_string);
+    boost::conversion::try_lexical_convert(numeric_value_as_string, update.altitude);
 
     get(numeric_value_as_string, j, "ground_speed_kts");
-    update.ground_speed = boost::lexical_cast<double>(numeric_value_as_string);
+    boost::conversion::try_lexical_convert(numeric_value_as_string, update.ground_speed);
 
     get(numeric_value_as_string, j, "true_heading");
-    update.heading = boost::lexical_cast<double>(numeric_value_as_string);
+    boost::conversion::try_lexical_convert(numeric_value_as_string, update.heading);
   }
 
   std::string tss;

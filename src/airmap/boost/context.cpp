@@ -1,6 +1,16 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include <airmap/boost/context.h>
-
-#include <airmap/monitor/grpc/client.h>
 
 #include <airmap/net/http/boost/requester.h>
 #include <airmap/net/mqtt/boost/broker.h>
@@ -69,14 +79,6 @@ void airmap::boost::Context::create_client_with_configuration(const Client::Conf
   auto mqtt_broker = std::make_shared<net::mqtt::boost::Broker>(configuration.traffic.host, configuration.traffic.port,
                                                                 log_.logger(), io_service_);
   cb(ClientCreateResult{std::make_shared<rest::Client>(configuration, sp, udp_sender, requesters, mqtt_broker)});
-}
-
-void airmap::boost::Context::create_monitor_client_with_configuration(
-    const monitor::Client::Configuration& configuration, const MonitorClientCreateCallback& cb) {
-  auto sp     = shared_from_this();
-  auto client = std::make_shared<monitor::grpc::Client>(configuration, sp);
-
-  dispatch([cb, client]() { cb(MonitorClientCreateResult{client}); });
 }
 
 airmap::Context::ReturnCode airmap::boost::Context::exec(const SignalSet& signal_set,
@@ -288,3 +290,24 @@ std::shared_ptr<airmap::net::http::Requester> airmap::boost::Context::sso(
       net::http::boost::Requester::create(host, ::boost::lexical_cast<std::uint16_t>(port), log_.logger(), io_service_,
                                           net::http::boost::Requester::request_factory_for_protocol(protocol)));
 }
+
+#if defined(AIRMAP_ENABLE_GRPC)
+
+#include <airmap/monitor/grpc/client.h>
+
+void airmap::boost::Context::create_monitor_client_with_configuration(
+    const monitor::Client::Configuration& configuration, const MonitorClientCreateCallback& cb) {
+  auto sp     = shared_from_this();
+  auto client = std::make_shared<monitor::grpc::Client>(configuration, sp);
+
+  dispatch([cb, client]() { cb(MonitorClientCreateResult{client}); });
+}
+
+#else    // AIRMAP_ENABLE_GRPC
+
+void airmap::boost::Context::create_monitor_client_with_configuration(
+    const monitor::Client::Configuration& configuration, const MonitorClientCreateCallback& cb) {
+  throw std::runtime_error{"not implemented"};
+}
+
+#endif  // AIRMAP_ENABLE_GRPC

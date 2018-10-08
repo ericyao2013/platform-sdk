@@ -1,3 +1,15 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include <airmap/net/http/requester.h>
 
 #include <boost/uuid/uuid.hpp>
@@ -60,7 +72,7 @@ void airmap::net::http::LoggingRequester::delete_(const std::string& path,
     r << "  " << pair.first << "=" << pair.second << "\n";
   }
 
-  next_->delete_(path, std::move(query), std::move(headers), [ this, uuid, cb = std::move(cb) ](const auto& result) {
+  next_->delete_(path, std::move(query), std::move(headers), [this, uuid, cb = std::move(cb)](const auto& result) {
     auto it       = request_start_timestamps_.find(uuid);
     auto duration = Clock::universal_time() - it->second;
     request_start_timestamps_.erase(it);
@@ -101,7 +113,7 @@ void airmap::net::http::LoggingRequester::get(const std::string& path,
     r << "  " << pair.first << "=" << pair.second << "\n";
   }
 
-  next_->get(path, std::move(query), std::move(headers), [ this, uuid, cb = std::move(cb) ](const auto& result) {
+  next_->get(path, std::move(query), std::move(headers), [this, uuid, cb = std::move(cb)](const auto& result) {
     auto it       = request_start_timestamps_.find(uuid);
     auto duration = Clock::universal_time() - it->second;
     request_start_timestamps_.erase(it);
@@ -140,7 +152,7 @@ void airmap::net::http::LoggingRequester::patch(const std::string& path,
   r << "body:\n"
     << "  " << body;
 
-  next_->patch(path, std::move(headers), std::move(body), [ this, uuid, cb = std::move(cb) ](const auto& result) {
+  next_->patch(path, std::move(headers), std::move(body), [this, uuid, cb = std::move(cb)](const auto& result) {
     auto it       = request_start_timestamps_.find(uuid);
     auto duration = Clock::universal_time() - it->second;
     request_start_timestamps_.erase(it);
@@ -179,7 +191,7 @@ void airmap::net::http::LoggingRequester::post(const std::string& path,
   r << "body:\n"
     << "  " << body;
 
-  next_->post(path, std::move(headers), std::move(body), [ this, uuid, cb = std::move(cb) ](const auto& result) {
+  next_->post(path, std::move(headers), std::move(body), [this, uuid, cb = std::move(cb)](const auto& result) {
     auto it       = request_start_timestamps_.find(uuid);
     auto duration = Clock::universal_time() - it->second;
     request_start_timestamps_.erase(it);

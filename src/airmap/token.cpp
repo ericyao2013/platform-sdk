@@ -1,9 +1,23 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include <airmap/token.h>
 
 #include <airmap/codec.h>
 
 #include <iostream>
 #include <stdexcept>
+
+#include <jwt/jwt.hpp>
 
 airmap::Token airmap::Token::load_from_json(std::istream& in) {
   Token result = nlohmann::json::parse(in);
@@ -47,6 +61,14 @@ airmap::Token& airmap::Token::operator=(Token&& token) {
 
 airmap::Token::Type airmap::Token::type() const {
   return type_;
+}
+
+const std::string airmap::Token::pilot_id() const {
+  auto dec_obj = jwt::decode(id(), jwt::params::algorithms({"hs256"}), jwt::params::verify(false));
+  std::ostringstream oss;
+  oss << dec_obj.payload();
+  auto j = nlohmann::json::parse(oss.str());
+  return j["sub"];
 }
 
 const std::string& airmap::Token::id() const {

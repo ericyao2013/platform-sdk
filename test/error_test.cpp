@@ -1,3 +1,15 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #define BOOST_TEST_MODULE error
 
 #include <airmap/error.h>
@@ -306,8 +318,10 @@ BOOST_AUTO_TEST_CASE(error_insertion_operator_outputs_correct_string) {
                  }})
           .value(airmap::Error::Value{std::string{"vector"}},
                  airmap::Error::Value{std::vector<airmap::Error::Value>{
-                     airmap::Error::Value{false}, airmap::Error::Value{std::int64_t{42}},
-                     airmap::Error::Value{double{42.}}, airmap::Error::Value{std::string{"42"}},
+                     airmap::Error::Value{false},
+                     airmap::Error::Value{std::int64_t{42}},
+                     airmap::Error::Value{double{42.}},
+                     airmap::Error::Value{std::string{"42"}},
                      airmap::Error::Value{std::vector<std::uint8_t>{'4', '2'}},
                  }});
 

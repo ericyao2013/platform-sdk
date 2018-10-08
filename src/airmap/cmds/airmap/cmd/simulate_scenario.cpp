@@ -1,3 +1,15 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include <airmap/cmds/airmap/cmd/simulate_scenario.h>
 
 #include <airmap/client.h>
@@ -51,7 +63,7 @@ constexpr float p4                        = 0.;
 }  // namespace mavlink
 
 const std::string device_name = boost::asio::ip::host_name();
-const airmap::Microseconds duration(airmap::microseconds(60 * 1000 * 1000));
+const airmap::Seconds duration(airmap::seconds(60));
 constexpr const char* component{"simulate-scenario-cli"};
 
 class TcpRouteMonitor : public airmap::mavlink::boost::TcpRoute::Monitor {
@@ -202,6 +214,10 @@ cmd::SimulateScenario::SimulateScenario()
     }
     util::Scenario scenario = json::parse(in);
 
+    if (!scenario.duration) {
+      scenario.duration = duration;
+    }
+
     collector_ = std::make_shared<Collector>(scenario);
     runner_    = std::make_shared<util::ScenarioSimulator::Runner>(5);
     context_   = ::airmap::boost::Context::create(log_.logger());
@@ -233,9 +249,10 @@ cmd::SimulateScenario::SimulateScenario()
                "  telemetry.host:            %s\n"
                "  telemetry.port:            %d\n"
                "  mavlink router (tcp) port: %d\n"
-               "  credentials.api_key:       %s",
+               "  credentials.api_key:       %s\n"
+               "  duration:                  %s",
                config.host, config.version, config.telemetry.host, config.telemetry.port,
-               params_.mavlink_router_endpoint_port, config.credentials.api_key);
+               params_.mavlink_router_endpoint_port, config.credentials.api_key, scenario.duration);
 
     context_->create_client_with_configuration(config, [this](const auto& result) mutable {
       if (not result) {
@@ -362,7 +379,7 @@ void cmd::SimulateScenario::request_create_flight_for(util::Scenario::Participan
   const auto& polygon  = participant->geometry.details_for_polygon();
   params.authorization = participant->authentication.get();
   params.start_time    = Clock::universal_time();
-  params.end_time      = Clock::universal_time() + duration;
+  params.end_time      = Clock::universal_time() + collector_->scenario().duration.get();
   params.aircraft_id   = participant->aircraft.id;
   params.latitude      = polygon.outer_ring.coordinates[0].latitude;
   params.longitude     = polygon.outer_ring.coordinates[0].longitude;
@@ -380,11 +397,12 @@ void cmd::SimulateScenario::handle_create_flight_result_for(util::Scenario::Part
     request_traffic_monitoring_for(participant);
     request_start_flight_comms_for(participant);
 
-    context_->schedule_in(duration, [this, participant]() {
-      client_->flights().end_flight_communications(
-          {participant->authentication.get(), participant->flight.get().id},
-          std::bind(&SimulateScenario::handle_end_flight_comms, this, participant, ph::_1));
-    });
+    context_->schedule_in(microseconds(collector_->scenario().duration.get().total_microseconds()),
+                          [this, participant]() {
+                            client_->flights().end_flight_communications(
+                                {participant->authentication.get(), participant->flight.get().id},
+                                std::bind(&SimulateScenario::handle_end_flight_comms, this, participant, ph::_1));
+                          });
 
   } else {
     log_.errorf(component, "failed to create flight for polygon: %s", result.error());

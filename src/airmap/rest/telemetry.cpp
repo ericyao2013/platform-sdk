@@ -1,9 +1,21 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include <airmap/rest/telemetry.h>
 
 #include <airmap/flight.h>
 #include <airmap/util/fmt.h>
 
-#include "telemetry.pb.h"
+#include <airmap/pregenerated/telemetry.pb.h>
 
 #include <boost/beast/core/detail/base64.hpp>
 
@@ -30,11 +42,7 @@ bool init_once() {
   ERR_load_crypto_strings();
   OpenSSL_add_all_algorithms();
   OPENSSL_config(NULL);
-#if ((OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER))
   CRYPTO_malloc_init();
-#else
-  OPENSSL_malloc_init();
-#endif
   // A word on seeding the PRNG used by SSL. On all the platforms we
   // care about, the PRNG is transparently seeded by using underlying
   // platform facilities, e.g., /dev/urandom on Posix-like platforms.

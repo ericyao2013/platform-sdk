@@ -1,3 +1,15 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include <airmap/mavlink/boost/tcp_route.h>
 
 namespace {
@@ -45,7 +57,7 @@ void airmap::mavlink::boost::TcpRoute::stop() {
 
 // From Route
 void airmap::mavlink::boost::TcpRoute::process(const mavlink_message_t& message) {
-  io_service_->post([ sp = shared_from_this(), message ]() {
+  io_service_->post([sp = shared_from_this(), message]() {
     for (const auto& session : sp->sessions_)
       session->process(message);
   });
@@ -83,7 +95,7 @@ void airmap::mavlink::boost::TcpRoute::Session::process(const mavlink_message_t&
   EncodedBuffer eb;
   eb.set_size(mavlink_msg_to_send_buffer(eb.data(), &message));
 
-  io_service_->post([ sp = shared_from_this(), eb = std::move(eb) ]() {
+  io_service_->post([sp = shared_from_this(), eb = std::move(eb)]() {
     sp->buffers_.emplace(eb);
     if (sp->buffers_.size() == 1)
       sp->process();
@@ -93,8 +105,8 @@ void airmap::mavlink::boost::TcpRoute::Session::process(const mavlink_message_t&
 void airmap::mavlink::boost::TcpRoute::Session::process() {
   const auto& eb = buffers_.front();
 
-  ::boost::asio::async_write(socket_, ::boost::asio::buffer(eb.data(), eb.size()),
-                             ::boost::asio::transfer_all(), [sp = shared_from_this()](const auto& error, auto) {
+  ::boost::asio::async_write(socket_, ::boost::asio::buffer(eb.data(), eb.size()), ::boost::asio::transfer_all(),
+                             [sp = shared_from_this()](const auto& error, auto) {
                                sp->buffers_.pop();
 
                                if (error) {
