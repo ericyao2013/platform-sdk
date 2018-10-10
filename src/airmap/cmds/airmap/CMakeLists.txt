@@ -23,12 +23,12 @@ add_executable(
   cmd/end_flight.cpp
   cmd/end_flight_comms.h
   cmd/end_flight_comms.cpp
-  cmd/evaluate_rulesets.h
-  cmd/evaluate_rulesets.cpp
-  cmd/find_elevation.h
-  cmd/find_elevation.cpp
+  cmd/evaluate.h
+  cmd/evaluate.cpp
   cmd/fetch_rules.h
   cmd/fetch_rules.cpp
+  cmd/find_elevation.h
+  cmd/find_elevation.cpp
   cmd/flags.h
   cmd/flags.cpp
   cmd/get_advisories.h
