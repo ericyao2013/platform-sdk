@@ -13,11 +13,8 @@
 #ifndef AIRMAP_ELEVATION_H_
 #define AIRMAP_ELEVATION_H_
 
-#include <airmap/airspace.h>
-#include <airmap/date_time.h>
 #include <airmap/do_not_copy_or_move.h>
 #include <airmap/error.h>
-#include <airmap/geometry.h>
 #include <airmap/optional.h>
 #include <airmap/outcome.h>
 #include <airmap/visibility.h>
