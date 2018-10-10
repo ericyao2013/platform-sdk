@@ -110,6 +110,8 @@ add_library(
   codec/json/credentials.cpp
   codec/json/date_time.h
   codec/json/date_time.cpp
+  codec/json/elevation.h
+  codec/json/elevation.cpp
   codec/json/evaluation.h
   codec/json/evaluation.cpp
   codec/json/flight_plan.h

@@ -10,25 +10,27 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#ifndef AIRMAP_CODEC_HTTP_QUERY_ELEVATION_H_
-#define AIRMAP_CODEC_HTTP_QUERY_ELEVATION_H_
+#ifndef AIRMAP_CODEC_JSON_ELEVATION_H_
+#define AIRMAP_CODEC_JSON_ELEVATION_H_
 
 #include <airmap/elevation.h>
 
-#include <unordered_map>
+#include <nlohmann/json.hpp>
+
+#include <string>
 
 namespace airmap {
 namespace codec {
-namespace http {
-namespace query {
+namespace json {
 
-void encode(std::unordered_map<std::string, std::string>& query, const Elevation::GetElevationPoints::Parameters& parameters);
-void encode(std::unordered_map<std::string, std::string>& query, const Elevation::GetElevationCarpet::Parameters& parameters);
-void encode(std::unordered_map<std::string, std::string>& query, const Elevation::GetElevationPath::Parameters& parameters);
+void decode(const nlohmann::json& j, Elevation::Carpet& carpet);
+void decode(const nlohmann::json& j, Elevation::Path& path);
+void decode(const nlohmann::json& j, std::vector<Elevation::Path>& v);
+void decode(const nlohmann::json& j, Elevation::Bounds& bounds);
+void decode(const nlohmann::json& j, Elevation::Stats& stats);
 
-}  // namespace query
-}  // namespace http
+}  // namespace json
 }  // namespace codec
 }  // namespace airmap
 
-#endif  // AIRMAP_CODEC_HTTP_QUERY_ELEVATION_H_
+#endif  // AIRMAP_CODEC_JSON_ELEVATION_H_

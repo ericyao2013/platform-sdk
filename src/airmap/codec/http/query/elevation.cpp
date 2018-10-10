@@ -31,3 +31,15 @@ void airmap::codec::http::query::encode(std::unordered_map<std::string, std::str
   if (parameters.points)
     query["points"] = parameters.points.get();
 }
+
+void airmap::codec::http::query::encode(std::unordered_map<std::string, std::string>& query,
+                                        const Elevation::GetElevationCarpet::Parameters& parameters) {
+  if (parameters.points)
+    query["points"] = parameters.points.get();
+}
+
+void airmap::codec::http::query::encode(std::unordered_map<std::string, std::string>& query,
+                                        const Elevation::GetElevationPath::Parameters& parameters) {
+  if (parameters.points)
+    query["points"] = parameters.points.get();
+}
