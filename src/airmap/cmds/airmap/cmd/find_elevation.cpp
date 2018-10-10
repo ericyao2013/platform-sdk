@@ -29,11 +29,35 @@ namespace {
 
 constexpr const char* component{"find-elevation"};
 
-void print_elevation(std::ostream& out, const std::vector<std::int32_t>& v) {
+void print_elevation_points(std::ostream& out, const std::vector<std::int32_t>& v) {
   cli::TabWriter tw;
   tw << "elevation" << cli::TabWriter::NewLine{};
   for (const auto& e : v)
     tw << e << cli::TabWriter::NewLine{};
+  tw.flush(out);
+}
+
+void print_elevation_carpet(std::ostream& out, const airmap::Elevation::Carpet c) {
+  cli::TabWriter tw;
+  tw << "max"
+     << "min"
+     << "avg";
+
+  tw << cli::TabWriter::NewLine{};
+  tw << c.stats.max << c.stats.min << c.stats.avg;
+
+  tw << cli::TabWriter::NewLine{};
+  tw.flush(out);
+}
+
+void print_elevation_path(std::ostream& out, const std::vector<airmap::Elevation::Path>& v) {
+  cli::TabWriter tw;
+  tw << "profile" << cli::TabWriter::NewLine{};
+  for (const auto& p : v) {
+    for (const auto& pr : p.profile) {
+      tw << pr << cli::TabWriter::NewLine{};
+    }
+  }
   tw.flush(out);
 }
 
@@ -46,7 +70,7 @@ cmd::FindElevation::FindElevation()
   flag(flags::log_level(log_level_));
   flag(flags::config_file(config_file_));
   flag(cli::make_flag("points", "comma-separated list of coordinates", points_));
-  flag(cli::make_flag("type", "type of elevation query (points, carpet, or path", type_));
+  flag(cli::make_flag("type", "type of elevation query (points, carpet, or path)", type_));
 
   action([this](const cli::Command::Context& ctxt) {
     log_ = util::FormattingLogger{create_filtering_logger(log_level_, create_default_logger(ctxt.cerr))};
@@ -73,8 +97,8 @@ cmd::FindElevation::FindElevation()
       return 1;
     }
 
-    auto context = result.value();
-    auto config  = Client::load_configuration_from_json(in_config);
+    context_    = result.value();
+    auto config = Client::load_configuration_from_json(in_config);
 
     log_.infof(component,
                "client configuration:\n"
@@ -85,43 +109,78 @@ cmd::FindElevation::FindElevation()
                "  credentials.api_key: %s\n",
                config.host, config.version, config.telemetry.host, config.telemetry.port, config.credentials.api_key);
 
-    context->create_client_with_configuration(
-        config, [this, &ctxt, context](const ::airmap::Context::ClientCreateResult& result) {
+    context_->create_client_with_configuration(
+        config, [this, &ctxt](const ::airmap::Context::ClientCreateResult& result) {
           if (not result) {
             log_.errorf(component, "failed to create client: %s", result.error());
-            context->stop(::airmap::Context::ReturnCode::error);
+            context_->stop(::airmap::Context::ReturnCode::error);
             return;
           }
 
-          auto client = result.value();
+          client_ = result.value();
 
           if (type_.get().string() == "carpet") {
+            Elevation::GetElevationCarpet::Parameters params;
+            params.points = points_.get();
+            client_->elevation().get_elevation_carpet(params, std::bind(&FindElevation::handle_elevation_carpet_result,
+                                                                        this, std::placeholders::_1, std::ref(ctxt)));
           } else if (type_.get().string() == "path") {
+            Elevation::GetElevationPath::Parameters params;
+            params.points = points_.get();
+            client_->elevation().get_elevation_path(params, std::bind(&FindElevation::handle_elevation_path_result,
+                                                                      this, std::placeholders::_1, std::ref(ctxt)));
           } else {
             Elevation::GetElevationPoints::Parameters params;
-            auto handler = [this, &ctxt, context, client](const Elevation::GetElevationPoints::Result& result) {
-              if (result) {
-                log_.infof(component, "succesfully obtained elevation for list of coordinates\n");
-                print_elevation(ctxt.cout, result.value());
-                context->stop();
-              } else {
-                log_.errorf(component, "failed to obtain elevation: %s", result.error());
-                context->stop(::airmap::Context::ReturnCode::error);
-                return;
-              }
-            };
-
             params.points = points_.get();
-            client->elevation().get_elevation_points(params, handler);
+            client_->elevation().get_elevation_points(params, std::bind(&FindElevation::handle_elevation_points_result,
+                                                                        this, std::placeholders::_1, std::ref(ctxt)));
           }
         });
 
-    return context->exec({SIGINT, SIGQUIT},
-                         [this, context](int sig) {
-                           log_.infof(component, "received [%s], shutting down", ::strsignal(sig));
-                           context->stop();
-                         }) == ::airmap::Context::ReturnCode::success
+    return context_->exec({SIGINT, SIGQUIT},
+                          [this](int sig) {
+                            log_.infof(component, "received [%s], shutting down", ::strsignal(sig));
+                            context_->stop();
+                          }) == ::airmap::Context::ReturnCode::success
                ? 0
                : 1;
   });
+}
+
+void cmd::FindElevation::handle_elevation_points_result(const Elevation::GetElevationPoints::Result& result,
+                                                        ConstContextRef context) {
+  if (result) {
+    log_.infof(component, "succesfully obtained elevation for points\n");
+    print_elevation_points(context.get().cout, result.value());
+    context_->stop();
+  } else {
+    log_.errorf(component, "failed to obtain elevation: %s", result.error());
+    context_->stop(::airmap::Context::ReturnCode::error);
+    return;
+  }
+}
+
+void cmd::FindElevation::handle_elevation_carpet_result(const Elevation::GetElevationCarpet::Result& result,
+                                                        ConstContextRef context) {
+  if (result) {
+    log_.infof(component, "succesfully obtained elevation for carpet\n");
+    print_elevation_carpet(context.get().cout, result.value());
+    context_->stop();
+  } else {
+    log_.errorf(component, "failed to obtain elevation: %s", result.error());
+    context_->stop(::airmap::Context::ReturnCode::error);
+    return;
+  }
+}
+void cmd::FindElevation::handle_elevation_path_result(const Elevation::GetElevationPath::Result& result,
+                                                      ConstContextRef context) {
+  if (result) {
+    log_.infof(component, "succesfully obtained elevation for path\n");
+    print_elevation_path(context.get().cout, result.value());
+    context_->stop();
+  } else {
+    log_.errorf(component, "failed to obtain elevation: %s", result.error());
+    context_->stop(::airmap::Context::ReturnCode::error);
+    return;
+  }
 }
