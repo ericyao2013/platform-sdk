@@ -96,9 +96,7 @@ cmd::FindElevation::FindElevation()
           auto client = result.value();
 
           if (type_.get().string() == "carpet") {
-
           } else if (type_.get().string() == "path") {
-
           } else {
             Elevation::GetElevationPoints::Parameters params;
             auto handler = [this, &ctxt, context, client](const Elevation::GetElevationPoints::Result& result) {

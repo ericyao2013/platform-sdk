@@ -51,7 +51,7 @@ class AIRMAP_EXPORT Elevation : DoNotCopyOrMove {
   struct AIRMAP_EXPORT Carpet {
     Bounds bounds;                           ///< Bounds of the carpet.
     Stats stats;                             ///< Elevation statistics.
-    std::vector<std::vector<float>> carpet;  ///< Array of rows orientated south-west to north-east.            
+    std::vector<std::vector<float>> carpet;  ///< Array of rows orientated south-west to north-east.
   };
 
   /// Path bundles up the profile of the path described by the given latitude/longitude milestones.
@@ -81,7 +81,8 @@ class AIRMAP_EXPORT Elevation : DoNotCopyOrMove {
   struct AIRMAP_EXPORT GetElevationCarpet {
     /// Parameters bundles up input parameters.
     struct Parameters {
-      Required<std::string> points;  ///< Array of latitude/longitude points of the south-west and north-east corners of the rectangle.
+      Required<std::string>
+          points;  ///< Array of latitude/longitude points of the south-west and north-east corners of the rectangle.
     };
     /// Result models the outcome of calling Elevation::get_elevation*.
     using Result = Outcome<Carpet, Error>;
@@ -104,18 +105,20 @@ class AIRMAP_EXPORT Elevation : DoNotCopyOrMove {
     using Callback = std::function<void(const Result&)>;
   };
 
-
   /// get_elevation_points searches elevations for 'parameters' and reports
   /// results back to 'cb'.
-  virtual void get_elevation_points(const GetElevationPoints::Parameters& parameters, const GetElevationPoints::Callback& cb) = 0;
+  virtual void get_elevation_points(const GetElevationPoints::Parameters& parameters,
+                                    const GetElevationPoints::Callback& cb) = 0;
 
   /// get_elevation_carpet searches elevations for 'parameters' and reports
   /// results back to 'cb'.
-  virtual void get_elevation_carpet(const GetElevationCarpet::Parameters& parameters, const GetElevationCarpet::Callback& cb) = 0;
+  virtual void get_elevation_carpet(const GetElevationCarpet::Parameters& parameters,
+                                    const GetElevationCarpet::Callback& cb) = 0;
 
   /// get_elevation_path searches elevations for 'parameters' and reports
   /// results back to 'cb'.
-  virtual void get_elevation_path(const GetElevationPath::Parameters& parameters, const GetElevationPath::Callback& cb) = 0;
+  virtual void get_elevation_path(const GetElevationPath::Parameters& parameters,
+                                  const GetElevationPath::Callback& cb) = 0;
 
  protected:
   /// @cond
