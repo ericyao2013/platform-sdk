@@ -1,3 +1,15 @@
+// AirMap Platform SDK
+// Copyright © 2018 AirMap, Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include <airmap/cmds/airmap/cmd/find_elevation.h>
 
 #include <airmap/client.h>
@@ -34,6 +46,7 @@ cmd::FindElevation::FindElevation()
   flag(flags::log_level(log_level_));
   flag(flags::config_file(config_file_));
   flag(cli::make_flag("points", "comma-separated list of coordinates", points_));
+  flag(cli::make_flag("type", "type of elevation query (points, carpet, or path", type_));
 
   action([this](const cli::Command::Context& ctxt) {
     log_ = util::FormattingLogger{create_filtering_logger(log_level_, create_default_logger(ctxt.cerr))};
@@ -82,20 +95,27 @@ cmd::FindElevation::FindElevation()
 
           auto client = result.value();
 
-          auto handler = [this, &ctxt, context, client](const Elevation::GetElevationPoints::Result& result) {
-            if (result) {
-              log_.infof(component, "succesfully obtained elevation for list of coordinates\n");
-              print_elevation(ctxt.cout, result.value());
-              context->stop();
-            } else {
-              log_.errorf(component, "failed to obtain elevation: %s", result.error());
-              context->stop(::airmap::Context::ReturnCode::error);
-              return;
-            }
-          };
+          if (type_.get().string() == "carpet") {
 
-          params_.points = points_.get();
-          client->elevation().get_elevation_points(params_, handler);
+          } else if (type_.get().string() == "path") {
+
+          } else {
+            Elevation::GetElevationPoints::Parameters params;
+            auto handler = [this, &ctxt, context, client](const Elevation::GetElevationPoints::Result& result) {
+              if (result) {
+                log_.infof(component, "succesfully obtained elevation for list of coordinates\n");
+                print_elevation(ctxt.cout, result.value());
+                context->stop();
+              } else {
+                log_.errorf(component, "failed to obtain elevation: %s", result.error());
+                context->stop(::airmap::Context::ReturnCode::error);
+                return;
+              }
+            };
+
+            params.points = points_.get();
+            client->elevation().get_elevation_points(params, handler);
+          }
         });
 
     return context->exec({SIGINT, SIGQUIT},
