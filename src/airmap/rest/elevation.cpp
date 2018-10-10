@@ -46,3 +46,21 @@ void airmap::rest::Elevation::get_elevation_points(const GetElevationPoints::Par
   requester_->get("/ele/", std::move(query), std::move(headers),
                   net::http::jsend_parsing_request_callback<std::vector<std::int32_t>>(cb));
 }
+
+void airmap::rest::Elevation::get_elevation_carpet(const GetElevationCarpet::Parameters& parameters,
+                                                   const GetElevationCarpet::Callback& cb) {
+  std::unordered_map<std::string, std::string> query, headers;
+  codec::http::query::encode(query, parameters);
+
+  requester_->get("/ele/carpet/", std::move(query), std::move(headers),
+                  net::http::jsend_parsing_request_callback<Carpet>(cb));
+}
+
+void airmap::rest::Elevation::get_elevation_path(const GetElevationPath::Parameters& parameters,
+                                                 const GetElevationPath::Callback& cb) {
+  std::unordered_map<std::string, std::string> query, headers;
+  codec::http::query::encode(query, parameters);
+
+  requester_->get("/ele/path/", std::move(query), std::move(headers),
+                  net::http::jsend_parsing_request_callback<std::vector<Path>>(cb));
+}

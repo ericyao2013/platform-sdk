@@ -30,3 +30,21 @@ void airmap::qt::Elevation::get_elevation_points(const GetElevationPoints::Param
     });
   });
 }
+
+void airmap::qt::Elevation::get_elevation_carpet(const GetElevationCarpet::Parameters& parameters,
+                                                 const GetElevationCarpet::Callback& cb) {
+  dispatcher_->dispatch_to_native([this, sp = shared_from_this(), parameters, cb]() {
+    sp->client_->elevation().get_elevation_carpet(parameters, [this, sp, cb](const auto& result) {
+      sp->dispatcher_->dispatch_to_qt([sp, result, cb]() { cb(result); });
+    });
+  });
+}
+
+void airmap::qt::Elevation::get_elevation_points(const GetElevationPath::Parameters& parameters,
+                                                 const GetElevationPath::Callback& cb) {
+  dispatcher_->dispatch_to_native([this, sp = shared_from_this(), parameters, cb]() {
+    sp->client_->elevation().get_elevation_path(parameters, [this, sp, cb](const auto& result) {
+      sp->dispatcher_->dispatch_to_qt([sp, result, cb]() { cb(result); });
+    });
+  });
+}

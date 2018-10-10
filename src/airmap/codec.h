@@ -36,6 +36,7 @@
 #include <airmap/codec/json/client.h>
 #include <airmap/codec/json/credentials.h>
 #include <airmap/codec/json/date_time.h>
+#include <airmap/codec/json/elevation.h>
 #include <airmap/codec/json/evaluation.h>
 #include <airmap/codec/json/flight.h>
 #include <airmap/codec/json/flight_plan.h>

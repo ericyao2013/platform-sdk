@@ -29,6 +29,10 @@ class Elevation : public airmap::Elevation, public std::enable_shared_from_this<
 
   void get_elevation_points(const GetElevationPoints::Parameters& parameters,
                             const GetElevationPoints::Callback& cb) override;
+  void get_elevation_carpet(const GetElevationCarpet::Parameters& parameters,
+                            const GetElevationCarpet::Callback& cb) override;
+  void get_elevation_path(const GetElevationPath::Parameters& parameters,
+                          const GetElevationPath::Callback& cb) override;
 
  private:
   explicit Elevation(const std::shared_ptr<Dispatcher>& dispatcher, const std::shared_ptr<airmap::Client>& client);
