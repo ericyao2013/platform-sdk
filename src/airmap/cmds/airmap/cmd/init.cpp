@@ -87,8 +87,6 @@ cmd::Init::Init()
       } else if (auto le = std::getenv("EDITOR")) {
         editor = le;
       }
-
-      std::system(fmt::sprintf("%s %s", editor, config_file_.get()).c_str());
     }
 
     return 0;
